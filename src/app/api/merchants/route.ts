@@ -18,7 +18,22 @@ export async function GET(req: NextRequest) {
   const [merchants, total] = await Promise.all([
     prisma.merchant.findMany({
       where,
-      include: { offers: { where: { isActive: true }, take: 3 } },
+      include: {
+          offers: {
+            where: { isActive: true },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              discount: true,
+              terms: true,
+              validFrom: true,
+              validUntil: true,
+              isActive: true,
+            },
+            orderBy: { createdAt: "desc" },
+          },
+        },
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
