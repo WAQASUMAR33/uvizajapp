@@ -7,10 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
 enum UserRole {
-  GUEST
-  REGISTERED
-  PAID_SUBSCRIBER
   ADMIN
 }
 
@@ -33,21 +32,21 @@ enum MerchantCategory {
   BARS_NIGHTLIFE
 }
 
-model User {
-  id            Int           @id @default(autoincrement())
-  email         String        @unique @db.VarChar(191)
-  password      String?       @db.VarChar(191)
-  name          String?       @db.VarChar(191)
-  image         String?       @db.VarChar(191)
-  role          UserRole      @default(REGISTERED)
-  emailVerified DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+// ─── Admin auth (NextAuth) ────────────────────────────────────────────────────
 
-  subscription  Subscription?
-  redemptions   Redemption[]
-  accounts      Account[]
-  sessions      Session[]
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique @db.VarChar(191)
+  password      String?   @db.VarChar(191)
+  name          String?   @db.VarChar(191)
+  image         String?   @db.VarChar(191)
+  role          UserRole  @default(ADMIN)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
 }
 
 model Account {
@@ -86,9 +85,32 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// ─── Customer (app users / subscribers) ──────────────────────────────────────
+
+model Customer {
+  id          Int       @id @default(autoincrement())
+  fullname    String    @db.VarChar(191)
+  email       String    @unique @db.VarChar(191)
+  password    String?   @db.VarChar(191)
+  uid         String?   @unique @db.VarChar(191)
+  logType     String    @default("email") @db.VarChar(50)
+  phoneNumber String?   @db.VarChar(50)
+  nationality String?   @db.VarChar(100)
+  dateOfBirth DateTime?
+  gender      String?   @db.VarChar(20)
+  imageUrl    String?   @db.VarChar(500)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  subscription Subscription?
+  redemptions  Redemption[]
+}
+
+// ─── Business models ──────────────────────────────────────────────────────────
+
 model Subscription {
   id         Int                @id @default(autoincrement())
-  userId     Int                @unique
+  customerId Int                @unique
   plan       SubscriptionPlan   @default(ANNUAL)
   status     SubscriptionStatus @default(ACTIVE)
   startDate  DateTime           @default(now())
@@ -100,7 +122,7 @@ model Subscription {
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -155,13 +177,13 @@ model Offer {
 
 model Redemption {
   id         Int      @id @default(autoincrement())
-  userId     Int
+  customerId Int
   offerId    Int
   merchantId Int
   savings    Float    @default(0)
   redeemedAt DateTime @default(now())
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   offer    Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
   merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
 }
