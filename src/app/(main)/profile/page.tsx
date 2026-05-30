@@ -51,18 +51,18 @@ export default async function ProfilePage() {
 
       {/* Profile header */}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 3, borderColor: "divider", mb: 3 }}>
-        <Box display="flex" alignItems="flex-start" justifyContent="space-between" flexWrap="wrap" gap={3}>
-          <Box display="flex" alignItems="center" gap={2.5}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2.5 }}>
             <Avatar sx={{ width: 64, height: 64, fontSize: "1.5rem", fontWeight: 700, background: "linear-gradient(135deg,#4f46e5,#7c3aed)", borderRadius: 3 }}>
               {user.name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
             </Avatar>
             <Box>
-              <Typography variant="h6" fontWeight={700}>{user.name || "No name set"}</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>{user.name || "No name set"}</Typography>
               <Typography variant="body2" color="text.secondary">{user.email}</Typography>
               <Chip label={role.label} size="small" sx={{ mt: 1, bgcolor: role.bg, color: role.color, fontWeight: 600, fontSize: "0.72rem" }} />
             </Box>
           </Box>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Calendar size={16} color="#94a3b8" />
             <Typography variant="caption" color="text.secondary">Member since {formatDate(user.createdAt)}</Typography>
           </Box>
@@ -70,21 +70,21 @@ export default async function ProfilePage() {
       </Paper>
 
       {/* Stats */}
-      <Grid container spacing={2} mb={3}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { icon: Receipt,     bg: "#e0e7ff", color: "#4338ca", label: "Redemptions",  value: user.redemptions.length },
           { icon: TrendingDown, bg: "#d1fae5", color: "#065f46", label: "Est. Savings", value: formatCurrency(totalSavings) },
           { icon: Crown,       bg: "#fef3c7", color: "#92400e", label: "Plan",          value: user.subscription ? user.subscription.plan.charAt(0) + user.subscription.plan.slice(1).toLowerCase() : "Free" },
         ].map(({ icon: Icon, bg, color, label, value }) => (
-          <Grid item xs={12} sm={4} key={label}>
+          <Grid size={{ xs: 12, sm: 4 }} key={label}>
             <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3, borderColor: "divider" }}>
-              <Box display="flex" alignItems="center" gap={1.5} mb={1}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
                 <Box sx={{ width: 36, height: 36, borderRadius: 2, bgcolor: bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <Icon size={18} color={color} />
                 </Box>
-                <Typography variant="body2" color="text.secondary" fontWeight={500}>{label}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>{label}</Typography>
               </Box>
-              <Typography variant="h5" fontWeight={700}>{value}</Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>{value}</Typography>
               {label === "Plan" && user.subscription && (
                 <Typography variant="caption" color="text.secondary">Exp. {formatDate(user.subscription.endDate)}</Typography>
               )}
@@ -97,9 +97,9 @@ export default async function ProfilePage() {
       {!isPaid && (
         <Paper sx={{ p: 3, borderRadius: 3, background: "linear-gradient(135deg,#fffbeb,#fefce8)", border: "1px solid #fde68a", mb: 3, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2 }}>
           <Box>
-            <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
               <Crown size={18} color="#f59e0b" />
-              <Typography variant="subtitle1" fontWeight={700}>Upgrade to Premium</Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Upgrade to Premium</Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">Unlock all offers and start saving at premium merchants.</Typography>
           </Box>
@@ -110,7 +110,7 @@ export default async function ProfilePage() {
       )}
 
       {/* Redemption history */}
-      <Typography variant="h6" fontWeight={700} mb={2}>Redemption History</Typography>
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>Redemption History</Typography>
       {user.redemptions.length === 0 ? (
         <Paper variant="outlined" sx={{ p: 6, textAlign: "center", borderRadius: 3, borderColor: "divider" }}>
           <Receipt size={40} color="#cbd5e1" style={{ marginBottom: 8 }} />
@@ -122,13 +122,13 @@ export default async function ProfilePage() {
           {user.redemptions.map((r, i) => (
             <Box key={r.id}>
               {i > 0 && <Divider />}
-              <Box px={3} py={2} display="flex" alignItems="center" justifyContent="space-between" sx={{ "&:hover": { bgcolor: "action.hover" } }}>
+              <Box sx={{ px: 3, py: 2, display: "flex", alignItems: "center", justifyContent: "space-between", "&:hover": { bgcolor: "action.hover" } }}>
                 <Box>
-                  <Typography variant="body2" fontWeight={500}>{r.offer.title}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.offer.title}</Typography>
                   <Typography variant="caption" color="text.secondary">{r.merchant.name}</Typography>
                 </Box>
-                <Box textAlign="right">
-                  <Typography variant="body2" fontWeight={600} color="success.main">~{formatCurrency(r.savings)} saved</Typography>
+                <Box sx={{ textAlign: "right" }}>
+                  <Typography variant="body2" color="success.main" sx={{ fontWeight: 600 }}>~{formatCurrency(r.savings)} saved</Typography>
                   <Typography variant="caption" color="text.secondary">{formatDate(r.redeemedAt)}</Typography>
                 </Box>
               </Box>

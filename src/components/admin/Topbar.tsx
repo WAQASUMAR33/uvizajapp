@@ -89,9 +89,9 @@ export function AdminTopbar({ user }: AdminTopbarProps) {
             anchorEl={anchor}
             open={Boolean(anchor)}
             onClose={() => setAnchor(null)}
-            PaperProps={{
+            slotProps={{ paper: {
               sx: { mt: 1, minWidth: 220, borderRadius: "14px", border: "1px solid", borderColor: "divider", boxShadow: 4 },
-            }}
+            } }}
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
@@ -115,7 +115,7 @@ export function AdminTopbar({ user }: AdminTopbarProps) {
               sx={{ color: "error.main", gap: 1.5, "&:hover": { backgroundColor: "error.light", color: "error.dark" } }}
             >
               <LogOut size={16} />
-              <Typography variant="body2" fontWeight={500}>Sign out</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>Sign out</Typography>
             </MenuItem>
           </Menu>
         </Box>

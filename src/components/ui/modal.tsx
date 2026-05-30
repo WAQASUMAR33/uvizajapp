@@ -21,7 +21,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{ className: cn(className) }}
+      slotProps={{ paper: { className: cn(className) } }}
     >
       {title && (
         <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1.5 }}>

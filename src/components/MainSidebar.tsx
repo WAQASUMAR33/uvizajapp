@@ -46,7 +46,7 @@ export function MainSidebar({ role }: { role?: string }) {
         <Box sx={{ width: 32, height: 32, borderRadius: "9px", background: "linear-gradient(135deg,#f59e0b,#eab308)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(245,158,11,0.3)" }}>
           <Sparkles size={16} color="#fff" />
         </Box>
-        <Typography variant="subtitle1" fontWeight={700}>Ujivaj</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Ujivaj</Typography>
       </Box>
 
       <List sx={{ flex: 1, px: 1.5, py: 1.5 }} disablePadding>
@@ -70,7 +70,7 @@ export function MainSidebar({ role }: { role?: string }) {
               </ListItemIcon>
               <ListItemText
                 primary={label}
-                primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: active ? 600 : 400 }}
+                slotProps={{ primary: { style: { fontSize: "0.875rem", fontWeight: active ? 600 : 400 } } }}
               />
             </ListItemButton>
           );
@@ -87,7 +87,7 @@ export function MainSidebar({ role }: { role?: string }) {
           <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
             <LogOut size={18} />
           </ListItemIcon>
-          <ListItemText primary="Sign out" primaryTypographyProps={{ fontSize: "0.875rem" }} />
+          <ListItemText primary="Sign out" slotProps={{ primary: { style: { fontSize: "0.875rem" } } }} />
         </ListItemButton>
       </Box>
     </Drawer>

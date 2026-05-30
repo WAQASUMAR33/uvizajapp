@@ -46,26 +46,26 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
     <>
       <Card sx={{ background: "linear-gradient(135deg,#eef2ff,#f5f3ff)", border: "1px solid #e0e7ff", borderRadius: 3, boxShadow: "none", transition: "all 0.2s", "&:hover": { boxShadow: 3 } }}>
         <CardContent>
-          <Box display="flex" alignItems="center" gap={1.5} mb={1.5}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
             <Avatar sx={{ width: 36, height: 36, bgcolor: "#4f46e5", borderRadius: 2 }}>
               <Percent size={18} />
             </Avatar>
             <Chip label={offer.discount || "Special Offer"} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
           </Box>
-          <Typography variant="subtitle2" fontWeight={700} gutterBottom>{offer.title}</Typography>
+          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 700 }}>{offer.title}</Typography>
           {offer.description && (
-            <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", mb: 1 }}>
               {offer.description}
             </Typography>
           )}
           {offer.validUntil && (
             <Typography variant="caption" color="text.disabled">Valid until {new Date(offer.validUntil).toLocaleDateString()}</Typography>
           )}
-          <Box mt={2}>
+          <Box sx={{ mt: 2 }}>
             {canRedeem ? (
               redeemed ? (
-                <Box display="flex" alignItems="center" gap={1} color="success.main">
-                  <CheckCircle size={16} /><Typography variant="body2" fontWeight={600}>Redeemed!</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "success.main" }}>
+                  <CheckCircle size={16} /><Typography variant="body2" sx={{ fontWeight: 600 }}>Redeemed!</Typography>
                 </Box>
               ) : (
                 <MuiButton size="small" variant="contained" onClick={() => setOpen(true)} sx={{ borderRadius: "8px" }}>Redeem Offer</MuiButton>
@@ -79,7 +79,7 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
         </CardContent>
       </Card>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { borderRadius: "20px" } }}>
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" slotProps={{ paper: { sx: { borderRadius: "20px" } } }}>
         <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1.5 }}>
           {canRedeem ? "Redeem Offer" : "Subscription Required"}
           <IconButton size="small" onClick={() => setOpen(false)}><X size={18} /></IconButton>
@@ -88,15 +88,15 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
           {canRedeem ? (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, py: 1 }}>
               <Avatar sx={{ width: 64, height: 64, bgcolor: "#e0e7ff", borderRadius: 3 }}><Percent size={32} color="#4f46e5" /></Avatar>
-              <Box textAlign="center">
-                <Typography variant="h6" fontWeight={700}>{offer.title}</Typography>
+              <Box sx={{ textAlign: "center" }}>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>{offer.title}</Typography>
                 {merchantName && <Typography variant="body2" color="text.secondary">at {merchantName}</Typography>}
               </Box>
               <Chip label={offer.discount} sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.875rem", px: 1, py: 2 }} />
-              {offer.description && <Typography variant="body2" color="text.secondary" textAlign="center">{offer.description}</Typography>}
+              {offer.description && <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>{offer.description}</Typography>}
               {offer.terms && (
                 <Box sx={{ bgcolor: "grey.50", borderRadius: 2, p: 2, width: "100%" }}>
-                  <Typography variant="caption" fontWeight={600} display="block" mb={0.5}>Terms & Conditions</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 0.5 }}>Terms & Conditions</Typography>
                   <Typography variant="caption" color="text.secondary">{offer.terms}</Typography>
                 </Box>
               )}
@@ -107,9 +107,9 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, py: 1 }}>
               <Avatar sx={{ width: 64, height: 64, bgcolor: "#fef3c7", borderRadius: 3 }}><Lock size={32} color="#f59e0b" /></Avatar>
-              <Box textAlign="center">
-                <Typography variant="h6" fontWeight={700}>Unlock This Offer</Typography>
-                <Typography variant="body2" color="text.secondary" mt={0.5}>Subscribe to Ujivaj to redeem exclusive offers at premium merchants.</Typography>
+              <Box sx={{ textAlign: "center" }}>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>Unlock This Offer</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Subscribe to Ujivaj to redeem exclusive offers at premium merchants.</Typography>
               </Box>
               <MuiButton variant="contained" color="secondary" fullWidth size="large" onClick={() => { setOpen(false); window.location.href = "/subscribe"; }} sx={{ borderRadius: "10px" }}>
                 View Plans

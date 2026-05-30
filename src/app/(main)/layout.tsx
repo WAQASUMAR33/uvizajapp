@@ -16,7 +16,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         <Box component="main" sx={{ flex: 1 }}>{children}</Box>
 
         <Box component="footer" sx={{ bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider", py: 3 }}>
-          <Typography variant="caption" color="text.secondary" display="block" textAlign="center">
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "center" }}>
             © 2026 Ujivaj. All rights reserved.
           </Typography>
         </Box>

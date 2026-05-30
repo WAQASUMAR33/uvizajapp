@@ -170,10 +170,10 @@ export default function AdminCategoriesPage() {
   return (
     <Box>
       {/* Header */}
-      <Box mb={3} sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", width: "100%" }}>
+      <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", width: "100%", mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Categories</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>{categories.length} total</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Categories</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{categories.length} total</Typography>
         </Box>
         <MuiButton variant="contained" startIcon={<Plus size={16} />} onClick={openCreate}>
           Add Category
@@ -187,15 +187,15 @@ export default function AdminCategoriesPage() {
         onChange={(e) => setSearch(e.target.value)}
         size="small"
         sx={{ maxWidth: 320, mb: 3 }}
-        InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
+        slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
 
       {/* Table */}
       <Paper variant="outlined" sx={{ borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
-          <Box py={8} textAlign="center" color="text.secondary">Loading…</Box>
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
         ) : filtered.length === 0 ? (
-          <Box py={8} textAlign="center" color="text.secondary">
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
             <LayoutGrid size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
             <Typography variant="body2">No categories found</Typography>
           </Box>
@@ -233,7 +233,7 @@ export default function AdminCategoriesPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600}>{cat.name}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{cat.name}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="caption" sx={{ fontFamily: "monospace", color: "text.secondary" }}>
@@ -291,7 +291,7 @@ export default function AdminCategoriesPage() {
 
             {/* Image upload */}
             <Box>
-              <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" mb={1} textTransform="uppercase" letterSpacing={0.5}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, display: "block", mb: 1, textTransform: "uppercase", letterSpacing: 0.5 }}>
                 Category Image
               </Typography>
               <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
@@ -308,9 +308,9 @@ export default function AdminCategoriesPage() {
                   {previewUrl ? (
                     <Box component="img" src={previewUrl} alt="preview" sx={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
-                    <Box textAlign="center">
+                    <Box sx={{ textAlign: "center" }}>
                       <ImageIcon size={28} color="#cbd5e1" />
-                      <Typography variant="caption" color="text.disabled" display="block" mt={0.5}>
+                      <Typography variant="caption" color="text.disabled" sx={{ display: "block", mt: 0.5 }}>
                         Click to upload
                       </Typography>
                     </Box>
@@ -318,7 +318,7 @@ export default function AdminCategoriesPage() {
                 </Box>
 
                 {/* Upload button + instructions */}
-                <Box flex={1}>
+                <Box sx={{ flex: 1 }}>
                   <MuiButton
                     variant="outlined"
                     size="small"
@@ -328,7 +328,7 @@ export default function AdminCategoriesPage() {
                   >
                     Browse Image
                   </MuiButton>
-                  <Typography variant="caption" color="text.secondary" display="block" lineHeight={1.5}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.5 }}>
                     JPEG, PNG, WebP or GIF · Max 5 MB
                   </Typography>
                   {previewUrl && (
@@ -363,7 +363,7 @@ export default function AdminCategoriesPage() {
                 value={form.emoji || ""}
                 onChange={(e) => setForm({ ...form, emoji: e.target.value })}
                 size="small"
-                inputProps={{ style: { fontSize: "1.5rem", textAlign: "center" } }}
+                slotProps={{ htmlInput: { style: { fontSize: "1.5rem", textAlign: "center" } } }}
               />
               <TextField
                 label="Category Name *"

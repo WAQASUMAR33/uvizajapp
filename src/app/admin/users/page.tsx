@@ -57,10 +57,10 @@ export default function AdminUsersPage() {
 
   return (
     <Box>
-      <Box mb={3} display="flex" alignItems="center" justifyContent="space-between">
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Users</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>{users.length} total</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Users</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{users.length} total</Typography>
         </Box>
       </Box>
 
@@ -70,14 +70,14 @@ export default function AdminUsersPage() {
         onChange={(e) => setSearch(e.target.value)}
         size="small"
         sx={{ maxWidth: 320, mb: 3 }}
-        InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
+        slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
 
       <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
-          <Box py={8} textAlign="center" color="text.secondary">Loading…</Box>
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
         ) : filtered.length === 0 ? (
-          <Box py={8} textAlign="center" color="text.secondary">
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
             <Users size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
             <Typography variant="body2">No users found</Typography>
           </Box>
@@ -98,12 +98,12 @@ export default function AdminUsersPage() {
                 return (
                   <TableRow key={u.id}>
                     <TableCell>
-                      <Box display="flex" alignItems="center" gap={1.5}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <Avatar sx={{ width: 34, height: 34, fontSize: "0.8rem", fontWeight: 700, bgcolor: "#e0e7ff", color: "#4338ca" }}>
                           {(u.name || u.email)[0].toUpperCase()}
                         </Avatar>
                         <Box>
-                          <Typography variant="body2" fontWeight={500}>{u.name || "—"}</Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>{u.name || "—"}</Typography>
                           <Typography variant="caption" color="text.secondary">{u.email}</Typography>
                         </Box>
                       </Box>
@@ -120,12 +120,12 @@ export default function AdminUsersPage() {
                       {u.subscription ? (
                         <Box>
                           <Chip label={u.subscription.plan} size="small" sx={{ bgcolor: u.subscription.status === "ACTIVE" ? "#d1fae5" : "#f1f5f9", color: u.subscription.status === "ACTIVE" ? "#065f46" : "#475569", fontWeight: 600, fontSize: "0.72rem", mb: 0.5 }} />
-                          <Typography variant="caption" display="block" color="text.secondary">Exp. {formatDate(u.subscription.endDate)}</Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>Exp. {formatDate(u.subscription.endDate)}</Typography>
                         </Box>
                       ) : <Typography variant="body2" color="text.secondary">—</Typography>}
                     </TableCell>
                     <TableCell align="center">
-                      <Typography variant="body2" fontWeight={600}>{u._count.redemptions}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{u._count.redemptions}</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" color="text.secondary">{formatDate(u.createdAt)}</Typography>

@@ -55,14 +55,14 @@ export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
         )}
       </Box>
       <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-        <Typography variant="subtitle2" fontWeight={700} noWrap>{merchant.name}</Typography>
+        <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>{merchant.name}</Typography>
         {merchant.description && (
-          <Typography variant="caption" color="text.secondary" display="block" mt={0.5} sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", mt: 0.5 }}>
             {merchant.description}
           </Typography>
         )}
         {(merchant.city || merchant.address) && (
-          <Box display="flex" alignItems="center" gap={0.5} mt={1}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 1 }}>
             <MapPin size={11} color="#94a3b8" />
             <Typography variant="caption" color="text.secondary" noWrap>
               {merchant.city || merchant.address}

@@ -61,7 +61,7 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
             {merchant.name}
           </Typography>
           {merchant.city && (
-            <Stack direction="row" alignItems="center" spacing={0.5} mt={0.75}>
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mt: 0.75 }}>
               <MapPin size={14} color="rgba(255,255,255,0.75)" />
               <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.8)" }}>{merchant.city}</Typography>
             </Stack>
@@ -73,13 +73,13 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
       <Grid container sx={{ bgcolor: "background.paper", borderTop: "3px solid", borderColor: "primary.main" }}>
 
         {/* Left — main content */}
-        <Grid item xs={12} md={8} sx={{ borderRight: { md: "1px solid" }, borderColor: { md: "divider" } }}>
+        <Grid size={{ xs: 12, md: 8 }} sx={{ borderRight: { md: "1px solid" }, borderColor: { md: "divider" } }}>
 
           {/* About */}
           {merchant.description && (
             <Box sx={{ px: { xs: 2.5, md: 4 }, py: 3, borderBottom: "1px solid", borderColor: "divider" }}>
-              <Typography variant="overline" color="text.secondary" fontWeight={700}>About</Typography>
-              <Typography variant="body1" color="text.secondary" lineHeight={1.8} mt={0.5}>
+              <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>About</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8, mt: 0.5 }}>
                 {merchant.description}
               </Typography>
             </Box>
@@ -87,9 +87,9 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
 
           {/* Offers */}
           <Box sx={{ px: { xs: 2.5, md: 4 }, py: 3, borderBottom: "1px solid", borderColor: "divider" }}>
-            <Stack direction="row" alignItems="center" spacing={1.5} mb={2.5}>
+            <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 2.5 }}>
               <Tag size={18} color="#4f46e5" />
-              <Typography variant="subtitle1" fontWeight={700}>Available Offers</Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Available Offers</Typography>
               <Chip
                 label={merchant.offers.length}
                 size="small"
@@ -114,10 +114,10 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
           {/* Gallery */}
           {images.length > 1 && (
             <Box sx={{ px: { xs: 2.5, md: 4 }, py: 3 }}>
-              <Typography variant="overline" color="text.secondary" fontWeight={700} display="block" mb={1.5}>Gallery</Typography>
+              <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700, display: "block", mb: 1.5 }}>Gallery</Typography>
               <Grid container spacing={1}>
                 {images.slice(1).map((img, i) => (
-                  <Grid item xs={4} sm={3} key={i}>
+                  <Grid size={{ xs: 4, sm: 3 }} key={i}>
                     <Box
                       component="img"
                       src={img}
@@ -132,9 +132,9 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
         </Grid>
 
         {/* Right — details sidebar */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={{ px: 3, py: 2, bgcolor: "#f8fafc", borderBottom: "1px solid", borderColor: "divider" }}>
-            <Typography variant="overline" color="text.secondary" fontWeight={700}>Details</Typography>
+            <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>Details</Typography>
           </Box>
 
           <Table size="small">
@@ -182,10 +182,10 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
                   <Typography variant="caption" sx={{ color: "#fff", fontWeight: 800 }}>%</Typography>
                 </Box>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" textTransform="uppercase" letterSpacing={0.5}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, display: "block", textTransform: "uppercase", letterSpacing: 0.5 }}>
                     Estimated Savings
                   </Typography>
-                  <Typography variant="h6" fontWeight={800} sx={{ color: "#065f46" }}>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: "#065f46" }}>
                     ${merchant.savingsEstimate} / visit
                   </Typography>
                 </Box>

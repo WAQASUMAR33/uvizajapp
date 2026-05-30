@@ -19,7 +19,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       inputRef={ref}
       className={className}
       style={style}
-      inputProps={props as any}
+      slotProps={{ htmlInput: props as any }}
       size="small"
       fullWidth
     />

@@ -90,10 +90,10 @@ export default function AdminOffersPage() {
 
   return (
     <Box>
-      <Box mb={3} display="flex" alignItems="center" justifyContent="space-between">
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Offers</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>{offers.length} total</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Offers</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{offers.length} total</Typography>
         </Box>
         <MuiButton variant="contained" startIcon={<Plus size={16} />} onClick={openCreate} disabled={merchants.length === 0} sx={{ borderRadius: "10px" }}>
           Add Offer
@@ -106,14 +106,14 @@ export default function AdminOffersPage() {
         onChange={(e) => setSearch(e.target.value)}
         size="small"
         sx={{ maxWidth: 320, mb: 3 }}
-        InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
+        slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
 
       <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
-          <Box py={8} textAlign="center" color="text.secondary">Loading…</Box>
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
         ) : filtered.length === 0 ? (
-          <Box py={8} textAlign="center" color="text.secondary">
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
             <Tag size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
             <Typography variant="body2">No offers found</Typography>
           </Box>
@@ -132,7 +132,7 @@ export default function AdminOffersPage() {
             <TableBody>
               {filtered.map((o) => (
                 <TableRow key={o.id}>
-                  <TableCell><Typography variant="body2" fontWeight={500}>{o.title}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 500 }}>{o.title}</Typography></TableCell>
                   <TableCell><Typography variant="body2" color="text.secondary">{o.merchant?.name || "—"}</Typography></TableCell>
                   <TableCell>
                     {o.discount
@@ -155,7 +155,7 @@ export default function AdminOffersPage() {
       </Paper>
 
       {/* Dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "20px" } }}>
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm" slotProps={{ paper: { sx: { borderRadius: "20px" } } }}>
         <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1.5 }}>
           {editing ? "Edit Offer" : "Add Offer"}
           <IconButton size="small" onClick={() => setOpen(false)}><X size={18} /></IconButton>
@@ -171,7 +171,7 @@ export default function AdminOffersPage() {
           <MuiTextField label="Discount label" value={form.discount || ""} onChange={(e) => setForm({ ...form, discount: e.target.value })} placeholder="e.g. 20% OFF" size="small" fullWidth />
           <MuiTextField label="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} multiline rows={3} size="small" fullWidth />
           <MuiTextField label="Terms & Conditions" value={form.terms || ""} onChange={(e) => setForm({ ...form, terms: e.target.value })} multiline rows={2} size="small" fullWidth />
-          <MuiTextField label="Valid until (optional)" type="date" value={form.validUntil ? String(form.validUntil).slice(0, 10) : ""} onChange={(e) => setForm({ ...form, validUntil: e.target.value || null })} size="small" fullWidth InputLabelProps={{ shrink: true }} />
+          <MuiTextField label="Valid until (optional)" type="date" value={form.validUntil ? String(form.validUntil).slice(0, 10) : ""} onChange={(e) => setForm({ ...form, validUntil: e.target.value || null })} size="small" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <MuiButton variant="text" onClick={() => setOpen(false)}>Cancel</MuiButton>

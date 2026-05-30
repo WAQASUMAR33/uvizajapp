@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
 
 setOptions({
-  apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  version: "weekly",
+  key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  v: "weekly",
 });
 
 const DEFAULT_CENTER = { lat: 25.2048, lng: 55.2708 }; // Dubai

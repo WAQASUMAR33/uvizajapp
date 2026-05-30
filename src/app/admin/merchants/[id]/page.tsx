@@ -45,7 +45,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           Merchants
         </MuiButton>
         <Typography component="span" variant="caption" color="text.disabled" sx={{ mx: 1 }}>/</Typography>
-        <Typography component="span" variant="caption" color="text.primary" fontWeight={600}>{merchant.name}</Typography>
+        <Typography component="span" variant="caption" color="text.primary" sx={{ fontWeight: 600 }}>{merchant.name}</Typography>
       </Box>
 
       {/* ── Hero image ── */}
@@ -83,13 +83,13 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
       <Grid container sx={{ borderTop: "1px solid", borderColor: "divider" }}>
 
         {/* Left — details */}
-        <Grid item xs={12} md={8} sx={{ borderRight: { md: "1px solid" }, borderColor: { md: "divider" } }}>
+        <Grid size={{ xs: 12, md: 8 }} sx={{ borderRight: { md: "1px solid" }, borderColor: { md: "divider" } }}>
 
           {/* Name + description */}
           <Box sx={{ px: 4, py: 3, borderBottom: "1px solid", borderColor: "divider" }}>
-            <Typography variant="h5" fontWeight={700} gutterBottom>{merchant.name}</Typography>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>{merchant.name}</Typography>
             {merchant.description ? (
-              <Typography variant="body1" color="text.secondary" lineHeight={1.75}>{merchant.description}</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.75 }}>{merchant.description}</Typography>
             ) : (
               <Typography variant="body2" color="text.disabled" sx={{ fontStyle: "italic" }}>No description provided.</Typography>
             )}
@@ -97,10 +97,10 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
 
           {/* Offers */}
           <Box sx={{ px: 4, py: 3 }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-              <Stack direction="row" alignItems="center" spacing={1.5}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                 <Tag size={18} color="#4f46e5" />
-                <Typography variant="subtitle1" fontWeight={700}>Active Offers</Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Active Offers</Typography>
               </Stack>
               <Typography variant="caption" color="text.secondary">{merchant.offers.length} of 3 shown</Typography>
             </Box>
@@ -122,15 +122,15 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                       <Typography variant="caption" sx={{ color: "#fff", fontWeight: 700 }}>{i + 1}</Typography>
                     </Box>
 
-                    <Box flex={1} minWidth={0}>
-                      <Stack direction="row" alignItems="center" flexWrap="wrap" gap={1} mb={0.5}>
-                        <Typography variant="body2" fontWeight={700}>{offer.title}</Typography>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Stack direction="row" sx={{ alignItems: "center", flexWrap: "wrap", gap: 1, mb: 0.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{offer.title}</Typography>
                         {offer.discount && (
                           <Chip label={offer.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.7rem" }} />
                         )}
                       </Stack>
                       {offer.description && (
-                        <Typography variant="body2" color="text.secondary" mb={0.5}>{offer.description}</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{offer.description}</Typography>
                       )}
                       {offer.terms && (
                         <Typography variant="caption" color="text.disabled" sx={{ fontStyle: "italic" }}>
@@ -147,10 +147,10 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           {/* Gallery */}
           {images.length > 1 && (
             <Box sx={{ px: 4, py: 3, borderTop: "1px solid", borderColor: "divider" }}>
-              <Typography variant="subtitle1" fontWeight={700} mb={2}>Gallery</Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>Gallery</Typography>
               <Grid container spacing={1}>
                 {images.slice(1).map((img, i) => (
-                  <Grid item xs={4} sm={3} key={i}>
+                  <Grid size={{ xs: 4, sm: 3 }} key={i}>
                     <Box
                       component="img"
                       src={img}
@@ -165,9 +165,9 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
         </Grid>
 
         {/* Right — info panel */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={{ borderBottom: "1px solid", borderColor: "divider", px: 3, py: 2, bgcolor: "#f8fafc" }}>
-            <Typography variant="overline" color="text.secondary" fontWeight={700}>Merchant Info</Typography>
+            <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>Merchant Info</Typography>
           </Box>
 
           <Table size="small">

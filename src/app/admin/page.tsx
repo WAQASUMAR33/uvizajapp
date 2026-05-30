@@ -48,22 +48,22 @@ export default async function AdminDashboard() {
 
   return (
     <Box sx={{ spaceY: 4 }}>
-      <Box mb={4}>
-        <Typography variant="h5" fontWeight={700}>Dashboard</Typography>
-        <Typography variant="body2" color="text.secondary" mt={0.5}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>Dashboard</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
           Welcome back! Here's what's happening with Ujivaj.
         </Typography>
       </Box>
 
       {/* Stat cards */}
-      <Grid container spacing={2.5} mb={4}>
+      <Grid container spacing={2.5} sx={{ mb: 4 }}>
         {statCards(stats).map(({ label, value, icon: Icon, bg, color }) => (
-          <Grid item xs={12} sm={6} xl={4} key={label}>
+          <Grid size={{ xs: 12, sm: 6, xl: 4 }} key={label}>
             <Paper variant="outlined" sx={{ p: 3, borderRadius: 3, borderColor: "divider" }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary" fontWeight={500}>{label}</Typography>
-                  <Typography variant="h4" fontWeight={700} mt={0.5}>{value}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>{label}</Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, mt: 0.5 }}>{value}</Typography>
                 </Box>
                 <Box sx={{ width: 52, height: 52, borderRadius: 3, backgroundColor: bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <Icon size={24} color={color} />
@@ -77,7 +77,7 @@ export default async function AdminDashboard() {
       {/* Recent redemptions */}
       <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
         <Box sx={{ px: 3, py: 2.5, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="subtitle1" fontWeight={700}>Recent Redemptions</Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Recent Redemptions</Typography>
         </Box>
         <Table>
           <TableHead>
@@ -102,7 +102,7 @@ export default async function AdminDashboard() {
                       <Avatar sx={{ width: 34, height: 34, fontSize: "0.8rem", fontWeight: 700, bgcolor: "#e0e7ff", color: "#4338ca" }}>
                         {(r.user.name || r.user.email)[0].toUpperCase()}
                       </Avatar>
-                      <Typography variant="body2" fontWeight={500}>{r.user.name || r.user.email}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.user.name || r.user.email}</Typography>
                     </Box>
                   </TableCell>
                   <TableCell>

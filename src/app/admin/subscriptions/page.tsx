@@ -59,16 +59,16 @@ export default function AdminSubscriptionsPage() {
 
   return (
     <Box>
-      <Box mb={3} display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Subscriptions</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Subscriptions</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             {subs.filter((s) => s.status === "ACTIVE").length} active
           </Typography>
         </Box>
         <Paper variant="outlined" sx={{ display: "flex", alignItems: "center", gap: 1, px: 2.5, py: 1.5, borderRadius: 3, borderColor: "divider" }}>
           <CreditCard size={18} color="#4f46e5" />
-          <Typography variant="body2" fontWeight={600}>Revenue: {formatCurrency(totalRevenue)}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>Revenue: {formatCurrency(totalRevenue)}</Typography>
         </Paper>
       </Box>
 
@@ -78,14 +78,14 @@ export default function AdminSubscriptionsPage() {
         onChange={(e) => setSearch(e.target.value)}
         size="small"
         sx={{ maxWidth: 320, mb: 3 }}
-        InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
+        slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
 
       <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
-          <Box py={8} textAlign="center" color="text.secondary">Loading…</Box>
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
         ) : filtered.length === 0 ? (
-          <Box py={8} textAlign="center" color="text.secondary">
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
             <Crown size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
             <Typography variant="body2">No subscriptions found</Typography>
           </Box>
@@ -107,7 +107,7 @@ export default function AdminSubscriptionsPage() {
                 return (
                   <TableRow key={s.id}>
                     <TableCell>
-                      <Typography variant="body2" fontWeight={500}>{s.user.name || s.user.email}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{s.user.name || s.user.email}</Typography>
                       {s.user.name && <Typography variant="caption" color="text.secondary">{s.user.email}</Typography>}
                     </TableCell>
                     <TableCell>
@@ -116,7 +116,7 @@ export default function AdminSubscriptionsPage() {
                     <TableCell>
                       <Chip label={s.status} size="small" sx={{ bgcolor: sc.bg, color: sc.color, fontWeight: 600, fontSize: "0.72rem" }} />
                     </TableCell>
-                    <TableCell><Typography variant="body2" fontWeight={600}>{formatCurrency(s.price, s.currency)}</Typography></TableCell>
+                    <TableCell><Typography variant="body2" sx={{ fontWeight: 600 }}>{formatCurrency(s.price, s.currency)}</Typography></TableCell>
                     <TableCell><Typography variant="body2" color="text.secondary">{formatDate(s.endDate)}</Typography></TableCell>
                     <TableCell><Typography variant="body2" color="text.secondary" sx={{ textTransform: "capitalize" }}>{s.platform || "web"}</Typography></TableCell>
                   </TableRow>

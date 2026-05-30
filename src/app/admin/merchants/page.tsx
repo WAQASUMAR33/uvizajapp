@@ -145,10 +145,10 @@ export default function AdminMerchantsPage() {
 
   return (
     <Box>
-      <Box mb={3} sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", width: "100%" }}>
+      <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", width: "100%", mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Merchants</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>{merchants.length} total</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Merchants</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{merchants.length} total</Typography>
         </Box>
         <MuiButton variant="contained" startIcon={<Plus size={16} />} onClick={openCreate} sx={{ ml: "auto" }}>
           Add Merchant
@@ -161,14 +161,14 @@ export default function AdminMerchantsPage() {
         onChange={(e) => setSearch(e.target.value)}
         size="small"
         sx={{ maxWidth: 320, mb: 3 }}
-        InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
+        slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
 
       <Paper variant="outlined" sx={{ borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
-          <Box py={8} textAlign="center" color="text.secondary">Loading…</Box>
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
         ) : filtered.length === 0 ? (
-          <Box py={8} textAlign="center" color="text.secondary">
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
             <Store size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
             <Typography variant="body2">No merchants found</Typography>
           </Box>
@@ -199,18 +199,18 @@ export default function AdminMerchantsPage() {
                   </TableCell>
                   {/* Name column */}
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600}>{m.name}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.name}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="text.secondary">{getCategoryLabel(m.category)}</Typography>
                   </TableCell>
                   <TableCell>
                     {(m.city || m.address || m.latitude != null) ? (
-                      <Box display="flex" alignItems="flex-start" gap={0.75} maxWidth={200}>
+                      <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.75, maxWidth: 200 }}>
                         <MapPin size={14} style={{ marginTop: 3, flexShrink: 0, color: "#94a3b8" }} />
                         <Box>
                           {m.address && <Typography variant="body2" noWrap>{m.address}</Typography>}
-                          {m.city && <Typography variant="caption" color="text.secondary" display="block">{m.city}</Typography>}
+                          {m.city && <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{m.city}</Typography>}
                           {m.latitude != null && m.longitude != null && (
                             <Typography variant="caption" sx={{ fontFamily: "monospace", color: "primary.main" }}>
                               {m.latitude.toFixed(5)}, {m.longitude.toFixed(5)}
@@ -272,15 +272,15 @@ export default function AdminMerchantsPage() {
 
             {/* Geo location picker */}
             <Box sx={{ gridColumn: "1 / -1" }}>
-              <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mb={1}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, display: "block", mb: 1 }}>
                 GEO LOCATION
               </Typography>
-              <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
                 <MuiButton variant="contained" size="small" startIcon={<MapPin size={14} />} onClick={() => setMapOpen(true)}>
                   {form.latitude != null ? "Change on Map" : "Pick on Map"}
                 </MuiButton>
                 {form.latitude != null && form.longitude != null ? (
-                  <Box display="flex" alignItems="center" gap={1} sx={{ bgcolor: "#e0e7ff", px: 1.5, py: 0.75 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "#e0e7ff", px: 1.5, py: 0.75 }}>
                     <MapPin size={13} color="#4f46e5" />
                     <Typography variant="caption" sx={{ fontFamily: "monospace", color: "#4338ca", fontWeight: 600 }}>
                       {(form.latitude as number).toFixed(5)}, {(form.longitude as number).toFixed(5)}
@@ -302,7 +302,7 @@ export default function AdminMerchantsPage() {
             <TextField label="Website" value={form.website || ""} onChange={(e) => setForm({ ...form, website: e.target.value })} size="small" fullWidth />
             {/* Image upload */}
             <Box sx={{ gridColumn: "1 / -1" }}>
-              <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" mb={1} textTransform="uppercase" letterSpacing={0.5}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, display: "block", mb: 1, textTransform: "uppercase", letterSpacing: 0.5 }}>
                 Merchant Image
               </Typography>
               <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
@@ -318,19 +318,19 @@ export default function AdminMerchantsPage() {
                   {previewUrl ? (
                     <Box component="img" src={previewUrl} alt="preview" sx={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
-                    <Box textAlign="center">
+                    <Box sx={{ textAlign: "center" }}>
                       <ImageIcon size={28} color="#cbd5e1" />
-                      <Typography variant="caption" color="text.disabled" display="block" mt={0.5}>
+                      <Typography variant="caption" color="text.disabled" sx={{ display: "block", mt: 0.5 }}>
                         Click to upload
                       </Typography>
                     </Box>
                   )}
                 </Box>
-                <Box flex={1}>
+                <Box sx={{ flex: 1 }}>
                   <MuiButton variant="outlined" size="small" startIcon={<Upload size={14} />} onClick={() => fileRef.current?.click()} sx={{ mb: 1 }}>
                     Browse Image
                   </MuiButton>
-                  <Typography variant="caption" color="text.secondary" display="block" lineHeight={1.5}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.5 }}>
                     JPEG, PNG, WebP or GIF · Max 5 MB
                   </Typography>
                   {previewUrl && (

@@ -130,13 +130,13 @@ function LoginForm() {
           <Box sx={{ width: 36, height: 36, borderRadius: "10px", background: "linear-gradient(135deg, #f59e0b, #eab308)", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Sparkles size={18} color="#fff" />
           </Box>
-          <Typography variant="h6" fontWeight={700}>Ujivaj</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>Ujivaj</Typography>
         </Box>
 
         <Box sx={{ width: "100%", maxWidth: 380 }}>
-          <Box mb={4}>
-            <Typography variant="h5" fontWeight={700}>Welcome back</Typography>
-            <Typography variant="body2" color="text.secondary" mt={0.5}>Sign in to your account to continue</Typography>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>Welcome back</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Sign in to your account to continue</Typography>
           </Box>
 
           {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
@@ -149,7 +149,7 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               fullWidth
-              InputProps={{ startAdornment: <InputAdornment position="start"><Mail size={16} /></InputAdornment> }}
+              slotProps={{ input: { startAdornment: <InputAdornment position="start"><Mail size={16} /></InputAdornment> } }}
             />
 
             <TextField
@@ -159,7 +159,7 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               fullWidth
-              InputProps={{
+              slotProps={{ input: {
                 startAdornment: <InputAdornment position="start"><Lock size={16} /></InputAdornment>,
                 endAdornment: (
                   <InputAdornment position="end">
@@ -168,7 +168,7 @@ function LoginForm() {
                     </IconButton>
                   </InputAdornment>
                 ),
-              }}
+              } }}
             />
 
             <MuiButton
@@ -185,7 +185,7 @@ function LoginForm() {
           </Box>
 
           <Divider sx={{ my: 3 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>OR</Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>OR</Typography>
           </Divider>
 
           <MuiButton

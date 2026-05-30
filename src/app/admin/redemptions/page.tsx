@@ -47,14 +47,14 @@ export default function AdminRedemptionsPage() {
 
   return (
     <Box>
-      <Box mb={3} display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 3 }}>
         <Box>
-          <Typography variant="h5" fontWeight={700}>Redemptions</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>{redemptions.length} total</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>Redemptions</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{redemptions.length} total</Typography>
         </Box>
         <Paper variant="outlined" sx={{ display: "flex", alignItems: "center", gap: 1, px: 2.5, py: 1.5, borderRadius: 3, borderColor: "divider" }}>
           <TrendingUp size={18} color="#10b981" />
-          <Typography variant="body2" fontWeight={600}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
             Total Savings: {formatCurrency(totalSavings)}
           </Typography>
         </Paper>
@@ -66,14 +66,14 @@ export default function AdminRedemptionsPage() {
         onChange={(e) => setSearch(e.target.value)}
         size="small"
         sx={{ maxWidth: 320, mb: 3 }}
-        InputProps={{ startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> }}
+        slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
 
       <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
-          <Box py={8} textAlign="center" color="text.secondary">Loading…</Box>
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
         ) : filtered.length === 0 ? (
-          <Box py={8} textAlign="center" color="text.secondary">
+          <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
             <Receipt size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
             <Typography variant="body2">No redemptions found</Typography>
           </Box>
@@ -92,7 +92,7 @@ export default function AdminRedemptionsPage() {
               {filtered.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={500}>{r.user.name || r.user.email}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.user.name || r.user.email}</Typography>
                     {r.user.name && <Typography variant="caption" color="text.secondary">{r.user.email}</Typography>}
                   </TableCell>
                   <TableCell>
@@ -100,7 +100,7 @@ export default function AdminRedemptionsPage() {
                     {r.offer.discount && <Typography variant="caption" sx={{ color: "#d97706", fontWeight: 600 }}>{r.offer.discount}</Typography>}
                   </TableCell>
                   <TableCell><Typography variant="body2" color="text.secondary">{r.merchant.name}</Typography></TableCell>
-                  <TableCell><Typography variant="body2" fontWeight={600} sx={{ color: "#059669" }}>{formatCurrency(r.savings)}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" sx={{ fontWeight: 600, color: "#059669" }}>{formatCurrency(r.savings)}</Typography></TableCell>
                   <TableCell><Typography variant="body2" color="text.secondary">{formatDate(r.redeemedAt)}</Typography></TableCell>
                 </TableRow>
               ))}

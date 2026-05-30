@@ -130,13 +130,13 @@ export default function RegisterPage() {
           <Box sx={{ width: 36, height: 36, borderRadius: "10px", background: "linear-gradient(135deg,#f59e0b,#eab308)", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Sparkles size={18} color="#fff" />
           </Box>
-          <Typography variant="h6" fontWeight={700}>Ujivaj</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>Ujivaj</Typography>
         </Box>
 
         <Box sx={{ width: "100%", maxWidth: 380 }}>
-          <Box mb={4}>
-            <Typography variant="h5" fontWeight={700}>Create your account</Typography>
-            <Typography variant="body2" color="text.secondary" mt={0.5}>Free forever. No credit card required.</Typography>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>Create your account</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Free forever. No credit card required.</Typography>
           </Box>
 
           {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
@@ -147,7 +147,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               fullWidth
-              InputProps={{ startAdornment: <InputAdornment position="start"><User size={16} /></InputAdornment> }}
+              slotProps={{ input: { startAdornment: <InputAdornment position="start"><User size={16} /></InputAdornment> } }}
             />
             <TextField
               label="Email address"
@@ -156,7 +156,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               fullWidth
-              InputProps={{ startAdornment: <InputAdornment position="start"><Mail size={16} /></InputAdornment> }}
+              slotProps={{ input: { startAdornment: <InputAdornment position="start"><Mail size={16} /></InputAdornment> } }}
             />
             <Box>
               <TextField
@@ -165,9 +165,8 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                inputProps={{ minLength: 8 }}
                 fullWidth
-                InputProps={{
+                slotProps={{ input: {
                   startAdornment: <InputAdornment position="start"><Lock size={16} /></InputAdornment>,
                   endAdornment: (
                     <InputAdornment position="end">
@@ -176,7 +175,7 @@ export default function RegisterPage() {
                       </IconButton>
                     </InputAdornment>
                   ),
-                }}
+                }, htmlInput: { minLength: 8 } }}
               />
               {password.length > 0 && (
                 <LinearProgress variant="determinate" value={pwStrength} color={pwColor as any} sx={{ mt: 1, borderRadius: 2, height: 4 }} />
@@ -196,14 +195,14 @@ export default function RegisterPage() {
             </MuiButton>
           </Box>
 
-          <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mt={2.5} lineHeight={1.6}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "center", mt: 2.5, lineHeight: 1.6 }}>
             By creating an account you agree to our{" "}
             <Box component="span" sx={{ color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>Terms</Box>
             {" "}and{" "}
             <Box component="span" sx={{ color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>Privacy Policy</Box>.
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" textAlign="center" mt={3}>
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", mt: 3 }}>
             Already have an account?{" "}
             <Box component={Link} href="/login" sx={{ color: "primary.main", fontWeight: 600, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
               Sign in

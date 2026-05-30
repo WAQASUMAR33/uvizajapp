@@ -17,7 +17,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       inputRef={ref}
       className={className}
       style={style}
-      inputProps={props as any}
+      slotProps={{ htmlInput: props as any }}
       size="small"
       fullWidth
     />

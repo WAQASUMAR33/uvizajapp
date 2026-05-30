@@ -91,7 +91,7 @@ export function AdminSidebar() {
               </ListItemIcon>
               <ListItemText
                 primary={label}
-                primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: active ? 600 : 400 }}
+                slotProps={{ primary: { style: { fontSize: "0.875rem", fontWeight: active ? 600 : 400 } } }}
               />
             </ListItemButton>
           );
@@ -115,7 +115,7 @@ export function AdminSidebar() {
           </ListItemIcon>
           <ListItemText
             primary="Sign out"
-            primaryTypographyProps={{ fontSize: "0.875rem" }}
+            slotProps={{ primary: { style: { fontSize: "0.875rem" } } }}
           />
         </ListItemButton>
       </Box>

@@ -25,9 +25,9 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
 
   return (
     <Box sx={{ maxWidth: 1152, mx: "auto", px: 3, py: 4 }}>
-      <Box mb={3}>
-        <Typography variant="h5" fontWeight={700}>All Merchants</Typography>
-        <Typography variant="body2" color="text.secondary" mt={0.5}>Discover exclusive offers from top establishments</Typography>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>All Merchants</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Discover exclusive offers from top establishments</Typography>
       </Box>
 
       {/* Category filter chips */}
@@ -56,19 +56,19 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
       </Box>
 
       {merchants.length === 0 ? (
-        <Box py={12} textAlign="center" color="text.secondary">
+        <Box sx={{ py: 12, textAlign: "center", color: "text.secondary" }}>
           <Store size={48} style={{ marginBottom: 12, opacity: 0.3 }} />
           <Typography variant="h6" color="text.secondary">No merchants found</Typography>
-          <Typography variant="body2" color="text.disabled" mt={0.5}>Try a different category</Typography>
+          <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5 }}>Try a different category</Typography>
         </Box>
       ) : (
         <>
-          <Typography variant="body2" color="text.secondary" mb={2.5}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
             {merchants.length} merchant{merchants.length !== 1 ? "s" : ""}
           </Typography>
           <Grid container spacing={2.5}>
             {merchants.map((merchant) => (
-              <Grid item xs={12} sm={6} lg={4} key={merchant.id}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={merchant.id}>
                 <MerchantCard merchant={merchant} />
               </Grid>
             ))}
