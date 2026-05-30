@@ -34,16 +34,15 @@ async function main() {
   });
   console.log("Primary user:", primaryUser.email);
 
-  // Create test subscriber
+  // Create test subscriber (Customer table)
   const subPassword = await bcrypt.hash("test123", 12);
-  const subscriber = await prisma.user.upsert({
+  const subscriber = await prisma.customer.upsert({
     where: { email: "test@ujivaj.com" },
     update: {},
     create: {
       email: "test@ujivaj.com",
       password: subPassword,
-      name: "Test Subscriber",
-      role: "PAID_SUBSCRIBER",
+      fullname: "Test Subscriber",
       subscription: {
         create: {
           plan: "ANNUAL",

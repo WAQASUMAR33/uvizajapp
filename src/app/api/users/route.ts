@@ -22,8 +22,6 @@ export async function GET(req: NextRequest) {
         name: true,
         role: true,
         createdAt: true,
-        subscription: { select: { plan: true, status: true, endDate: true } },
-        _count: { select: { redemptions: true } },
       },
       orderBy: { createdAt: "desc" },
       skip,

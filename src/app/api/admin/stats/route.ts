@@ -26,7 +26,7 @@ export async function GET() {
       take: 5,
       orderBy: { redeemedAt: "desc" },
       include: {
-        user: { select: { name: true, email: true } },
+        customer: { select: { fullname: true, email: true } },
         merchant: { select: { name: true } },
         offer: { select: { title: true } },
       },

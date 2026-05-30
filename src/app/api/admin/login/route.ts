@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { subscription: true },
     });
 
     if (!user || !user.password) {

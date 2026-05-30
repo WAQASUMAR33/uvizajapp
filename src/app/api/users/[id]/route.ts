@@ -24,14 +24,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       image: true,
       role: true,
       createdAt: true,
-      subscription: true,
-      redemptions: {
-        include: {
-          offer: { select: { id: true, title: true, discount: true } },
-          merchant: { select: { id: true, name: true, images: true } },
-        },
-        orderBy: { redeemedAt: "desc" },
-      },
     },
   });
 
