@@ -98,8 +98,8 @@ export default function AdminCategoriesPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
-      setUploadError("Only JPEG, PNG, WebP, or GIF images are allowed.");
+    if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
+      setUploadError("Only JPEG, PNG, or GIF images are allowed.");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -119,20 +119,17 @@ export default function AdminCategoriesPage() {
 
     let imageUrl = form.image ?? null;
 
-    // Upload new image if selected
     if (selectedFile) {
       const fd = new FormData();
       fd.append("file", selectedFile);
-      fd.append("folder", "categories");
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd });
+      const uploadRes  = await fetch("/api/upload", { method: "POST", body: fd });
+      const uploadJson = await uploadRes.json();
       if (!uploadRes.ok) {
-        const err = await uploadRes.json();
-        setUploadError(err.error || "Upload failed.");
+        setUploadError(uploadJson.error || "Upload failed. Please try again.");
         setSaving(false);
         return;
       }
-      const { url } = await uploadRes.json();
-      imageUrl = url;
+      imageUrl = uploadJson.url;
     }
 
     const url    = editing ? `/api/categories/${editing.id}` : "/api/categories";
@@ -351,7 +348,7 @@ export default function AdminCategoriesPage() {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
+                accept="image/jpeg,image/png,image/gif"
                 style={{ display: "none" }}
                 onChange={handleFileChange}
               />

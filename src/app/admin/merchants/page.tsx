@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -25,7 +25,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MuiSelect from "@mui/material/Select";
 import CircularProgress from "@mui/material/CircularProgress";
 import Avatar from "@mui/material/Avatar";
-import { Plus, Edit2, Trash2, Store, Search, Eye, MapPin, X } from "lucide-react";
+import Alert from "@mui/material/Alert";
+import { Plus, Edit2, Trash2, Store, Search, Eye, MapPin, X, Upload, ImageIcon } from "lucide-react";
 import { MapPickerModal } from "@/components/admin/MapPickerModal";
 import { getCategoryLabel, getImageArray } from "@/lib/utils";
 import { CATEGORIES } from "@/types";
@@ -65,6 +66,26 @@ export default function AdminMerchantsPage() {
   const [form, setForm]             = useState<Partial<Merchant>>(empty);
   const [saving, setSaving]         = useState(false);
   const [mapOpen, setMapOpen]       = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
+      setUploadError("Only JPEG, PNG, or GIF images are allowed.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image must be smaller than 5 MB.");
+      return;
+    }
+    setUploadError("");
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -75,14 +96,37 @@ export default function AdminMerchantsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const openCreate = () => { setEditing(null); setForm(empty); setModalOpen(true); };
-  const openEdit   = (m: Merchant) => { setEditing(m); setForm(m); setModalOpen(true); };
+  const openCreate = () => {
+    setEditing(null); setForm(empty); setModalOpen(true);
+    setPreviewUrl(null); setSelectedFile(null); setUploadError("");
+  };
+  const openEdit = (m: Merchant) => {
+    setEditing(m); setForm(m); setModalOpen(true);
+    setPreviewUrl(firstImage(m.images)); setSelectedFile(null); setUploadError("");
+  };
 
   const handleSave = async () => {
     setSaving(true);
+    setUploadError("");
+
+    let images = form.images ?? "";
+
+    if (selectedFile) {
+      const fd = new FormData();
+      fd.append("file", selectedFile);
+      const uploadRes  = await fetch("/api/upload", { method: "POST", body: fd });
+      const uploadJson = await uploadRes.json();
+      if (!uploadRes.ok) {
+        setUploadError(uploadJson.error || "Image upload failed. Please try again.");
+        setSaving(false);
+        return;
+      }
+      images = JSON.stringify([uploadJson.url]);
+    }
+
     const url    = editing ? `/api/merchants/${editing.id}` : "/api/merchants";
     const method = editing ? "PUT" : "POST";
-    await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, savingsEstimate: Number(form.savingsEstimate) }) });
+    await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, images, savingsEstimate: Number(form.savingsEstimate) }) });
     setSaving(false); setModalOpen(false); load();
   };
 
@@ -256,8 +300,52 @@ export default function AdminMerchantsPage() {
             </Box>
             <TextField label="Phone" value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} size="small" fullWidth />
             <TextField label="Website" value={form.website || ""} onChange={(e) => setForm({ ...form, website: e.target.value })} size="small" fullWidth />
+            {/* Image upload */}
             <Box sx={{ gridColumn: "1 / -1" }}>
-              <TextField label='Image URLs (JSON array or single URL)' value={form.images || ""} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder='["https://..."]' size="small" fullWidth />
+              <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" mb={1} textTransform="uppercase" letterSpacing={0.5}>
+                Merchant Image
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
+                <Box
+                  sx={{
+                    width: 100, height: 100, border: "2px dashed", borderColor: "divider",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    bgcolor: "#f8fafc", flexShrink: 0, overflow: "hidden", cursor: "pointer",
+                    "&:hover": { borderColor: "primary.main" },
+                  }}
+                  onClick={() => fileRef.current?.click()}
+                >
+                  {previewUrl ? (
+                    <Box component="img" src={previewUrl} alt="preview" sx={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <Box textAlign="center">
+                      <ImageIcon size={28} color="#cbd5e1" />
+                      <Typography variant="caption" color="text.disabled" display="block" mt={0.5}>
+                        Click to upload
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+                <Box flex={1}>
+                  <MuiButton variant="outlined" size="small" startIcon={<Upload size={14} />} onClick={() => fileRef.current?.click()} sx={{ mb: 1 }}>
+                    Browse Image
+                  </MuiButton>
+                  <Typography variant="caption" color="text.secondary" display="block" lineHeight={1.5}>
+                    JPEG, PNG, WebP or GIF · Max 5 MB
+                  </Typography>
+                  {previewUrl && (
+                    <MuiButton
+                      size="small" color="error" variant="text"
+                      sx={{ mt: 0.5, p: 0, minWidth: 0, fontSize: "0.75rem" }}
+                      onClick={() => { setPreviewUrl(null); setSelectedFile(null); setForm((p) => ({ ...p, images: "" })); if (fileRef.current) fileRef.current.value = ""; }}
+                    >
+                      Remove image
+                    </MuiButton>
+                  )}
+                </Box>
+              </Box>
+              <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/gif" style={{ display: "none" }} onChange={handleFileChange} />
+              {uploadError && <Alert severity="error" sx={{ mt: 1.5 }}>{uploadError}</Alert>}
             </Box>
             <TextField label="Est. Savings per Visit ($)" type="number" value={form.savingsEstimate || 0} onChange={(e) => setForm({ ...form, savingsEstimate: parseFloat(e.target.value) })} size="small" />
           </Box>
@@ -265,7 +353,7 @@ export default function AdminMerchantsPage() {
         <DialogActions sx={{ px: 3, py: 2 }}>
           <MuiButton variant="text" onClick={() => setModalOpen(false)}>Cancel</MuiButton>
           <MuiButton variant="contained" onClick={handleSave} disabled={saving} startIcon={saving ? <CircularProgress size={14} color="inherit" /> : undefined} sx={{ borderRadius: "10px" }}>
-            {editing ? "Save changes" : "Create merchant"}
+            {saving ? (selectedFile ? "Uploading…" : "Saving…") : editing ? "Save changes" : "Create merchant"}
           </MuiButton>
         </DialogActions>
       </Dialog>

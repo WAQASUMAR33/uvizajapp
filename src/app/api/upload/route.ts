@@ -1,35 +1,82 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-const MAX_SIZE_MB   = 5;
+// PHP only accepts jpg/jpeg/png/gif — it extracts type from the data URI prefix
+const ALLOWED_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png":  "png",
+  "image/gif":  "gif",
+};
+const MAX_SIZE_MB    = 5;
+const PHP_UPLOAD_URL = process.env.UPLOAD_API_URL!;
+const IMG_BASE_URL   = process.env.UPLOAD_IMG_BASE_URL!;
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== "ADMIN")
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   const formData = await req.formData();
-  const file     = formData.get("file") as File | null;
-  const folder   = (formData.get("folder") as string) || "general";
+  const file = formData.get("file") as File | null;
 
-  if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
-  if (!ALLOWED_TYPES.includes(file.type))
-    return NextResponse.json({ error: "Only JPEG, PNG, WebP, and GIF are allowed" }, { status: 400 });
+  if (!file)
+    return NextResponse.json({ error: "No file provided" }, { status: 400 });
+
+  if (!ALLOWED_TYPES[file.type])
+    return NextResponse.json({ error: "Only JPEG, PNG, and GIF are allowed" }, { status: 400 });
+
   if (file.size > MAX_SIZE_MB * 1024 * 1024)
-    return NextResponse.json({ error: `File too large (max ${MAX_SIZE_MB}MB)` }, { status: 400 });
+    return NextResponse.json({ error: `File too large (max ${MAX_SIZE_MB} MB)` }, { status: 400 });
 
-  const bytes    = await file.arrayBuffer();
-  const buffer   = Buffer.from(bytes);
-  const ext      = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
+  // Build the full data URI — PHP extracts the type from the prefix via regex
+  const bytes   = await file.arrayBuffer();
+  const base64  = Buffer.from(bytes).toString("base64");
+  const dataUri = `data:${file.type};base64,${base64}`;
 
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(path.join(uploadDir, filename), buffer);
+  // Send JSON body — PHP reads php://input and json_decodes it
+  // Only send `image`; PHP does not use a separate `type` field
+  let phpRes: Response;
+  try {
+    phpRes = await fetch(PHP_UPLOAD_URL, {
+      method:  "POST",
+      headers: {
+        "Content-Type":   "application/json",
+        "User-Agent":     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept":         "application/json, text/plain, */*",
+        "Accept-Language":"en-US,en;q=0.9",
+        "Referer":        "https://uzivaj.rizwancars.com/",
+        "Origin":         "https://uzivaj.rizwancars.com",
+      },
+      body: JSON.stringify({ image: dataUri }),
+    });
+  } catch {
+    return NextResponse.json({ error: "Could not reach upload server" }, { status: 502 });
+  }
 
-  return NextResponse.json({ url: `/uploads/${folder}/${filename}` });
+  const text = await phpRes.text();
+
+  if (text.trimStart().startsWith("<")) {
+    return NextResponse.json(
+      { error: `Upload server blocked the request (HTTP ${phpRes.status}). Whitelist the upload URL in your hosting bot-protection settings.` },
+      { status: 502 }
+    );
+  }
+
+  let json: Record<string, string>;
+  try { json = JSON.parse(text); } catch {
+    return NextResponse.json(
+      { error: `Unexpected response from upload server: ${text.slice(0, 200)}` },
+      { status: 502 }
+    );
+  }
+
+  if (json.error)
+    return NextResponse.json({ error: json.error }, { status: 502 });
+
+  // PHP returns just the filename e.g. "67abc123.jpg"
+  // Prepend the base URL to get the full accessible URL
+  const filename = json.image_url;
+  if (!filename)
+    return NextResponse.json({ error: "No filename returned from upload server" }, { status: 502 });
+
+  const imageUrl = filename.startsWith("http")
+    ? filename
+    : `${IMG_BASE_URL}/${filename}`;
+
+  return NextResponse.json({ url: imageUrl });
 }
