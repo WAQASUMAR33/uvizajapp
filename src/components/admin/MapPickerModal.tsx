@@ -5,11 +5,6 @@ import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
 
-setOptions({
-  key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  v: "weekly",
-});
-
 const DEFAULT_CENTER = { lat: 25.2048, lng: 55.2708 }; // Dubai
 
 interface MapPickerModalProps {
@@ -50,6 +45,7 @@ export function MapPickerModal({
     let cancelled = false;
 
     async function initMap() {
+      setOptions({ key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!, v: "weekly" });
       const { Map } = await importLibrary("maps") as google.maps.MapsLibrary;
       const { Marker } = await importLibrary("marker") as google.maps.MarkerLibrary;
       const { Geocoder } = await importLibrary("geocoding") as google.maps.GeocodingLibrary;

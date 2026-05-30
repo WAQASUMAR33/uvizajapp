@@ -15,7 +15,7 @@ import { Users, Store, Tag, Receipt, CreditCard, TrendingUp } from "lucide-react
 async function getStats() {
   const [totalUsers, totalMerchants, totalOffers, totalRedemptions, activeSubscriptions, recentRedemptions] =
     await Promise.all([
-      prisma.user.count(),
+      prisma.customer.count(),
       prisma.merchant.count({ where: { isActive: true } }),
       prisma.offer.count({ where: { isActive: true } }),
       prisma.redemption.count(),
@@ -24,7 +24,7 @@ async function getStats() {
         take: 6,
         orderBy: { redeemedAt: "desc" },
         include: {
-          user: { select: { name: true, email: true } },
+          customer: { select: { fullname: true, email: true } },
           merchant: { select: { name: true } },
           offer: { select: { title: true } },
         },
@@ -100,9 +100,9 @@ export default async function AdminDashboard() {
                   <TableCell>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                       <Avatar sx={{ width: 34, height: 34, fontSize: "0.8rem", fontWeight: 700, bgcolor: "#e0e7ff", color: "#4338ca" }}>
-                        {(r.user.name || r.user.email)[0].toUpperCase()}
+                        {(r.customer.fullname || r.customer.email)[0].toUpperCase()}
                       </Avatar>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.user.name || r.user.email}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.customer.fullname || r.customer.email}</Typography>
                     </Box>
                   </TableCell>
                   <TableCell>

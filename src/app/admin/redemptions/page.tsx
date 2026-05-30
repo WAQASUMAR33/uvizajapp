@@ -17,7 +17,7 @@ interface Redemption {
   id: string;
   savings: number;
   redeemedAt: string;
-  user: { name: string | null; email: string };
+  customer: { fullname: string; email: string };
   merchant: { name: string };
   offer: { title: string; discount: string | null };
 }
@@ -38,7 +38,7 @@ export default function AdminRedemptionsPage() {
 
   const filtered = redemptions.filter(
     (r) =>
-      r.user.email.toLowerCase().includes(search.toLowerCase()) ||
+      r.customer.email.toLowerCase().includes(search.toLowerCase()) ||
       r.merchant.name.toLowerCase().includes(search.toLowerCase()) ||
       r.offer.title.toLowerCase().includes(search.toLowerCase())
   );
@@ -92,8 +92,8 @@ export default function AdminRedemptionsPage() {
               {filtered.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.user.name || r.user.email}</Typography>
-                    {r.user.name && <Typography variant="caption" color="text.secondary">{r.user.email}</Typography>}
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{r.customer.fullname || r.customer.email}</Typography>
+                    <Typography variant="caption" color="text.secondary">{r.customer.email}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">{r.offer.title}</Typography>

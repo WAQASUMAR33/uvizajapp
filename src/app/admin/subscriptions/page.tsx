@@ -23,7 +23,7 @@ interface Sub {
   price: number;
   currency: string;
   platform: string | null;
-  user: { name: string | null; email: string };
+  customer: { fullname: string; email: string };
 }
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
@@ -39,11 +39,8 @@ export default function AdminSubscriptionsPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await fetch("/api/users?limit=200").then((r) => r.json());
-    const withSubs = (data.users || [])
-      .filter((u: any) => u.subscription)
-      .map((u: any) => ({ ...u.subscription, user: { name: u.name, email: u.email } }));
-    setSubs(withSubs);
+    const data = await fetch("/api/subscriptions/list").then((r) => r.json());
+    setSubs(data.subscriptions || []);
     setLoading(false);
   }, []);
 
@@ -51,8 +48,8 @@ export default function AdminSubscriptionsPage() {
 
   const filtered = subs.filter(
     (s) =>
-      s.user.email.toLowerCase().includes(search.toLowerCase()) ||
-      (s.user.name || "").toLowerCase().includes(search.toLowerCase())
+      s.customer.email.toLowerCase().includes(search.toLowerCase()) ||
+      s.customer.fullname.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalRevenue = subs.filter((s) => s.status === "ACTIVE").reduce((sum, s) => sum + s.price, 0);
@@ -107,8 +104,8 @@ export default function AdminSubscriptionsPage() {
                 return (
                   <TableRow key={s.id}>
                     <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{s.user.name || s.user.email}</Typography>
-                      {s.user.name && <Typography variant="caption" color="text.secondary">{s.user.email}</Typography>}
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{s.customer.fullname || s.customer.email}</Typography>
+                      <Typography variant="caption" color="text.secondary">{s.customer.email}</Typography>
                     </TableCell>
                     <TableCell>
                       <Chip icon={<Crown size={12} />} label={s.plan} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 600, fontSize: "0.72rem" }} />
