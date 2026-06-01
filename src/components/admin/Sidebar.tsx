@@ -11,7 +11,7 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {
-  LayoutDashboard, Store, Tag, Users, Receipt, CreditCard, LayoutGrid, LogOut, Sparkles,
+  LayoutDashboard, Store, Tag, Users, UserCheck, Receipt, CreditCard, LayoutGrid, LogOut, Sparkles,
 } from "lucide-react";
 
 const DRAWER_WIDTH = 256;
@@ -21,7 +21,8 @@ const navItems = [
   { href: "/admin/merchants",     label: "Merchants",    icon: Store },
   { href: "/admin/categories",    label: "Categories",   icon: LayoutGrid },
   { href: "/admin/offers",        label: "Offers",       icon: Tag },
-  { href: "/admin/users",         label: "Users",        icon: Users },
+  { href: "/admin/customers",     label: "Customers",    icon: UserCheck },
+  { href: "/admin/users",         label: "Admin Users",  icon: Users },
   { href: "/admin/redemptions",   label: "Redemptions",  icon: Receipt },
   { href: "/admin/subscriptions", label: "Subscriptions",icon: CreditCard },
 ];
