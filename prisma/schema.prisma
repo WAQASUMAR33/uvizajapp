@@ -116,7 +116,7 @@ model Subscription {
   startDate  DateTime           @default(now())
   endDate    DateTime
   price      Float
-  currency   String             @default("USD")
+  currency   String             @default("EUR")
   paymentRef String?
   platform   String?
   createdAt  DateTime           @default(now())

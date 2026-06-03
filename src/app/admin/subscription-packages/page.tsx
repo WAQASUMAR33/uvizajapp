@@ -232,10 +232,10 @@ export default function SubscriptionPackagesPage() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>${pkg.priceMonthly.toFixed(2)}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>€{pkg.priceMonthly.toFixed(2)}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>${pkg.priceYearly.toFixed(2)}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>€{pkg.priceYearly.toFixed(2)}</Typography>
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -301,7 +301,7 @@ export default function SubscriptionPackagesPage() {
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
-              label="Monthly Price ($)"
+              label="Monthly Price (€)"
               value={form.priceMonthly}
               onChange={(e) => setForm((f) => ({ ...f, priceMonthly: e.target.value }))}
               fullWidth
@@ -311,7 +311,7 @@ export default function SubscriptionPackagesPage() {
               slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
             />
             <TextField
-              label="Yearly Price ($)"
+              label="Yearly Price (€)"
               value={form.priceYearly}
               onChange={(e) => setForm((f) => ({ ...f, priceYearly: e.target.value }))}
               fullWidth

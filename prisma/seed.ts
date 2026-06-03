@@ -50,7 +50,7 @@ async function main() {
           startDate: new Date(),
           endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
           price: 79.99,
-          currency: "USD",
+          currency: "EUR",
           platform: "web",
         },
       },
