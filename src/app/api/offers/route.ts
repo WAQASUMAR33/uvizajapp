@@ -6,9 +6,11 @@ import { prisma } from "@/lib/prisma";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const merchantId = searchParams.get("merchantId");
+  const all = searchParams.get("all") === "true" && !!merchantId;
 
-  const where: any = { isActive: true };
-  if (merchantId) where.merchantId = merchantId;
+  const where: any = {};
+  if (!all) where.isActive = true;
+  if (merchantId) where.merchantId = parseInt(merchantId, 10);
 
   const offers = await prisma.offer.findMany({
     where,
@@ -27,6 +29,9 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
+    if (body.validUntil) {
+      body.validUntil = new Date(body.validUntil);
+    }
     const offer = await prisma.offer.create({ data: body });
     return NextResponse.json(offer, { status: 201 });
   } catch {

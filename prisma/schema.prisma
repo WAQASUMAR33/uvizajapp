@@ -175,6 +175,17 @@ model Offer {
   redemptions Redemption[]
 }
 
+model SubscriptionPackage {
+  id           Int      @id @default(autoincrement())
+  title        String   @db.VarChar(191)
+  priceMonthly Float
+  priceYearly  Float
+  description  String?  @db.Text
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model Redemption {
   id         Int      @id @default(autoincrement())
   customerId Int
