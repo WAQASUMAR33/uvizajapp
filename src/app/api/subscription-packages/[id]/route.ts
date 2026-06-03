@@ -3,13 +3,30 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+function serialize(row: any) {
+  return {
+    ...row,
+    id: Number(row.id),
+    priceMonthly: Number(row.priceMonthly),
+    priceYearly: Number(row.priceYearly),
+    isActive: Boolean(row.isActive),
+  };
+}
+
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const pkg = await prisma.subscriptionPackage.findUnique({
-    where: { id: parseInt(id) },
-  });
-  if (!pkg) return NextResponse.json({ error: "Package not found" }, { status: 404 });
-  return NextResponse.json(pkg);
+  try {
+    const rows = await prisma.$queryRaw<any[]>`
+      SELECT id, title, priceMonthly, priceYearly, description, isActive, createdAt, updatedAt
+      FROM SubscriptionPackage
+      WHERE id = ${parseInt(id)}
+      LIMIT 1
+    `;
+    if (!rows.length) return NextResponse.json({ error: "Package not found" }, { status: 404 });
+    return NextResponse.json(serialize(rows[0]));
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? "Failed to fetch package" }, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -19,22 +36,33 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 
   const { id } = await params;
-  const { title, priceMonthly, priceYearly, description, isActive } = await req.json();
-
   try {
-    const pkg = await prisma.subscriptionPackage.update({
-      where: { id: parseInt(id) },
-      data: {
-        title,
-        priceMonthly: parseFloat(priceMonthly),
-        priceYearly: parseFloat(priceYearly),
-        description,
-        isActive,
-      },
-    });
-    return NextResponse.json(pkg);
-  } catch {
-    return NextResponse.json({ error: "Failed to update package" }, { status: 500 });
+    const { title, priceMonthly, priceYearly, description, isActive } = await req.json();
+    const monthly = parseFloat(priceMonthly);
+    const yearly  = parseFloat(priceYearly);
+
+    await prisma.$executeRaw`
+      UPDATE SubscriptionPackage
+      SET title = ${title},
+          priceMonthly = ${monthly},
+          priceYearly = ${yearly},
+          description = ${description ?? null},
+          isActive = ${isActive},
+          updatedAt = NOW()
+      WHERE id = ${parseInt(id)}
+    `;
+
+    const rows = await prisma.$queryRaw<any[]>`
+      SELECT id, title, priceMonthly, priceYearly, description, isActive, createdAt, updatedAt
+      FROM SubscriptionPackage
+      WHERE id = ${parseInt(id)}
+      LIMIT 1
+    `;
+    if (!rows.length) return NextResponse.json({ error: "Package not found" }, { status: 404 });
+    return NextResponse.json(serialize(rows[0]));
+  } catch (err: any) {
+    console.error("PUT /api/subscription-packages/[id]:", err);
+    return NextResponse.json({ error: err?.message ?? "Failed to update package" }, { status: 500 });
   }
 }
 
@@ -45,6 +73,10 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const { id } = await params;
-  await prisma.subscriptionPackage.delete({ where: { id: parseInt(id) } });
-  return NextResponse.json({ success: true });
+  try {
+    await prisma.$executeRaw`DELETE FROM SubscriptionPackage WHERE id = ${parseInt(id)}`;
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? "Failed to delete package" }, { status: 500 });
+  }
 }

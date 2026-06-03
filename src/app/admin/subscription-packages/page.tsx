@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import dynamic from "next/dynamic";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -20,6 +21,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Chip from "@mui/material/Chip";
 import InputAdornment from "@mui/material/InputAdornment";
 import { Plus, Pencil, Trash2, Package, Search } from "lucide-react";
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 interface SubPackage {
   id: number;
@@ -39,20 +43,46 @@ const EMPTY_FORM = {
   isActive: true,
 };
 
+const QUILL_MODULES = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link"],
+    ["clean"],
+  ],
+};
+
+const QUILL_FORMATS = ["header", "bold", "italic", "underline", "strike", "list", "link"];
+
 export default function SubscriptionPackagesPage() {
   const [packages, setPackages] = useState<SubPackage[]>([]);
   const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState<string | null>(null);
   const [search, setSearch]     = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing]   = useState<SubPackage | null>(null);
   const [form, setForm]         = useState(EMPTY_FORM);
   const [saving, setSaving]     = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await fetch("/api/subscription-packages").then((r) => r.json());
-    setPackages(Array.isArray(data) ? data : []);
+    setError(null);
+    try {
+      const res  = await fetch("/api/subscription-packages");
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Failed to load packages");
+        setPackages([]);
+      } else {
+        setPackages(Array.isArray(data) ? data : []);
+      }
+    } catch {
+      setError("Network error — could not reach the server");
+      setPackages([]);
+    }
     setLoading(false);
   }, []);
 
@@ -61,6 +91,7 @@ export default function SubscriptionPackagesPage() {
   const openAdd = () => {
     setEditing(null);
     setForm(EMPTY_FORM);
+    setSaveError(null);
     setDialogOpen(true);
   };
 
@@ -73,6 +104,7 @@ export default function SubscriptionPackagesPage() {
       description: pkg.description ?? "",
       isActive: pkg.isActive,
     });
+    setSaveError(null);
     setDialogOpen(true);
   };
 
@@ -80,21 +112,36 @@ export default function SubscriptionPackagesPage() {
     setDialogOpen(false);
     setEditing(null);
     setForm(EMPTY_FORM);
+    setSaveError(null);
   };
 
   const handleSave = async () => {
     if (!form.title || !form.priceMonthly || !form.priceYearly) return;
     setSaving(true);
+    setSaveError(null);
     const method = editing ? "PUT" : "POST";
     const url    = editing
       ? `/api/subscription-packages/${editing.id}`
       : "/api/subscription-packages";
 
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res  = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveError(data.error ?? "Failed to save package");
+        setSaving(false);
+        return;
+      }
+    } catch {
+      setSaveError("Network error — could not reach the server");
+      setSaving(false);
+      return;
+    }
+
     setSaving(false);
     closeDialog();
     load();
@@ -107,8 +154,9 @@ export default function SubscriptionPackagesPage() {
     load();
   };
 
-  const filtered = packages.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () => packages.filter((p) => p.title.toLowerCase().includes(search.toLowerCase())),
+    [packages, search]
   );
 
   return (
@@ -130,6 +178,13 @@ export default function SubscriptionPackagesPage() {
           Add Package
         </Button>
       </Box>
+
+      {/* Error banner */}
+      {error && (
+        <Paper variant="outlined" sx={{ mb: 3, p: 2, borderRadius: 2, borderColor: "#fca5a5", bgcolor: "#fef2f2" }}>
+          <Typography variant="body2" color="error">{error}</Typography>
+        </Paper>
+      )}
 
       {/* Search */}
       <TextField
@@ -169,9 +224,12 @@ export default function SubscriptionPackagesPage() {
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{pkg.title}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {pkg.description || "—"}
-                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                      dangerouslySetInnerHTML={{ __html: pkg.description ?? "—" }}
+                    />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>${pkg.priceMonthly.toFixed(2)}</Typography>
@@ -205,7 +263,7 @@ export default function SubscriptionPackagesPage() {
       </Paper>
 
       {/* Add / Edit Dialog */}
-      <Dialog open={dialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <Dialog open={dialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth slotProps={{ paper: { sx: { borderRadius: 3 } } }}>
         <DialogTitle sx={{ fontWeight: 700 }}>
           {editing ? "Edit Package" : "New Subscription Package"}
         </DialogTitle>
@@ -218,15 +276,29 @@ export default function SubscriptionPackagesPage() {
             size="small"
             required
           />
-          <TextField
-            label="Description"
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            fullWidth
-            size="small"
-            multiline
-            rows={3}
-          />
+
+          {/* Rich text description */}
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: "block" }}>
+              Description
+            </Typography>
+            <Box sx={{
+              ".ql-container": { borderRadius: "0 0 8px 8px", fontFamily: "inherit", fontSize: "0.875rem" },
+              ".ql-toolbar": { borderRadius: "8px 8px 0 0", borderColor: "rgba(0,0,0,0.23)" },
+              ".ql-container.ql-snow": { borderColor: "rgba(0,0,0,0.23)", minHeight: 120 },
+              "&:focus-within .ql-toolbar, &:focus-within .ql-container": { borderColor: "#4f46e5" },
+            }}>
+              <ReactQuill
+                theme="snow"
+                value={form.description}
+                onChange={(val) => setForm((f) => ({ ...f, description: val }))}
+                modules={QUILL_MODULES}
+                formats={QUILL_FORMATS}
+                placeholder="Enter package description…"
+              />
+            </Box>
+          </Box>
+
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
               label="Monthly Price ($)"
@@ -249,6 +321,7 @@ export default function SubscriptionPackagesPage() {
               slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
             />
           </Box>
+
           <FormControlLabel
             control={
               <Switch
@@ -259,6 +332,10 @@ export default function SubscriptionPackagesPage() {
             }
             label="Active"
           />
+
+          {saveError && (
+            <Typography variant="body2" color="error">{saveError}</Typography>
+          )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
           <Button onClick={closeDialog} sx={{ textTransform: "none" }}>Cancel</Button>
@@ -274,7 +351,7 @@ export default function SubscriptionPackagesPage() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)} PaperProps={{ sx: { borderRadius: 3 } }}>
+      <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)} slotProps={{ paper: { sx: { borderRadius: 3 } } }}>
         <DialogTitle sx={{ fontWeight: 700 }}>Delete Package</DialogTitle>
         <DialogContent>
           <Typography variant="body2">This action cannot be undone. Are you sure you want to delete this package?</Typography>
