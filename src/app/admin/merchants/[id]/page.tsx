@@ -128,6 +128,9 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                         {offer.discount && (
                           <Chip label={offer.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.7rem" }} />
                         )}
+                        {(offer as any).offerAmount != null && (
+                          <Chip label={`€${(offer as any).offerAmount}`} size="small" sx={{ bgcolor: "#d1fae5", color: "#065f46", fontWeight: 700, fontSize: "0.7rem" }} />
+                        )}
                       </Stack>
                       {offer.description && (
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{offer.description}</Typography>

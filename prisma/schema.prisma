@@ -171,6 +171,7 @@ model Offer {
   title       String
   description String?   @db.Text
   discount    String?
+  offerAmount Float?
   terms       String?   @db.Text
   validFrom   DateTime  @default(now())
   validUntil  DateTime?

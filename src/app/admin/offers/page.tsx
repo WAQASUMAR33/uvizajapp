@@ -31,6 +31,7 @@ interface Offer {
   id: string;
   title: string;
   discount: string | null;
+  offerAmount: number | null;
   description: string | null;
   terms: string | null;
   validFrom: string;
@@ -41,7 +42,7 @@ interface Offer {
 }
 interface Merchant { id: string; name: string }
 
-const empty: Partial<Offer> = { title: "", discount: "", description: "", terms: "", merchantId: "", isActive: true };
+const empty: Partial<Offer> = { title: "", discount: "", offerAmount: null, description: "", terms: "", merchantId: "", isActive: true };
 
 export default function AdminOffersPage() {
   const [offers, setOffers]       = useState<Offer[]>([]);
@@ -124,6 +125,7 @@ export default function AdminOffersPage() {
                 <TableCell>Title</TableCell>
                 <TableCell>Merchant</TableCell>
                 <TableCell>Discount</TableCell>
+                <TableCell>Offer Amount</TableCell>
                 <TableCell>Valid Until</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
@@ -137,6 +139,11 @@ export default function AdminOffersPage() {
                   <TableCell>
                     {o.discount
                       ? <Chip label={o.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
+                      : <Typography variant="body2" color="text.secondary">—</Typography>}
+                  </TableCell>
+                  <TableCell>
+                    {o.offerAmount != null
+                      ? <Chip label={`€${o.offerAmount}`} size="small" sx={{ bgcolor: "#d1fae5", color: "#065f46", fontWeight: 700, fontSize: "0.72rem" }} />
                       : <Typography variant="body2" color="text.secondary">—</Typography>}
                   </TableCell>
                   <TableCell><Typography variant="body2" color="text.secondary">{o.validUntil ? formatDate(o.validUntil) : "No expiry"}</Typography></TableCell>
@@ -169,6 +176,16 @@ export default function AdminOffersPage() {
           </FormControl>
           <MuiTextField label="Title *" value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} size="small" fullWidth />
           <MuiTextField label="Discount label" value={form.discount || ""} onChange={(e) => setForm({ ...form, discount: e.target.value })} placeholder="e.g. 20% OFF" size="small" fullWidth />
+          <MuiTextField
+            label="Offer Amount (€)"
+            type="number"
+            value={form.offerAmount ?? ""}
+            onChange={(e) => setForm({ ...form, offerAmount: e.target.value === "" ? null : parseFloat(e.target.value) })}
+            placeholder="e.g. 15.00"
+            size="small"
+            fullWidth
+            slotProps={{ input: { inputProps: { min: 0, step: 0.01 } } }}
+          />
           <MuiTextField label="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} multiline rows={3} size="small" fullWidth />
           <MuiTextField label="Terms & Conditions" value={form.terms || ""} onChange={(e) => setForm({ ...form, terms: e.target.value })} multiline rows={2} size="small" fullWidth />
           <MuiTextField label="Valid until (optional)" type="date" value={form.validUntil ? String(form.validUntil).slice(0, 10) : ""} onChange={(e) => setForm({ ...form, validUntil: e.target.value || null })} size="small" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
