@@ -41,8 +41,6 @@ export async function GET(req: NextRequest) {
         images:          true,
         isActive:        true,
         savingsEstimate: true,
-        avgRating:       true,
-        ratingCount:     true,
         createdAt:       true,
         updatedAt:       true,
         offers: {

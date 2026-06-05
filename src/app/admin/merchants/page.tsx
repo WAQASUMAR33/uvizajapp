@@ -58,6 +58,8 @@ interface Offer {
   id: string;
   title: string;
   discount: string | null;
+  discountValue: number | null;
+  offerAmount: number | null;
   description: string | null;
   terms: string | null;
   validFrom: string;
@@ -73,7 +75,7 @@ const emptyMerchant: Partial<Merchant> = {
 };
 
 const emptyOffer: Partial<Offer> = {
-  title: "", discount: "", description: "", terms: "", isActive: true,
+  title: "", discount: "", discountValue: null, offerAmount: null, description: "", terms: "", isActive: true,
 };
 
 export default function AdminMerchantsPage() {
@@ -657,7 +659,9 @@ export default function AdminMerchantsPage() {
               <TableHead>
                 <TableRow>
                   <TableCell>Title</TableCell>
-                  <TableCell>Discount</TableCell>
+                  <TableCell>Discount Label</TableCell>
+                  <TableCell>Discount %</TableCell>
+                  <TableCell>Amount (€)</TableCell>
                   <TableCell>Valid Until</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell align="right">Actions</TableCell>
@@ -677,6 +681,16 @@ export default function AdminMerchantsPage() {
                     <TableCell>
                       {o.discount
                         ? <Chip label={o.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
+                        : <Typography variant="body2" color="text.disabled">—</Typography>}
+                    </TableCell>
+                    <TableCell>
+                      {o.discountValue != null
+                        ? <Chip label={`${o.discountValue}%`} size="small" sx={{ bgcolor: "#ede9fe", color: "#5b21b6", fontWeight: 700, fontSize: "0.72rem" }} />
+                        : <Typography variant="body2" color="text.disabled">—</Typography>}
+                    </TableCell>
+                    <TableCell>
+                      {o.offerAmount != null
+                        ? <Chip label={`€${o.offerAmount}`} size="small" sx={{ bgcolor: "#d1fae5", color: "#065f46", fontWeight: 700, fontSize: "0.72rem" }} />
                         : <Typography variant="body2" color="text.disabled">—</Typography>}
                     </TableCell>
                     <TableCell>
@@ -731,6 +745,26 @@ export default function AdminMerchantsPage() {
             placeholder="e.g. 20% OFF"
             size="small"
             fullWidth
+          />
+          <TextField
+            label="Discount Value (%)"
+            type="number"
+            value={offerForm.discountValue ?? ""}
+            onChange={(e) => setOfferForm({ ...offerForm, discountValue: e.target.value === "" ? null : parseFloat(e.target.value) })}
+            placeholder="e.g. 20"
+            size="small"
+            fullWidth
+            slotProps={{ input: { inputProps: { min: 0, max: 100, step: 0.1 } } }}
+          />
+          <TextField
+            label="Offer Amount (€)"
+            type="number"
+            value={offerForm.offerAmount ?? ""}
+            onChange={(e) => setOfferForm({ ...offerForm, offerAmount: e.target.value === "" ? null : parseFloat(e.target.value) })}
+            placeholder="e.g. 15.00"
+            size="small"
+            fullWidth
+            slotProps={{ input: { inputProps: { min: 0, step: 0.01 } } }}
           />
           <TextField
             label="Description"

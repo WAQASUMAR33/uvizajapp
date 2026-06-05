@@ -170,8 +170,9 @@ model Offer {
   merchantId  Int
   title       String
   description String?   @db.Text
-  discount    String?
-  offerAmount Float?
+  discount      String?
+  discountValue Float?
+  offerAmount   Float?
   terms       String?   @db.Text
   validFrom   DateTime  @default(now())
   validUntil  DateTime?

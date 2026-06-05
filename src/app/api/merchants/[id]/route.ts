@@ -7,10 +7,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   const { id } = await params;
   const merchant = await prisma.merchant.findUnique({
     where: { id: parseInt(id) },
-    include: {
-      offers:  { where: { isActive: true }, take: 3 },
-      ratings: { select: { customerId: true, rating: true, review: true, createdAt: true }, orderBy: { createdAt: "desc" }, take: 20 },
-    },
+    include: { offers: { where: { isActive: true }, take: 3 } },
   });
   if (!merchant) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(merchant);

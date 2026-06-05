@@ -31,6 +31,7 @@ interface Offer {
   id: string;
   title: string;
   discount: string | null;
+  discountValue: number | null;
   offerAmount: number | null;
   description: string | null;
   terms: string | null;
@@ -42,7 +43,7 @@ interface Offer {
 }
 interface Merchant { id: string; name: string }
 
-const empty: Partial<Offer> = { title: "", discount: "", offerAmount: null, description: "", terms: "", merchantId: "", isActive: true };
+const empty: Partial<Offer> = { title: "", discount: "", discountValue: null, offerAmount: null, description: "", terms: "", merchantId: "", isActive: true };
 
 export default function AdminOffersPage() {
   const [offers, setOffers]       = useState<Offer[]>([]);
@@ -124,7 +125,8 @@ export default function AdminOffersPage() {
               <TableRow>
                 <TableCell>Title</TableCell>
                 <TableCell>Merchant</TableCell>
-                <TableCell>Discount</TableCell>
+                <TableCell>Discount Label</TableCell>
+                <TableCell>Discount %</TableCell>
                 <TableCell>Offer Amount</TableCell>
                 <TableCell>Valid Until</TableCell>
                 <TableCell>Status</TableCell>
@@ -139,6 +141,11 @@ export default function AdminOffersPage() {
                   <TableCell>
                     {o.discount
                       ? <Chip label={o.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
+                      : <Typography variant="body2" color="text.secondary">—</Typography>}
+                  </TableCell>
+                  <TableCell>
+                    {o.discountValue != null
+                      ? <Chip label={`${o.discountValue}%`} size="small" sx={{ bgcolor: "#ede9fe", color: "#5b21b6", fontWeight: 700, fontSize: "0.72rem" }} />
                       : <Typography variant="body2" color="text.secondary">—</Typography>}
                   </TableCell>
                   <TableCell>
@@ -176,6 +183,16 @@ export default function AdminOffersPage() {
           </FormControl>
           <MuiTextField label="Title *" value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} size="small" fullWidth />
           <MuiTextField label="Discount label" value={form.discount || ""} onChange={(e) => setForm({ ...form, discount: e.target.value })} placeholder="e.g. 20% OFF" size="small" fullWidth />
+          <MuiTextField
+            label="Discount Value (%)"
+            type="number"
+            value={form.discountValue ?? ""}
+            onChange={(e) => setForm({ ...form, discountValue: e.target.value === "" ? null : parseFloat(e.target.value) })}
+            placeholder="e.g. 20"
+            size="small"
+            fullWidth
+            slotProps={{ input: { inputProps: { min: 0, max: 100, step: 0.1 } } }}
+          />
           <MuiTextField
             label="Offer Amount (€)"
             type="number"
