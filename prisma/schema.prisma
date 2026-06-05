@@ -102,8 +102,9 @@ model Customer {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  subscription Subscription?
-  redemptions  Redemption[]
+  subscription    Subscription?
+  redemptions     Redemption[]
+  merchantRatings MerchantRating[]
 }
 
 // ─── Business models ──────────────────────────────────────────────────────────
@@ -154,11 +155,14 @@ model Merchant {
   images          String?          @db.Text
   isActive        Boolean          @default(true)
   savingsEstimate Float            @default(0)
+  avgRating       Float            @default(0)
+  ratingCount     Int              @default(0)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
   offers      Offer[]
   redemptions Redemption[]
+  ratings     MerchantRating[]
 }
 
 model Offer {
@@ -189,6 +193,21 @@ model SubscriptionPackage {
   updatedAt     DateTime       @updatedAt
 
   subscriptions Subscription[]
+}
+
+model MerchantRating {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  merchantId Int
+  rating     Int      // 1–5
+  review     String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, merchantId])
 }
 
 model Redemption {
