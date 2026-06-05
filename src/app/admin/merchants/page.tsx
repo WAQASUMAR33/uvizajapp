@@ -26,7 +26,6 @@ import MuiSelect from "@mui/material/Select";
 import CircularProgress from "@mui/material/CircularProgress";
 import Avatar from "@mui/material/Avatar";
 import Alert from "@mui/material/Alert";
-import Divider from "@mui/material/Divider";
 import {
   Plus, Edit2, Trash2, Store, Search, Eye, MapPin, X, Upload, ImageIcon, Tag,
 } from "lucide-react";
@@ -40,6 +39,7 @@ function firstImage(images: string | null): string | null {
 
 interface Merchant {
   id: string;
+  merchantCode: string | null;
   name: string;
   category: string;
   city: string | null;
@@ -67,7 +67,7 @@ interface Offer {
 }
 
 const emptyMerchant: Partial<Merchant> = {
-  name: "", category: "CASUAL_DINING", city: "", address: "",
+  merchantCode: "", name: "", category: "CASUAL_DINING", city: "", address: "",
   latitude: null, longitude: null, description: "", phone: "",
   website: "", images: "", savingsEstimate: 0,
 };
@@ -107,7 +107,7 @@ export default function AdminMerchantsPage() {
   /* ── load merchants ────────────────────────────────────────────────── */
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await fetch("/api/merchants?limit=100").then((r) => r.json());
+    const data = await fetch("/api/merchants?limit=100&all=true").then((r) => r.json());
     setMerchants(data.merchants || []);
     setLoading(false);
   }, []);
@@ -295,6 +295,7 @@ export default function AdminMerchantsPage() {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: 72 }}>Image</TableCell>
+                <TableCell sx={{ width: 80 }}>Code</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>Location</TableCell>
@@ -314,11 +315,22 @@ export default function AdminMerchantsPage() {
                       🍽️
                     </Avatar>
                   </TableCell>
+                  <TableCell sx={{ width: 80 }}>
+                    {m.merchantCode ? (
+                      <Chip
+                        label={m.merchantCode}
+                        size="small"
+                        sx={{ fontFamily: "monospace", fontWeight: 700, fontSize: "0.78rem", letterSpacing: 1 }}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">—</Typography>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.name}</Typography>
-                    {getImageArray(m.images).length > 1 && (
+                    {getImageArray(m.images).length > 0 && (
                       <Typography variant="caption" color="text.disabled">
-                        {getImageArray(m.images).length} images
+                        {getImageArray(m.images).length} image{getImageArray(m.images).length !== 1 ? "s" : ""}
                       </Typography>
                     )}
                   </TableCell>
@@ -382,9 +394,29 @@ export default function AdminMerchantsPage() {
         </DialogTitle>
         <DialogContent dividers>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2.5, pt: 1 }}>
-            <Box sx={{ gridColumn: "1 / -1" }}>
-              <TextField label="Name *" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} fullWidth size="small" />
-            </Box>
+            <TextField
+              label="Name *"
+              value={form.name || ""}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="Merchant Code"
+              value={form.merchantCode || ""}
+              onChange={(e) => {
+                const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
+                setForm({ ...form, merchantCode: v });
+              }}
+              size="small"
+              fullWidth
+              placeholder="e.g. AB12"
+              slotProps={{
+                input: { style: { fontFamily: "monospace", letterSpacing: 4, fontWeight: 700 } },
+                htmlInput: { maxLength: 4 },
+              }}
+              helperText="4-character alphanumeric code (A–Z, 0–9)"
+            />
             <FormControl size="small" fullWidth>
               <InputLabel>Category</InputLabel>
               <MuiSelect native label="Category" value={form.category || "CASUAL_DINING"} onChange={(e) => setForm({ ...form, category: e.target.value as string })}>
@@ -430,11 +462,18 @@ export default function AdminMerchantsPage() {
             {/* ── Multiple images ──────────────────────────────────────── */}
             <Box sx={{ gridColumn: "1 / -1" }}>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
-                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  Merchant Images {totalImages > 0 && `(${totalImages})`}
-                </Typography>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                    Merchant Images
+                  </Typography>
+                  {totalImages > 0 && (
+                    <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                      {existingImages.length} saved{pendingPreviews.length > 0 ? ` · ${pendingPreviews.length} new` : ""}
+                    </Typography>
+                  )}
+                </Box>
                 <MuiButton variant="outlined" size="small" startIcon={<Upload size={13} />} onClick={() => fileRef.current?.click()}>
-                  Add Image
+                  Upload Image
                 </MuiButton>
               </Box>
 
@@ -443,7 +482,7 @@ export default function AdminMerchantsPage() {
                   onClick={() => fileRef.current?.click()}
                   sx={{
                     border: "2px dashed", borderColor: "divider", borderRadius: 2,
-                    py: 4, textAlign: "center", cursor: "pointer",
+                    py: 5, textAlign: "center", cursor: "pointer",
                     "&:hover": { borderColor: "primary.main", bgcolor: "#f8faff" },
                   }}
                 >
@@ -452,53 +491,106 @@ export default function AdminMerchantsPage() {
                   <Typography variant="caption" color="text.disabled">JPEG, PNG, GIF · Max 5 MB each</Typography>
                 </Box>
               ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-                  {existingImages.map((url) => (
-                    <Box key={url} sx={{ position: "relative", width: 90, height: 90, flexShrink: 0 }}>
-                      <Box
-                        component="img"
-                        src={url}
-                        alt=""
-                        sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 1.5, border: "1px solid", borderColor: "divider" }}
-                      />
-                      <IconButton
-                        size="small"
-                        onClick={() => removeExistingImage(url)}
-                        sx={{ position: "absolute", top: -8, right: -8, bgcolor: "error.main", color: "#fff", width: 20, height: 20, "&:hover": { bgcolor: "error.dark" } }}
-                      >
-                        <X size={11} />
-                      </IconButton>
+                <Box sx={{ bgcolor: "#f8fafc", borderRadius: 2, border: "1px solid", borderColor: "divider", p: 2 }}>
+                  {existingImages.length > 0 && (
+                    <Box sx={{ mb: pendingPreviews.length > 0 ? 2 : 0 }}>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1, fontWeight: 600 }}>
+                        Saved images — click × to remove
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                        {existingImages.map((url) => (
+                          <Box key={url} sx={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
+                            <Box
+                              component="img"
+                              src={url}
+                              alt=""
+                              sx={{
+                                width: "100%", height: "100%", objectFit: "cover",
+                                borderRadius: 1.5, border: "2px solid", borderColor: "divider",
+                                bgcolor: "#fff",
+                              }}
+                            />
+                            <IconButton
+                              size="small"
+                              onClick={() => removeExistingImage(url)}
+                              sx={{
+                                position: "absolute", top: -8, right: -8,
+                                bgcolor: "error.main", color: "#fff", width: 22, height: 22,
+                                "&:hover": { bgcolor: "error.dark" },
+                              }}
+                            >
+                              <X size={12} />
+                            </IconButton>
+                          </Box>
+                        ))}
+                      </Box>
                     </Box>
-                  ))}
-                  {pendingPreviews.map((src, i) => (
-                    <Box key={i} sx={{ position: "relative", width: 90, height: 90, flexShrink: 0 }}>
-                      <Box
-                        component="img"
-                        src={src}
-                        alt=""
-                        sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 1.5, border: "2px dashed", borderColor: "primary.main" }}
-                      />
-                      <Chip label="New" size="small" sx={{ position: "absolute", bottom: 4, left: 4, fontSize: "0.6rem", height: 16, bgcolor: "primary.main", color: "#fff" }} />
-                      <IconButton
-                        size="small"
-                        onClick={() => removePendingImage(i)}
-                        sx={{ position: "absolute", top: -8, right: -8, bgcolor: "error.main", color: "#fff", width: 20, height: 20, "&:hover": { bgcolor: "error.dark" } }}
-                      >
-                        <X size={11} />
-                      </IconButton>
+                  )}
+
+                  {pendingPreviews.length > 0 && (
+                    <Box>
+                      <Typography variant="caption" color="primary.main" sx={{ display: "block", mb: 1, fontWeight: 600 }}>
+                        New images (will upload on save)
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                        {pendingPreviews.map((src, i) => (
+                          <Box key={i} sx={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
+                            <Box
+                              component="img"
+                              src={src}
+                              alt=""
+                              sx={{
+                                width: "100%", height: "100%", objectFit: "cover",
+                                borderRadius: 1.5, border: "2px dashed", borderColor: "primary.main",
+                              }}
+                            />
+                            <Chip
+                              label="New"
+                              size="small"
+                              sx={{ position: "absolute", bottom: 4, left: 4, fontSize: "0.6rem", height: 16, bgcolor: "primary.main", color: "#fff" }}
+                            />
+                            <IconButton
+                              size="small"
+                              onClick={() => removePendingImage(i)}
+                              sx={{
+                                position: "absolute", top: -8, right: -8,
+                                bgcolor: "error.main", color: "#fff", width: 22, height: 22,
+                                "&:hover": { bgcolor: "error.dark" },
+                              }}
+                            >
+                              <X size={12} />
+                            </IconButton>
+                          </Box>
+                        ))}
+                        <Box
+                          onClick={() => fileRef.current?.click()}
+                          sx={{
+                            width: 100, height: 100, border: "2px dashed", borderColor: "divider", borderRadius: 1.5,
+                            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                            cursor: "pointer", flexShrink: 0, bgcolor: "#fff",
+                            "&:hover": { borderColor: "primary.main", bgcolor: "#f8faff" },
+                          }}
+                        >
+                          <Plus size={20} color="#94a3b8" />
+                          <Typography variant="caption" color="text.disabled" sx={{ mt: 0.5 }}>Add more</Typography>
+                        </Box>
+                      </Box>
                     </Box>
-                  ))}
-                  <Box
-                    onClick={() => fileRef.current?.click()}
-                    sx={{
-                      width: 90, height: 90, border: "2px dashed", borderColor: "divider", borderRadius: 1.5,
-                      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                      cursor: "pointer", flexShrink: 0, "&:hover": { borderColor: "primary.main", bgcolor: "#f8faff" },
-                    }}
-                  >
-                    <Plus size={20} color="#94a3b8" />
-                    <Typography variant="caption" color="text.disabled" sx={{ mt: 0.5 }}>Add more</Typography>
-                  </Box>
+                  )}
+
+                  {pendingPreviews.length === 0 && (
+                    <Box
+                      onClick={() => fileRef.current?.click()}
+                      sx={{
+                        mt: 1.5, border: "2px dashed", borderColor: "divider", borderRadius: 1.5,
+                        py: 2, textAlign: "center", cursor: "pointer",
+                        "&:hover": { borderColor: "primary.main", bgcolor: "#f0f4ff" },
+                      }}
+                    >
+                      <Plus size={18} color="#94a3b8" style={{ display: "inline-block" }} />
+                      <Typography variant="caption" color="text.disabled" sx={{ display: "block" }}>Add more images</Typography>
+                    </Box>
+                  )}
                 </Box>
               )}
 
@@ -507,7 +599,7 @@ export default function AdminMerchantsPage() {
             </Box>
 
             <TextField
-              label="Est. Savings per Visit ($)"
+              label="Est. Savings per Visit (€)"
               type="number"
               value={form.savingsEstimate || 0}
               onChange={(e) => setForm({ ...form, savingsEstimate: parseFloat(e.target.value) })}

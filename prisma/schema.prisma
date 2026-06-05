@@ -109,20 +109,22 @@ model Customer {
 // ─── Business models ──────────────────────────────────────────────────────────
 
 model Subscription {
-  id         Int                @id @default(autoincrement())
-  customerId Int                @unique
-  plan       SubscriptionPlan   @default(ANNUAL)
-  status     SubscriptionStatus @default(ACTIVE)
-  startDate  DateTime           @default(now())
-  endDate    DateTime
-  price      Float
-  currency   String             @default("EUR")
-  paymentRef String?
-  platform   String?
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
+  id                    Int                  @id @default(autoincrement())
+  customerId            Int                  @unique
+  subscriptionPackageId Int?
+  plan                  SubscriptionPlan     @default(ANNUAL)
+  status                SubscriptionStatus   @default(ACTIVE)
+  startDate             DateTime             @default(now())
+  endDate               DateTime
+  price                 Float
+  currency              String               @default("EUR")
+  paymentRef            String?
+  platform              String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
 
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer             Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscriptionPackage  SubscriptionPackage?  @relation(fields: [subscriptionPackageId], references: [id])
 }
 
 model Category {
@@ -139,6 +141,7 @@ model Category {
 
 model Merchant {
   id              Int              @id @default(autoincrement())
+  merchantCode    String?          @unique @db.VarChar(4)
   name            String
   description     String?          @db.Text
   category        MerchantCategory @default(CASUAL_DINING)
@@ -176,14 +179,16 @@ model Offer {
 }
 
 model SubscriptionPackage {
-  id           Int      @id @default(autoincrement())
-  title        String   @db.VarChar(191)
-  priceMonthly Float
-  priceYearly  Float
-  description  String?  @db.Text
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  title         String         @db.VarChar(191)
+  priceMonthly  Float
+  priceYearly   Float
+  description   String?        @db.Text
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  subscriptions Subscription[]
 }
 
 model Redemption {

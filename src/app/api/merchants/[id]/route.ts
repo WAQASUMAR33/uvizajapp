@@ -22,9 +22,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   try {
     const body = await req.json();
-    const merchant = await prisma.merchant.update({ where: { id: parseInt(id) }, data: body });
+    // Strip fields that must not be passed to update: auto-managed columns and relation arrays
+    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ...data } = body;
+    const merchant = await prisma.merchant.update({ where: { id: parseInt(id) }, data });
     return NextResponse.json(merchant);
-  } catch {
+  } catch (e) {
+    console.error(e);
     return NextResponse.json({ error: "Failed to update" }, { status: 500 });
   }
 }
