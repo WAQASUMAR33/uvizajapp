@@ -5,12 +5,50 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const merchantId = parseInt(id);
+
   const merchant = await prisma.merchant.findUnique({
-    where: { id: parseInt(id) },
-    include: { offers: { where: { isActive: true }, take: 3 } },
+    where: { id: merchantId },
+    include: {
+      offers: {
+        where:   { isActive: true },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id:          true,
+          title:       true,
+          description: true,
+          discount:    true,
+          offerAmount: true,
+          terms:       true,
+          validFrom:   true,
+          validUntil:  true,
+          isActive:    true,
+        },
+      },
+      ratings: {
+        select:  { customerId: true, rating: true, review: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+        take:    20,
+      },
+    },
   });
+
   if (!merchant) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(merchant);
+
+  // Attach discountValue to each offer via raw SQL
+  const offerIds = merchant.offers.map((o) => o.id);
+  let dvMap: Record<number, number | null> = {};
+  if (offerIds.length) {
+    const rows: any[] = await prisma.$queryRawUnsafe(
+      `SELECT id, discountValue FROM Offer WHERE id IN (${offerIds.join(",")})`
+    );
+    for (const r of rows) dvMap[r.id] = r.discountValue ?? null;
+  }
+
+  return NextResponse.json({
+    ...merchant,
+    offers: merchant.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
+  });
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -22,8 +60,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   try {
     const body = await req.json();
-    // Strip fields that must not be passed to update: auto-managed columns and relation arrays
-    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ...data } = body;
+    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ratings: _ra, ...data } = body;
     const merchant = await prisma.merchant.update({ where: { id: parseInt(id) }, data });
     return NextResponse.json(merchant);
   } catch (e) {

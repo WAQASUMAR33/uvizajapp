@@ -41,6 +41,8 @@ export async function GET(req: NextRequest) {
         images:          true,
         isActive:        true,
         savingsEstimate: true,
+        avgRating:       true,
+        ratingCount:     true,
         createdAt:       true,
         updatedAt:       true,
         offers: {
@@ -50,6 +52,7 @@ export async function GET(req: NextRequest) {
             title:       true,
             description: true,
             discount:    true,
+            offerAmount: true,
             terms:       true,
             validFrom:   true,
             validUntil:  true,
@@ -65,7 +68,22 @@ export async function GET(req: NextRequest) {
     prisma.merchant.count({ where }),
   ]);
 
-  return NextResponse.json({ merchants, total, page, limit });
+  // Attach discountValue to each offer via raw SQL
+  const offerIds = merchants.flatMap((m) => m.offers.map((o) => o.id));
+  let dvMap: Record<number, number | null> = {};
+  if (offerIds.length) {
+    const rows: any[] = await prisma.$queryRawUnsafe(
+      `SELECT id, discountValue FROM Offer WHERE id IN (${offerIds.join(",")})`
+    );
+    for (const r of rows) dvMap[r.id] = r.discountValue ?? null;
+  }
+
+  const enriched = merchants.map((m) => ({
+    ...m,
+    offers: m.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
+  }));
+
+  return NextResponse.json({ merchants: enriched, total, page, limit });
 }
 
 export async function POST(req: NextRequest) {
@@ -76,7 +94,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ...data } = body;
+    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ratings: _ra, ...data } = body;
     const merchant = await prisma.merchant.create({ data });
     return NextResponse.json(merchant, { status: 201 });
   } catch (e) {
