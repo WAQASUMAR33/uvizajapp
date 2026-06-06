@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getImageArray } from "@/lib/utils";
 
 // GET /api/merchants
 // Query params:
@@ -80,6 +81,7 @@ export async function GET(req: NextRequest) {
 
   const enriched = merchants.map((m) => ({
     ...m,
+    images: getImageArray(m.images),
     offers: m.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
   }));
 

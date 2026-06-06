@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getImageArray } from "@/lib/utils";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -47,6 +48,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   return NextResponse.json({
     ...merchant,
+    images: getImageArray(merchant.images),
     offers: merchant.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
   });
 }

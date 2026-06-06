@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getImageArray } from "@/lib/utils";
 
 const redemptionSelectIncludes = {
   customer: { select: { id: true, fullname: true, email: true, phoneNumber: true, imageUrl: true } },
@@ -28,7 +29,11 @@ async function withSnapshotFields(redemptions: any[]) {
   );
   const map: Record<number, { offerAmount: number | null; offerDiscount: string | null }> = {};
   for (const r of rows) map[r.id] = { offerAmount: r.offerAmount ?? null, offerDiscount: r.offerDiscount ?? null };
-  return redemptions.map((r) => ({ ...r, ...(map[r.id] ?? { offerAmount: null, offerDiscount: null }) }));
+  return redemptions.map((r) => ({
+    ...r,
+    merchant: { ...r.merchant, images: getImageArray(r.merchant?.images ?? null) },
+    ...(map[r.id] ?? { offerAmount: null, offerDiscount: null }),
+  }));
 }
 
 // GET /api/redemptions?customerId=123&merchantId=4&page=1&limit=20

@@ -39,7 +39,8 @@ export function getCategoryFromSlug(slug: string) {
 export function getImageArray(images: string | null): string[] {
   if (!images) return [];
   try {
-    return JSON.parse(images);
+    const parsed = JSON.parse(images);
+    return Array.isArray(parsed) ? parsed.filter((img) => typeof img === "string" && img.length > 0) : [images];
   } catch {
     return [images];
   }
