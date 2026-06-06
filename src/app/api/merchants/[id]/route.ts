@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getImageArray } from "@/lib/utils";
+import { toImageFilename, toImageUrl } from "@/lib/images";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -48,7 +49,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
   return NextResponse.json({
     ...merchant,
-    images: getImageArray(merchant.images),
+    images: getImageArray(merchant.images).map(toImageUrl),
     offers: merchant.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
   });
 }
@@ -62,7 +63,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params;
   try {
     const body = await req.json();
-    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ratings: _ra, ...data } = body;
+    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ratings: _ra, images, ...data } = body;
+    if (typeof images === "string") {
+      const filenames = getImageArray(images).map(toImageFilename);
+      (data as any).images = filenames.length ? JSON.stringify(filenames) : "";
+    }
     const merchant = await prisma.merchant.update({ where: { id: parseInt(id) }, data });
     return NextResponse.json(merchant);
   } catch (e) {

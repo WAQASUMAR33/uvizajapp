@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getImageArray } from "@/lib/utils";
+import { toImageFilename, toImageUrl } from "@/lib/images";
 
 // GET /api/merchants
 // Query params:
@@ -81,7 +82,7 @@ export async function GET(req: NextRequest) {
 
   const enriched = merchants.map((m) => ({
     ...m,
-    images: getImageArray(m.images),
+    images: getImageArray(m.images).map(toImageUrl),
     offers: m.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
   }));
 
@@ -96,7 +97,11 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ratings: _ra, ...data } = body;
+    const { id: _id, createdAt: _c, updatedAt: _u, offers: _o, redemptions: _r, ratings: _ra, images, ...data } = body;
+    if (typeof images === "string") {
+      const filenames = getImageArray(images).map(toImageFilename);
+      data.images = filenames.length ? JSON.stringify(filenames) : "";
+    }
     const merchant = await prisma.merchant.create({ data });
     return NextResponse.json(merchant, { status: 201 });
   } catch (e) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getImageArray } from "@/lib/utils";
+import { toImageUrl } from "@/lib/images";
 
 const redemptionSelectIncludes = {
   customer: { select: { id: true, fullname: true, email: true, phoneNumber: true, imageUrl: true } },
@@ -31,7 +32,7 @@ async function withSnapshotFields(redemptions: any[]) {
   for (const r of rows) map[r.id] = { offerAmount: r.offerAmount ?? null, offerDiscount: r.offerDiscount ?? null };
   return redemptions.map((r) => ({
     ...r,
-    merchant: { ...r.merchant, images: getImageArray(r.merchant?.images ?? null) },
+    merchant: { ...r.merchant, images: getImageArray(r.merchant?.images ?? null).map(toImageUrl) },
     ...(map[r.id] ?? { offerAmount: null, offerDiscount: null }),
   }));
 }
