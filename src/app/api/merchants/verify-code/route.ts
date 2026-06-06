@@ -13,7 +13,7 @@ import { toImageUrl } from "@/lib/images";
 //
 // ── Success response (200) — code matches ────────────────────────────────────
 // {
-//   "valid": true,
+//   "status": "valid",
 //   "merchant": {
 //     "id": 7, "merchantCode": "AB12", "name": "Bloom Café", "category": "CAFES",
 //     "description": "...", "address": "...", "city": "...", "images": ["https://..."],
@@ -22,7 +22,7 @@ import { toImageUrl } from "@/lib/images";
 // }
 //
 // ── Code doesn't match / merchant not found / inactive (200) ─────────────────
-// { "valid": false, "error": "Invalid merchant code" }
+// { "status": "invalid", "error": "Invalid merchant code" }
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const merchantId   = body?.merchantId;
@@ -46,11 +46,11 @@ export async function POST(req: NextRequest) {
   });
 
   if (!merchant || !merchant.isActive || merchant.merchantCode !== merchantCode) {
-    return NextResponse.json({ valid: false, error: "Invalid merchant code" });
+    return NextResponse.json({ status: "invalid", error: "Invalid merchant code" });
   }
 
   return NextResponse.json({
-    valid: true,
+    status: "valid",
     merchant: { ...merchant, images: getImageArray(merchant.images).map(toImageUrl) },
   });
 }
