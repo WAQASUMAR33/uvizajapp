@@ -7,10 +7,11 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import { MapPin, Tag } from "lucide-react";
 import { getCategoryLabel, getImageArray } from "@/lib/utils";
+import { toImageUrl } from "@/lib/images";
 import type { SafeMerchant } from "@/types";
 
 export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
-  const images = getImageArray(merchant.images);
+  const images = getImageArray(merchant.images).map(toImageUrl);
   const imgSrc = images[0] || `https://ui-avatars.com/api/?name=${encodeURIComponent(merchant.name)}&background=6366f1&color=fff&size=400`;
 
   return (

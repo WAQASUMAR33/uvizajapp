@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { OfferCard } from "@/components/offers/OfferCard";
 import { getCategoryLabel, getImageArray } from "@/lib/utils";
+import { toImageUrl } from "@/lib/images";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -30,7 +31,7 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
 
   if (!merchant) notFound();
 
-  const images   = getImageArray(merchant.images);
+  const images   = getImageArray(merchant.images).map(toImageUrl);
   const mainImg  = images[0] ?? null;
   const userRole = (session?.user as any)?.role;
 

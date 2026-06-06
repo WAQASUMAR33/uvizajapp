@@ -30,11 +30,25 @@ import {
   Plus, Edit2, Trash2, Store, Search, Eye, MapPin, X, Upload, ImageIcon, Tag,
 } from "lucide-react";
 import { MapPickerModal } from "@/components/admin/MapPickerModal";
-import { getCategoryLabel, getImageArray, formatDate } from "@/lib/utils";
+import { getCategoryLabel, formatDate } from "@/lib/utils";
 import { CATEGORIES } from "@/types";
 
-function firstImage(images: string | null): string | null {
-  return getImageArray(images)[0] ?? null;
+// The merchants API returns `images` as an array of names/URLs. Entries that
+// are already full URLs are used as-is; bare filenames are concatenated with
+// the public upload base URL so the browser can load them directly.
+const IMG_BASE_URL = process.env.NEXT_PUBLIC_UPLOAD_IMG_BASE_URL ?? "";
+
+function resolveImageUrl(name: string): string {
+  if (!name) return name;
+  return name.startsWith("http") ? name : `${IMG_BASE_URL}/${name}`;
+}
+
+function imageList(images: string[] | null): string[] {
+  return (images ?? []).map(resolveImageUrl);
+}
+
+function firstImage(images: string[] | null): string | null {
+  return imageList(images)[0] ?? null;
 }
 
 interface Merchant {
@@ -49,7 +63,7 @@ interface Merchant {
   description: string | null;
   phone: string | null;
   website: string | null;
-  images: string | null;
+  images: string[] | null;
   isActive: boolean;
   savingsEstimate: number;
 }
@@ -71,7 +85,7 @@ interface Offer {
 const emptyMerchant: Partial<Merchant> = {
   merchantCode: "", name: "", category: "CASUAL_DINING", city: "", address: "",
   latitude: null, longitude: null, description: "", phone: "",
-  website: "", images: "", savingsEstimate: 0,
+  website: "", images: [], savingsEstimate: 0,
 };
 
 const emptyOffer: Partial<Offer> = {
@@ -130,7 +144,7 @@ export default function AdminMerchantsPage() {
   const openEdit = (m: Merchant) => {
     setEditing(m);
     setForm(m);
-    setExistingImages(getImageArray(m.images));
+    setExistingImages(imageList(m.images));
     setPendingFiles([]);
     setPendingPreviews([]);
     setUploadError("");
@@ -330,9 +344,9 @@ export default function AdminMerchantsPage() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.name}</Typography>
-                    {getImageArray(m.images).length > 0 && (
+                    {(m.images?.length ?? 0) > 0 && (
                       <Typography variant="caption" color="text.disabled">
-                        {getImageArray(m.images).length} image{getImageArray(m.images).length !== 1 ? "s" : ""}
+                        {m.images!.length} image{m.images!.length !== 1 ? "s" : ""}
                       </Typography>
                     )}
                   </TableCell>

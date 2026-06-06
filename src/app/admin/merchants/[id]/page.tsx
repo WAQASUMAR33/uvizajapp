@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCategoryLabel, getImageArray } from "@/lib/utils";
+import { toImageUrl } from "@/lib/images";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -27,7 +28,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
   const merchant = await getMerchant(params.id);
   if (!merchant) notFound();
 
-  const images    = getImageArray(merchant.images);
+  const images    = getImageArray(merchant.images).map(toImageUrl);
   const heroImage = images[0] ?? null;
 
   return (
