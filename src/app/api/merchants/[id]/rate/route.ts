@@ -74,24 +74,3 @@ export async function POST(
   return NextResponse.json({ ...ratingRecord, avgRating, ratingCount });
 }
 
-// GET /api/merchants/:id/rate?customerId=123
-//
-// Returns the rating a specific customer gave to this merchant (if any).
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const merchantId = parseInt(id);
-  const customerId = req.nextUrl.searchParams.get("customerId");
-
-  if (!customerId || isNaN(parseInt(customerId))) {
-    return NextResponse.json({ error: "customerId is required" }, { status: 400 });
-  }
-
-  const ratingRecord = await prisma.merchantRating.findUnique({
-    where: { customerId_merchantId: { customerId: parseInt(customerId), merchantId } },
-  });
-
-  return NextResponse.json(ratingRecord ?? { rating: null, review: null });
-}
