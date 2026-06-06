@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// POST /api/merchants/:id/rate/lookup
+// POST /api/merchants/rate/lookup
 //
-// Returns the rating a specific customer gave to this merchant (if any).
+// Returns the rating a specific customer gave to a specific merchant (if any).
 // Useful for pre-filling an "edit my rating" form.
 //
 // ── Request body ─────────────────────────────────────────────────────────────
-// { "customerId": 123 }
+// { "customerId": 123, "merchantId": 7 }
 //
 // ── Success response ─────────────────────────────────────────────────────────
 // Rating exists:
@@ -15,22 +15,19 @@ import { prisma } from "@/lib/prisma";
 //
 // No rating yet:
 // { "rating": null, "review": null }
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const merchantId = parseInt(id);
-
+export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const customerId = body?.customerId;
+  const { customerId, merchantId } = body ?? {};
 
   if (!customerId || isNaN(parseInt(customerId))) {
     return NextResponse.json({ error: "customerId is required" }, { status: 400 });
   }
+  if (!merchantId || isNaN(parseInt(merchantId))) {
+    return NextResponse.json({ error: "merchantId is required" }, { status: 400 });
+  }
 
   const ratingRecord = await prisma.merchantRating.findUnique({
-    where: { customerId_merchantId: { customerId: parseInt(customerId), merchantId } },
+    where: { customerId_merchantId: { customerId: parseInt(customerId), merchantId: parseInt(merchantId) } },
   });
 
   return NextResponse.json(ratingRecord ?? { rating: null, review: null });
