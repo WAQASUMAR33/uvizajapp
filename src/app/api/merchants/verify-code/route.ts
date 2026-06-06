@@ -5,13 +5,13 @@ import { toImageUrl } from "@/lib/images";
 
 // POST /api/merchants/verify-code
 //
-// Verifies that a merchant code is valid (exists and belongs to an active
-// merchant) and returns the merchant's details.
+// Verifies that a merchant code matches the given merchant (and that the
+// merchant is active), returning the merchant's details when it does.
 //
 // ── Request body ─────────────────────────────────────────────────────────────
-// { "merchantCode": "AB12" }
+// { "merchantId": 7, "merchantCode": "AB12" }
 //
-// ── Success response (200) — valid code ──────────────────────────────────────
+// ── Success response (200) — code matches ────────────────────────────────────
 // {
 //   "valid": true,
 //   "merchant": {
@@ -21,18 +21,22 @@ import { toImageUrl } from "@/lib/images";
 //   }
 // }
 //
-// ── Not found / inactive (200) ────────────────────────────────────────────────
+// ── Code doesn't match / merchant not found / inactive (200) ─────────────────
 // { "valid": false, "error": "Invalid merchant code" }
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
+  const merchantId   = body?.merchantId;
   const merchantCode = typeof body?.merchantCode === "string" ? body.merchantCode.trim() : "";
 
+  if (!merchantId || isNaN(parseInt(merchantId))) {
+    return NextResponse.json({ error: "merchantId is required" }, { status: 400 });
+  }
   if (!merchantCode) {
     return NextResponse.json({ error: "merchantCode is required" }, { status: 400 });
   }
 
   const merchant = await prisma.merchant.findUnique({
-    where: { merchantCode },
+    where: { id: parseInt(merchantId) },
     select: {
       id: true, merchantCode: true, name: true, description: true, category: true,
       address: true, city: true, latitude: true, longitude: true, phone: true,
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  if (!merchant || !merchant.isActive) {
+  if (!merchant || !merchant.isActive || merchant.merchantCode !== merchantCode) {
     return NextResponse.json({ valid: false, error: "Invalid merchant code" });
   }
 
