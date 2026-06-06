@@ -213,12 +213,14 @@ model MerchantRating {
 }
 
 model Redemption {
-  id         Int      @id @default(autoincrement())
-  customerId Int
-  offerId    Int
-  merchantId Int
-  savings    Float    @default(0)
-  redeemedAt DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  customerId    Int
+  offerId       Int
+  merchantId    Int
+  offerAmount   Float?
+  offerDiscount String?
+  savings       Float    @default(0)
+  redeemedAt    DateTime @default(now())
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   offer    Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
