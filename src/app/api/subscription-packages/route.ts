@@ -9,6 +9,7 @@ function serialize(rows: any[]) {
     id: Number(r.id),
     priceMonthly: Number(r.priceMonthly),
     priceYearly: Number(r.priceYearly),
+    discountValue: r.discountValue == null ? null : Number(r.discountValue),
     isActive: Boolean(r.isActive),
   }));
 }
@@ -16,7 +17,7 @@ function serialize(rows: any[]) {
 export async function GET() {
   try {
     const rows = await prisma.$queryRaw<any[]>`
-      SELECT id, title, priceMonthly, priceYearly, description, isActive, createdAt, updatedAt
+      SELECT id, title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt
       FROM SubscriptionPackage
       ORDER BY createdAt ASC
     `;
@@ -33,18 +34,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { title, priceMonthly, priceYearly, description, isActive } = await req.json();
-    const monthly = parseFloat(priceMonthly);
-    const yearly  = parseFloat(priceYearly);
-    const active  = isActive ?? true;
+    const { title, priceMonthly, priceYearly, discountValue, description, isActive } = await req.json();
+    const monthly  = parseFloat(priceMonthly);
+    const yearly   = parseFloat(priceYearly);
+    const discount = discountValue === "" || discountValue == null ? null : parseFloat(discountValue);
+    const active   = isActive ?? true;
 
     await prisma.$executeRaw`
-      INSERT INTO SubscriptionPackage (title, priceMonthly, priceYearly, description, isActive, createdAt, updatedAt)
-      VALUES (${title}, ${monthly}, ${yearly}, ${description ?? null}, ${active}, NOW(), NOW())
+      INSERT INTO SubscriptionPackage (title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt)
+      VALUES (${title}, ${monthly}, ${yearly}, ${discount}, ${description ?? null}, ${active}, NOW(), NOW())
     `;
 
     const [pkg] = await prisma.$queryRaw<any[]>`
-      SELECT id, title, priceMonthly, priceYearly, description, isActive, createdAt, updatedAt
+      SELECT id, title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt
       FROM SubscriptionPackage
       WHERE id = LAST_INSERT_ID()
     `;

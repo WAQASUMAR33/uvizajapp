@@ -30,6 +30,7 @@ interface SubPackage {
   title: string;
   priceMonthly: number;
   priceYearly: number;
+  discountValue: number | null;
   description: string | null;
   isActive: boolean;
   createdAt: string;
@@ -39,6 +40,7 @@ const EMPTY_FORM = {
   title: "",
   priceMonthly: "",
   priceYearly: "",
+  discountValue: "",
   description: "",
   isActive: true,
 };
@@ -101,6 +103,7 @@ export default function SubscriptionPackagesPage() {
       title: pkg.title,
       priceMonthly: String(pkg.priceMonthly),
       priceYearly: String(pkg.priceYearly),
+      discountValue: pkg.discountValue == null ? "" : String(pkg.discountValue),
       description: pkg.description ?? "",
       isActive: pkg.isActive,
     });
@@ -213,6 +216,7 @@ export default function SubscriptionPackagesPage() {
                 <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Monthly Price</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Yearly Price</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Discount</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                 <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
               </TableRow>
@@ -236,6 +240,17 @@ export default function SubscriptionPackagesPage() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>€{pkg.priceYearly.toFixed(2)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    {pkg.discountValue != null ? (
+                      <Chip
+                        label={`${pkg.discountValue}% OFF`}
+                        size="small"
+                        sx={{ bgcolor: "#ede9fe", color: "#5b21b6", fontWeight: 600, fontSize: "0.72rem" }}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">—</Typography>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -321,6 +336,18 @@ export default function SubscriptionPackagesPage() {
               slotProps={{ htmlInput: { min: 0, step: 0.01 } }}
             />
           </Box>
+
+          <TextField
+            label="Discount (%)"
+            value={form.discountValue}
+            onChange={(e) => setForm((f) => ({ ...f, discountValue: e.target.value }))}
+            fullWidth
+            size="small"
+            type="number"
+            placeholder="e.g. 10"
+            helperText="Optional — leave blank for no discount"
+            slotProps={{ htmlInput: { min: 0, max: 100, step: 0.01 } }}
+          />
 
           <FormControlLabel
             control={
