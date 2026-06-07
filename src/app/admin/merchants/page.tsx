@@ -36,11 +36,14 @@ import { CATEGORIES } from "@/types";
 // The merchants API returns `images` as an array of names/URLs. Entries that
 // are already full URLs are used as-is; bare filenames are concatenated with
 // the public upload base URL so the browser can load them directly.
-const IMG_BASE_URL = process.env.NEXT_PUBLIC_UPLOAD_IMG_BASE_URL ?? "";
+const IMG_BASE_URL = (process.env.NEXT_PUBLIC_UPLOAD_IMG_BASE_URL ?? "").replace(/\/+$/, "");
 
 function resolveImageUrl(name: string): string {
   if (!name) return name;
-  return name.startsWith("http") ? name : `${IMG_BASE_URL}/${name}`;
+  if (name.startsWith("http")) return name;
+  // Strip any leading slashes the server may have added when its env var was missing.
+  const clean = name.replace(/^\/+/, "");
+  return IMG_BASE_URL ? `${IMG_BASE_URL}/${clean}` : clean;
 }
 
 function imageList(images: string[] | null): string[] {

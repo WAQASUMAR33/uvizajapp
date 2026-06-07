@@ -3,11 +3,10 @@
 // bare filenames (e.g. "67abc123.jpg") — API responses expand these into
 // full URLs so frontend clients can use them directly.
 
-const IMG_BASE_URL = process.env.UPLOAD_IMG_BASE_URL ?? "";
+// Normalise the base URL: strip trailing slashes so we can always join
+// with a single "/" without creating double-slash URLs.
+const IMG_BASE_URL = (process.env.UPLOAD_IMG_BASE_URL ?? "").replace(/\/+$/, "");
 
-// Only collapse URLs that point at our own upload server down to a bare
-// filename — external URLs (e.g. seed/demo images from other hosts) are
-// left untouched so they keep resolving correctly.
 export function toImageFilename(value: string): string {
   if (!value) return value;
   if (IMG_BASE_URL && value.startsWith(IMG_BASE_URL)) {
@@ -18,5 +17,8 @@ export function toImageFilename(value: string): string {
 
 export function toImageUrl(filename: string): string {
   if (!filename) return filename;
-  return filename.startsWith("http") ? filename : `${IMG_BASE_URL}/${filename}`;
+  if (filename.startsWith("http")) return filename;
+  // Strip any accidental leading slashes from stored value before joining.
+  const clean = filename.replace(/^\/+/, "");
+  return IMG_BASE_URL ? `${IMG_BASE_URL}/${clean}` : clean;
 }
