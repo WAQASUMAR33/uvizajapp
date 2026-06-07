@@ -19,8 +19,17 @@ export async function POST(req: NextRequest) {
 
   const customer = await prisma.customer.findUnique({
     where: { email },
-    select: { id: true },
+    select: {
+      id: true, uid: true, email: true, logType: true,
+      fullname: true, phoneNumber: true, nationality: true,
+      dateOfBirth: true, gender: true, imageUrl: true,
+      createdAt: true, updatedAt: true,
+    },
   });
 
-  return NextResponse.json({ exists: customer !== null });
+  if (!customer) {
+    return NextResponse.json({ exists: false, customer: null });
+  }
+
+  return NextResponse.json({ exists: true, customer });
 }
