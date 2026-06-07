@@ -8,13 +8,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await getServerSession(authOptions);
   const role = (session?.user as any)?.role;
 
-  if (!session || role !== "ADMIN") {
+  const STAFF_ROLES = ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"];
+  if (!session || !STAFF_ROLES.includes(role)) {
     redirect("/login?callbackUrl=/admin");
   }
 
   return (
     <div className="flex min-h-screen">
-      <AdminSidebar />
+      <AdminSidebar role={role} />
 
       <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
         <AdminTopbar user={session.user!} />

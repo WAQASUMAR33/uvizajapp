@@ -10,7 +10,10 @@ datasource db {
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
 enum UserRole {
+  SUPER_ADMIN
   ADMIN
+  ACCOUNTANT
+  SALESMAN
 }
 
 enum SubscriptionPlan {

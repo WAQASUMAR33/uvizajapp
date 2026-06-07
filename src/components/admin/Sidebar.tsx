@@ -10,28 +10,57 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
 import {
-  LayoutDashboard, Store, Tag, Users, UserCheck, Receipt, CreditCard, LayoutGrid, LogOut, Sparkles, Package, FileText,
+  LayoutDashboard, Store, Tag, Users, UserCheck, Receipt,
+  CreditCard, LayoutGrid, LogOut, Sparkles, Package, FileText, ShieldCheck,
 } from "lucide-react";
 
 const DRAWER_WIDTH = 256;
 
-const navItems = [
-  { href: "/admin",               label: "Dashboard",    icon: LayoutDashboard },
-  { href: "/admin/merchants",     label: "Merchants",    icon: Store },
-  { href: "/admin/categories",    label: "Categories",   icon: LayoutGrid },
-  { href: "/admin/offers",        label: "Offers",       icon: Tag },
-  { href: "/admin/customers",     label: "Customers",    icon: UserCheck },
-  { href: "/admin/users",         label: "Admin Users",  icon: Users },
-  { href: "/admin/redemptions",   label: "Redemptions",  icon: Receipt },
-  { href: "/admin/subscriptions",          label: "Subscriptions",    icon: CreditCard },
-  { href: "/admin/subscription-packages",  label: "Sub. Packages",    icon: Package },
-  { href: "/admin/terms",                  label: "Terms & Conditions", icon: FileText },
+type Role = "SUPER_ADMIN" | "ADMIN" | "ACCOUNTANT" | "SALESMAN";
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  roles: Role[];
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { href: "/admin",                        label: "Dashboard",         icon: LayoutDashboard, roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"] },
+  { href: "/admin/merchants",              label: "Merchants",         icon: Store,           roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"] },
+  { href: "/admin/categories",            label: "Categories",        icon: LayoutGrid,      roles: ["SUPER_ADMIN", "ADMIN"] },
+  { href: "/admin/offers",                label: "Offers",            icon: Tag,             roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"] },
+  { href: "/admin/customers",             label: "Customers",         icon: UserCheck,       roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { href: "/admin/redemptions",           label: "Redemptions",       icon: Receipt,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { href: "/admin/subscription-packages", label: "Sub. Packages",     icon: Package,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { href: "/admin/terms",                 label: "Terms & Conditions",icon: FileText,        roles: ["SUPER_ADMIN", "ADMIN"] },
+  { href: "/admin/users",                 label: "User Management",   icon: Users,           roles: ["SUPER_ADMIN"] },
 ];
 
-export function AdminSidebar() {
+const ROLE_LABELS: Record<Role, string> = {
+  SUPER_ADMIN: "Super Admin",
+  ADMIN:       "Admin",
+  ACCOUNTANT:  "Accountant",
+  SALESMAN:    "Sales",
+};
+
+const ROLE_COLORS: Record<Role, string> = {
+  SUPER_ADMIN: "#f59e0b",
+  ADMIN:       "#6366f1",
+  ACCOUNTANT:  "#10b981",
+  SALESMAN:    "#3b82f6",
+};
+
+export function AdminSidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const isActive = (href: string) => href === "/admin" ? pathname === href : pathname.startsWith(href);
+
+  const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(role as Role));
+  const roleLabel    = ROLE_LABELS[role as Role] ?? role;
+  const roleColor    = ROLE_COLORS[role as Role] ?? "#94a3b8";
 
   return (
     <Drawer
@@ -63,14 +92,23 @@ export function AdminSidebar() {
             <Typography variant="subtitle1" sx={{ color: "#fff", lineHeight: 1.1, fontWeight: 700 }}>
               Ujivaj
             </Typography>
-            <Typography variant="caption" sx={{ color: "#94a3b8" }}>Admin Panel</Typography>
+            <Chip
+              label={roleLabel}
+              size="small"
+              icon={<ShieldCheck size={10} color={roleColor} />}
+              sx={{
+                height: 18, fontSize: "0.65rem", fontWeight: 700,
+                bgcolor: "rgba(255,255,255,0.08)", color: roleColor,
+                "& .MuiChip-icon": { ml: "4px" },
+              }}
+            />
           </Box>
         </Box>
       </Box>
 
       {/* Nav */}
       <List sx={{ flex: 1, px: 1.5, py: 1.5 }} disablePadding>
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {visibleItems.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (
             <ListItemButton
