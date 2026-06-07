@@ -11,9 +11,10 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
+import Image from "next/image";
 import {
   LayoutDashboard, Store, Tag, Users, UserCheck, Receipt,
-  CreditCard, LayoutGrid, LogOut, Sparkles, Package, FileText, ShieldCheck,
+  CreditCard, LayoutGrid, LogOut, Package, FileText, ShieldCheck,
 } from "lucide-react";
 
 const DRAWER_WIDTH = 256;
@@ -80,14 +81,13 @@ export function AdminSidebar({ role }: { role: string }) {
       {/* Logo */}
       <Box sx={{ px: 3, py: 2.5, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Box sx={{
-            width: 36, height: 36, borderRadius: "10px",
-            background: "linear-gradient(135deg, #f59e0b, #eab308)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 4px 14px rgba(245,158,11,0.35)",
-          }}>
-            <Sparkles size={18} color="#fff" />
-          </Box>
+          <Image
+            src="/uzivaj_logo.png"
+            alt="Ujivaj"
+            width={40}
+            height={40}
+            style={{ borderRadius: 10, objectFit: "contain" }}
+          />
           <Box>
             <Typography variant="subtitle1" sx={{ color: "#fff", lineHeight: 1.1, fontWeight: 700 }}>
               Ujivaj
