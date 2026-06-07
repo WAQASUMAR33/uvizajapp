@@ -226,3 +226,9 @@ model Redemption {
   offer    Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
   merchant Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
 }
+
+model TermsAndConditions {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.LongText
+  updatedAt DateTime @updatedAt
+}
