@@ -6,6 +6,11 @@ import bcrypt from "bcryptjs";
 
 const VALID_ROLES = ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"];
 
+function isAuthorized(session: any) {
+  const role = (session?.user as any)?.role;
+  return role === "SUPER_ADMIN" || role === "ADMIN";
+}
+
 function isSuperAdmin(session: any) {
   return (session?.user as any)?.role === "SUPER_ADMIN";
 }
@@ -13,7 +18,7 @@ function isSuperAdmin(session: any) {
 // GET /api/users?search=&role=&page=1&limit=50
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!isSuperAdmin(session)) {
+  if (!isAuthorized(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -59,10 +64,10 @@ export async function GET(req: NextRequest) {
   });
 }
 
-// POST /api/users — create staff account (SUPER_ADMIN only)
+// POST /api/users — create staff account
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!isSuperAdmin(session)) {
+  if (!isAuthorized(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -9,12 +9,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
 import Image from "next/image";
 import {
   LayoutDashboard, Store, Tag, Users, UserCheck, Receipt,
-  CreditCard, LayoutGrid, LogOut, Package, FileText, ShieldCheck,
+  CreditCard, LayoutGrid, LogOut, Package, FileText,
 } from "lucide-react";
 
 const DRAWER_WIDTH = 256;
@@ -38,30 +36,15 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/subscription-packages", label: "Sub. Packages",     icon: Package,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/terms",                 label: "Terms & Conditions",icon: FileText,        roles: ["SUPER_ADMIN", "ADMIN"] },
-  { href: "/admin/users",                 label: "User Management",   icon: Users,           roles: ["SUPER_ADMIN"] },
+  { href: "/admin/users",                 label: "User Management",   icon: Users,           roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
 
-const ROLE_LABELS: Record<Role, string> = {
-  SUPER_ADMIN: "Super Admin",
-  ADMIN:       "Admin",
-  ACCOUNTANT:  "Accountant",
-  SALESMAN:    "Sales",
-};
-
-const ROLE_COLORS: Record<Role, string> = {
-  SUPER_ADMIN: "#f59e0b",
-  ADMIN:       "#6366f1",
-  ACCOUNTANT:  "#10b981",
-  SALESMAN:    "#3b82f6",
-};
 
 export function AdminSidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const isActive = (href: string) => href === "/admin" ? pathname === href : pathname.startsWith(href);
 
   const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(role as Role));
-  const roleLabel    = ROLE_LABELS[role as Role] ?? role;
-  const roleColor    = ROLE_COLORS[role as Role] ?? "#94a3b8";
 
   return (
     <Drawer
@@ -79,31 +62,14 @@ export function AdminSidebar({ role }: { role: string }) {
       }}
     >
       {/* Logo */}
-      <Box sx={{ px: 3, py: 2.5, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Image
-            src="/uzivaj_logo.png"
-            alt="Ujivaj"
-            width={40}
-            height={40}
-            style={{ borderRadius: 10, objectFit: "contain" }}
-          />
-          <Box>
-            <Typography variant="subtitle1" sx={{ color: "#fff", lineHeight: 1.1, fontWeight: 700 }}>
-              Ujivaj
-            </Typography>
-            <Chip
-              label={roleLabel}
-              size="small"
-              icon={<ShieldCheck size={10} color={roleColor} />}
-              sx={{
-                height: 18, fontSize: "0.65rem", fontWeight: 700,
-                bgcolor: "rgba(255,255,255,0.08)", color: roleColor,
-                "& .MuiChip-icon": { ml: "4px" },
-              }}
-            />
-          </Box>
-        </Box>
+      <Box sx={{ px: 3, py: 2.5, borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "center" }}>
+        <Image
+          src="/uzivaj_logo.png"
+          alt="Ujivaj"
+          width={120}
+          height={48}
+          style={{ objectFit: "contain" }}
+        />
       </Box>
 
       {/* Nav */}

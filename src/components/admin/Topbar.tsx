@@ -11,7 +11,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-import { Sparkles, LogOut, ChevronDown } from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 
 interface AdminTopbarProps {
   user: { name?: string | null; email?: string | null; image?: string | null };
@@ -36,21 +36,9 @@ export function AdminTopbar({ user }: AdminTopbarProps) {
     >
       <Toolbar sx={{ justifyContent: "space-between", minHeight: "64px !important", px: 3 }}>
         {/* Brand */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Box sx={{
-            width: 32, height: 32, borderRadius: "9px",
-            background: "linear-gradient(135deg, #f59e0b, #eab308)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 2px 8px rgba(245,158,11,0.3)",
-          }}>
-            <Sparkles size={16} color="#fff" />
-          </Box>
-          <Box sx={{ lineHeight: 1 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.1, color: "text.primary" }}>
-              Ujivaj
-            </Typography>
-            <Typography variant="caption" color="text.secondary">Admin Panel</Typography>
-          </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 40, width: "auto" }} />
         </Box>
 
         {/* User menu */}

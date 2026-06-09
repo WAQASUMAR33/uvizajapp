@@ -15,7 +15,7 @@ import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
-  Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight,
+  Mail, Lock, Eye, EyeOff, ArrowRight,
   Crown, Utensils, MapPin, Star,
 } from "lucide-react";
 
@@ -63,11 +63,9 @@ function LoginForm() {
         ))}
 
         {/* Logo */}
-        <Box sx={{ position: "relative", display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Box sx={{ width: 40, height: 40, borderRadius: "12px", background: "linear-gradient(135deg, #f59e0b, #eab308)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(245,158,11,0.35)" }}>
-            <Sparkles size={20} color="#fff" />
-          </Box>
-          <Typography variant="h6" sx={{ color: "#fff", fontWeight: 700 }}>Ujivaj</Typography>
+        <Box sx={{ position: "relative" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 44, width: "auto" }} />
         </Box>
 
         {/* Hero copy */}
@@ -126,11 +124,9 @@ function LoginForm() {
       {/* ── Right form panel ── */}
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", p: { xs: 3, sm: 6 }, bgcolor: "background.default" }}>
         {/* Mobile logo */}
-        <Box sx={{ display: { xs: "flex", lg: "none" }, alignItems: "center", gap: 1.5, mb: 4 }}>
-          <Box sx={{ width: 36, height: 36, borderRadius: "10px", background: "linear-gradient(135deg, #f59e0b, #eab308)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Sparkles size={18} color="#fff" />
-          </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>Ujivaj</Typography>
+        <Box sx={{ display: { xs: "flex", lg: "none" }, alignItems: "center", mb: 4 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 40, width: "auto" }} />
         </Box>
 
         <Box sx={{ width: "100%", maxWidth: 380 }}>
@@ -170,6 +166,12 @@ function LoginForm() {
                 ),
               } }}
             />
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <MuiButton component={Link} href="/forgot-password" size="small" sx={{ textTransform: "none", color: "text.secondary", p: 0, minWidth: 0, fontSize: "0.8125rem" }}>
+                Forgot password?
+              </MuiButton>
+            </Box>
 
             <MuiButton
               type="submit"

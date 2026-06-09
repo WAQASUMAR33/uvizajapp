@@ -1,7 +1,6 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
 
 export default function SplashPage() {
   const router = useRouter();
@@ -13,14 +12,10 @@ export default function SplashPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center">
-      <div className="flex flex-col items-center gap-6 animate-pulse">
-        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-2xl shadow-amber-500/30">
-          <Sparkles className="w-12 h-12 text-white" />
-        </div>
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-white tracking-tight">Ujivaj</h1>
-          <p className="text-indigo-300 mt-2 text-lg">Exclusive Dining Offers</p>
-        </div>
+      <div className="flex flex-col items-center gap-6">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/uzivaj_logo.png" alt="Ujivaj" className="h-36 w-auto animate-pulse drop-shadow-2xl" />
+        <p className="text-indigo-300 text-lg">Exclusive Dining Offers</p>
       </div>
       <div className="absolute bottom-16 flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:-0.3s]" />

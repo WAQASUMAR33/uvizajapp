@@ -10,16 +10,17 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Avatar from "@mui/material/Avatar";
-import { Users, Store, Tag, Receipt, CreditCard, TrendingUp } from "lucide-react";
+import { Users, Store, Tag, Receipt, CreditCard, TrendingUp, ShieldCheck } from "lucide-react";
 
 async function getStats() {
-  const [totalUsers, totalMerchants, totalOffers, totalRedemptions, activeSubscriptions, recentRedemptions] =
+  const [totalUsers, totalMerchants, totalOffers, totalRedemptions, activeSubscriptions, totalStaff, recentRedemptions] =
     await Promise.all([
       prisma.customer.count(),
       prisma.merchant.count({ where: { isActive: true } }),
       prisma.offer.count({ where: { isActive: true } }),
       prisma.redemption.count(),
       prisma.subscription.count({ where: { status: "ACTIVE" } }),
+      prisma.user.count(),
       prisma.redemption.findMany({
         take: 6,
         orderBy: { redeemedAt: "desc" },
@@ -31,16 +32,17 @@ async function getStats() {
       }),
     ]);
   const savings = await prisma.redemption.aggregate({ _sum: { savings: true } });
-  return { totalUsers, totalMerchants, totalOffers, totalRedemptions, activeSubscriptions, recentRedemptions, totalSavings: savings._sum.savings ?? 0 };
+  return { totalUsers, totalMerchants, totalOffers, totalRedemptions, activeSubscriptions, totalStaff, recentRedemptions, totalSavings: savings._sum.savings ?? 0 };
 }
 
 const statCards = (stats: Awaited<ReturnType<typeof getStats>>) => [
-  { label: "Total Users",        value: stats.totalUsers,           icon: Users,       bg: "#ede9fe", color: "#6d28d9" },
-  { label: "Active Merchants",   value: stats.totalMerchants,       icon: Store,       bg: "#e0e7ff", color: "#4338ca" },
-  { label: "Active Offers",      value: stats.totalOffers,          icon: Tag,         bg: "#fce7f3", color: "#be185d" },
-  { label: "Redemptions",        value: stats.totalRedemptions,     icon: Receipt,     bg: "#ffedd5", color: "#c2410c" },
-  { label: "Subscriptions",      value: stats.activeSubscriptions,  icon: CreditCard,  bg: "#d1fae5", color: "#065f46" },
+  { label: "Total Users",        value: stats.totalUsers,           icon: Users,        bg: "#ede9fe", color: "#6d28d9" },
+  { label: "Active Merchants",   value: stats.totalMerchants,       icon: Store,        bg: "#e0e7ff", color: "#4338ca" },
+  { label: "Active Offers",      value: stats.totalOffers,          icon: Tag,          bg: "#fce7f3", color: "#be185d" },
+  { label: "Redemptions",        value: stats.totalRedemptions,     icon: Receipt,      bg: "#ffedd5", color: "#c2410c" },
+  { label: "Subscriptions",      value: stats.activeSubscriptions,  icon: CreditCard,   bg: "#d1fae5", color: "#065f46" },
   { label: "Total Savings",      value: formatCurrency(stats.totalSavings), icon: TrendingUp, bg: "#fef3c7", color: "#92400e" },
+  { label: "Staff Users",        value: stats.totalStaff,           icon: ShieldCheck,  bg: "#f0fdf4", color: "#15803d" },
 ];
 
 export default async function AdminDashboard() {

@@ -5,6 +5,11 @@ import { prisma } from "@/lib/prisma";
 
 const VALID_ROLES = ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"];
 
+function isAuthorized(session: any) {
+  const role = (session?.user as any)?.role;
+  return role === "SUPER_ADMIN" || role === "ADMIN";
+}
+
 function isSuperAdmin(session: any) {
   return (session?.user as any)?.role === "SUPER_ADMIN";
 }
@@ -12,7 +17,7 @@ function isSuperAdmin(session: any) {
 // GET /api/users/:id
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
-  if (!isSuperAdmin(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAuthorized(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
   const rows = await prisma.$queryRawUnsafe<any[]>(
@@ -23,10 +28,10 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   return NextResponse.json({ ...rows[0], id: Number(rows[0].id) });
 }
 
-// PUT /api/users/:id  — update name and/or role (SUPER_ADMIN only)
+// PUT /api/users/:id  — update name and/or role
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
-  if (!isSuperAdmin(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAuthorized(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
   const body = await req.json().catch(() => null);
@@ -57,10 +62,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json({ ...rows[0], id: Number(rows[0].id) });
 }
 
-// DELETE /api/users/:id  (SUPER_ADMIN only, cannot delete self)
+// DELETE /api/users/:id  (cannot delete self)
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
-  if (!isSuperAdmin(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isAuthorized(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
   const selfId = String((session!.user as any).id);
