@@ -109,10 +109,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
             {merchant.offers.length === 0 ? (
               <Box sx={{ py: 5, textAlign: "center", bgcolor: "#f8fafc", border: "1px dashed", borderColor: "divider" }}>
                 <Tag size={28} color="#cbd5e1" style={{ marginBottom: 8 }} />
-                <Typography variant="body2" color="text.secondary" gutterBottom>No active offers</Typography>
-                <MuiButton component={Link} href="/admin/offers" variant="outlined" size="small" sx={{ mt: 1 }}>
-                  Add Offers
-                </MuiButton>
+                <Typography variant="body2" color="text.secondary">No active offers</Typography>
               </Box>
             ) : (
               <Stack divider={<Divider />} sx={{ border: "1px solid", borderColor: "divider" }}>

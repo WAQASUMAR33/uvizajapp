@@ -30,7 +30,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin",                        label: "Dashboard",         icon: LayoutDashboard, roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"] },
   { href: "/admin/merchants",              label: "Merchants",         icon: Store,           roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"] },
   { href: "/admin/categories",            label: "Categories",        icon: LayoutGrid,      roles: ["SUPER_ADMIN", "ADMIN"] },
-  { href: "/admin/offers",                label: "Offers",            icon: Tag,             roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"] },
   { href: "/admin/customers",             label: "Customers",         icon: UserCheck,       roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/redemptions",           label: "Redemptions",       icon: Receipt,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
