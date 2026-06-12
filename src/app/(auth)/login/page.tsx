@@ -41,12 +41,31 @@ function LoginForm() {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "background.default", p: 3 }}>
-      <Box sx={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Box sx={{
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%)",
+      p: 3
+    }}>
+      <Box sx={{
+        width: "100%",
+        maxWidth: 420,
+        bgcolor: "background.paper",
+        p: { xs: 4, sm: 5 },
+        borderRadius: 4,
+        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+        border: "1px solid",
+        borderColor: "divider",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+      }}>
         {/* Logo */}
-        <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 5 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 44, width: "auto" }} />
+          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 60, width: "auto" }} />
         </Box>
 
         <Box sx={{ width: "100%" }}>
@@ -113,7 +132,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<Box sx={{ minHeight: "100vh", bgcolor: "background.default" }} />}>
+    <Suspense fallback={<Box sx={{ minHeight: "100vh", background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%)" }} />}>
       <LoginForm />
     </Suspense>
   );
