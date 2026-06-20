@@ -18,8 +18,10 @@ interface Redemption {
   savings: number;
   redeemedAt: string;
   customer: { fullname: string; email: string };
-  merchant: { name: string };
-  offer: { title: string; discount: string | null };
+  merchant: { nameEn: string; nameHr: string };
+  offer: { titleEn: string; titleHr: string };
+  offerDiscountEn: string | null;
+  offerDiscountHr: string | null;
 }
 
 export default function AdminRedemptionsPage() {
@@ -39,8 +41,10 @@ export default function AdminRedemptionsPage() {
   const filtered = redemptions.filter(
     (r) =>
       r.customer.email.toLowerCase().includes(search.toLowerCase()) ||
-      r.merchant.name.toLowerCase().includes(search.toLowerCase()) ||
-      r.offer.title.toLowerCase().includes(search.toLowerCase())
+      r.merchant.nameEn.toLowerCase().includes(search.toLowerCase()) ||
+      r.merchant.nameHr.toLowerCase().includes(search.toLowerCase()) ||
+      r.offer.titleEn.toLowerCase().includes(search.toLowerCase()) ||
+      r.offer.titleHr.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalSavings = redemptions.reduce((s, r) => s + r.savings, 0);
@@ -59,7 +63,7 @@ export default function AdminRedemptionsPage() {
           </Typography>
         </Paper>
       </Box>
-
+ 
       <TextField
         placeholder="Search redemptions…"
         value={search}
@@ -68,7 +72,7 @@ export default function AdminRedemptionsPage() {
         sx={{ maxWidth: 320, mb: 3 }}
         slotProps={{ input: { startAdornment: <InputAdornment position="start"><Search size={16} /></InputAdornment> } }}
       />
-
+ 
       <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
         {loading ? (
           <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
@@ -96,10 +100,14 @@ export default function AdminRedemptionsPage() {
                     <Typography variant="caption" color="text.secondary">{r.customer.email}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{r.offer.title}</Typography>
-                    {r.offer.discount && <Typography variant="caption" sx={{ color: "#d97706", fontWeight: 600 }}>{r.offer.discount}</Typography>}
+                    <Typography variant="body2">{r.offer.titleEn || r.offer.titleHr}</Typography>
+                    {(r.offerDiscountEn || r.offerDiscountHr) && (
+                      <Typography variant="caption" sx={{ color: "#d97706", fontWeight: 600 }}>
+                        {r.offerDiscountEn || r.offerDiscountHr}
+                      </Typography>
+                    )}
                   </TableCell>
-                  <TableCell><Typography variant="body2" color="text.secondary">{r.merchant.name}</Typography></TableCell>
+                  <TableCell><Typography variant="body2" color="text.secondary">{r.merchant.nameEn || r.merchant.nameHr}</Typography></TableCell>
                   <TableCell><Typography variant="body2" sx={{ fontWeight: 600, color: "#059669" }}>{formatCurrency(r.savings)}</Typography></TableCell>
                   <TableCell><Typography variant="body2" color="text.secondary">{formatDate(r.redeemedAt)}</Typography></TableCell>
                 </TableRow>

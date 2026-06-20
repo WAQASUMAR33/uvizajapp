@@ -30,11 +30,15 @@ export interface SafeSubscription {
 
 export interface SafeMerchant {
   id: number;
-  name: string;
-  description: string | null;
+  nameEn: string;
+  nameHr: string;
+  descriptionEn: string | null;
+  descriptionHr: string | null;
   category: MerchantCategory;
-  address: string | null;
-  city: string | null;
+  addressEn: string | null;
+  addressHr: string | null;
+  cityEn: string | null;
+  cityHr: string | null;
   latitude: number | null;
   longitude: number | null;
   phone: string | null;
@@ -48,10 +52,14 @@ export interface SafeMerchant {
 export interface SafeOffer {
   id: number;
   merchantId: number;
-  title: string;
-  description: string | null;
-  discount: string | null;
-  terms: string | null;
+  titleEn: string;
+  titleHr: string;
+  descriptionEn: string | null;
+  descriptionHr: string | null;
+  discountEn: string | null;
+  discountHr: string | null;
+  termsEn: string | null;
+  termsHr: string | null;
   validFrom: Date;
   validUntil: Date | null;
   isActive: boolean;
@@ -65,7 +73,7 @@ export interface SafeRedemption {
   savings: number;
   redeemedAt: Date;
   offer?: SafeOffer;
-  merchant?: Pick<SafeMerchant, "id" | "name" | "images">;
+  merchant?: Pick<SafeMerchant, "id" | "nameEn" | "nameHr" | "images">;
 }
 
 export const CATEGORIES: { value: MerchantCategory; label: string; slug: string; emoji: string }[] = [

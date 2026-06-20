@@ -41,14 +41,14 @@ export async function POST(req: NextRequest) {
     include: {
       offer: {
         select: {
-          id: true, title: true, description: true, discount: true,
-          offerAmount: true, terms: true, validFrom: true, validUntil: true, isActive: true,
+          id: true, titleEn: true, titleHr: true, descriptionEn: true, descriptionHr: true, discountEn: true, discountHr: true,
+          offerAmount: true, termsEn: true, termsHr: true, validFrom: true, validUntil: true, isActive: true,
         },
       },
       merchant: {
         select: {
-          id: true, merchantCode: true, name: true, category: true,
-          address: true, city: true, latitude: true, longitude: true,
+          id: true, merchantCode: true, nameEn: true, nameHr: true, category: true,
+          addressEn: true, addressHr: true, cityEn: true, cityHr: true, latitude: true, longitude: true,
           phone: true, website: true, images: true, savingsEstimate: true,
           avgRating: true, ratingCount: true,
         },
@@ -60,16 +60,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ customerId, total: 0, redemptions: [] });
   }
 
-  // Fetch snapshot fields (offerAmount, offerDiscount) via raw SQL
+  // Fetch snapshot fields (offerAmount, offerDiscountEn, offerDiscountHr) via raw SQL
   const ids = redemptions.map((r) => r.id);
   const snapshots = await prisma.$queryRawUnsafe<any[]>(
-    `SELECT id, offerAmount, offerDiscount FROM Redemption WHERE id IN (${ids.join(",")})`
+    `SELECT id, offerAmount, offerDiscountEn, offerDiscountHr FROM Redemption WHERE id IN (${ids.join(",")})`
   );
-  const snapMap: Record<number, { offerAmount: number | null; offerDiscount: string | null }> = {};
+  const snapMap: Record<number, { offerAmount: number | null; offerDiscountEn: string | null; offerDiscountHr: string | null }> = {};
   for (const s of snapshots) {
     snapMap[s.id] = {
       offerAmount:   s.offerAmount  == null ? null : Number(s.offerAmount),
-      offerDiscount: s.offerDiscount ?? null,
+      offerDiscountEn: s.offerDiscountEn ?? null,
+      offerDiscountHr: s.offerDiscountHr ?? null,
     };
   }
 
@@ -78,7 +79,8 @@ export async function POST(req: NextRequest) {
     redeemedAt:    r.redeemedAt,
     savings:       r.savings,
     offerAmount:   snapMap[r.id]?.offerAmount  ?? null,
-    offerDiscount: snapMap[r.id]?.offerDiscount ?? null,
+    offerDiscountEn: snapMap[r.id]?.offerDiscountEn ?? null,
+    offerDiscountHr: snapMap[r.id]?.offerDiscountHr ?? null,
     offer:         r.offer,
     merchant: {
       ...r.merchant,

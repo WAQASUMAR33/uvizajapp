@@ -4,38 +4,48 @@ const prisma = new PrismaClient();
 
 const categories = [
   {
-    name: "Casual Dining",
+    nameEn: "Casual Dining",
+    nameHr: "Opušteno blagovanje",
     slug: "casual-dining",
     emoji: "🍽️",
-    description: "Relaxed everyday restaurants with great food at affordable prices.",
+    descriptionEn: "Relaxed everyday restaurants with great food at affordable prices.",
+    descriptionHr: "Opušteni svakodnevni restorani s izvrsnom hranom po pristupačnim cijenama.",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
   },
   {
-    name: "Premium Dining",
+    nameEn: "Premium Dining",
+    nameHr: "Vrhunsko blagovanje",
     slug: "premium-dining",
     emoji: "⭐",
-    description: "Fine dining experiences crafted by world-class chefs.",
+    descriptionEn: "Fine dining experiences crafted by world-class chefs.",
+    descriptionHr: "Fina jela i gastronomski užici koje kreiraju svjetski poznati kuhari.",
     image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800",
   },
   {
-    name: "Cafés",
+    nameEn: "Cafés",
+    nameHr: "Kafići",
     slug: "cafes",
     emoji: "☕",
-    description: "Specialty coffee shops, bakeries, and cozy all-day cafés.",
+    descriptionEn: "Specialty coffee shops, bakeries, and cozy all-day cafés.",
+    descriptionHr: "Specijalizirane kavane, pekarnice i ugodni kafići za cjelodnevni boravak.",
     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800",
   },
   {
-    name: "Brunch",
+    nameEn: "Brunch",
+    nameHr: "Brunch",
     slug: "brunch",
     emoji: "🥂",
-    description: "The best weekend brunch spots with lavish spreads and live entertainment.",
+    descriptionEn: "The best weekend brunch spots with lavish spreads and live entertainment.",
+    descriptionHr: "Najbolja mjesta za vikend brunch s bogatim izborom jela i zabavom uživo.",
     image: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800",
   },
   {
-    name: "Bars & Nightlife",
+    nameEn: "Bars & Nightlife",
+    nameHr: "Barovi i Noćni život",
     slug: "bars-nightlife",
     emoji: "🍸",
-    description: "Cocktail bars, lounges, and nightlife venues with exclusive member offers.",
+    descriptionEn: "Cocktail bars, lounges, and nightlife venues with exclusive member offers.",
+    descriptionHr: "Koktel barovi, salonski prostori i mjesta za noćni život s ekskluzivnim ponudama za članove.",
     image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=800",
   },
 ];
@@ -47,10 +57,10 @@ async function main() {
     const existing = await prisma.category.findUnique({ where: { slug: cat.slug } });
     if (existing) {
       await prisma.category.update({ where: { slug: cat.slug }, data: cat });
-      console.log(`Updated: ${cat.emoji} ${cat.name}`);
+      console.log(`Updated: ${cat.emoji} ${cat.nameEn}`);
     } else {
       await prisma.category.create({ data: cat });
-      console.log(`Created: ${cat.emoji} ${cat.name}`);
+      console.log(`Created: ${cat.emoji} ${cat.nameEn}`);
     }
   }
 

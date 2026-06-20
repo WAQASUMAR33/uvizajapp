@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       price:     true,
       currency:  true,
       subscriptionPackage: {
-        select: { id: true, title: true, priceMonthly: true, priceYearly: true, description: true },
+        select: { id: true, titleEn: true, titleHr: true, priceMonthly: true, priceYearly: true, descriptionEn: true, descriptionHr: true },
       },
     },
   });

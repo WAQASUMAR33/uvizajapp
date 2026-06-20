@@ -27,21 +27,25 @@ const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 interface SubPackage {
   id: number;
-  title: string;
+  titleEn: string;
+  titleHr: string;
   priceMonthly: number;
   priceYearly: number;
   discountValue: number | null;
-  description: string | null;
+  descriptionEn: string | null;
+  descriptionHr: string | null;
   isActive: boolean;
   createdAt: string;
 }
 
 const EMPTY_FORM = {
-  title: "",
+  titleEn: "",
+  titleHr: "",
   priceMonthly: "",
   priceYearly: "",
   discountValue: "",
-  description: "",
+  descriptionEn: "",
+  descriptionHr: "",
   isActive: true,
 };
 
@@ -100,11 +104,13 @@ export default function SubscriptionPackagesPage() {
   const openEdit = (pkg: SubPackage) => {
     setEditing(pkg);
     setForm({
-      title: pkg.title,
+      titleEn: pkg.titleEn,
+      titleHr: pkg.titleHr,
       priceMonthly: String(pkg.priceMonthly),
       priceYearly: String(pkg.priceYearly),
       discountValue: pkg.discountValue == null ? "" : String(pkg.discountValue),
-      description: pkg.description ?? "",
+      descriptionEn: pkg.descriptionEn ?? "",
+      descriptionHr: pkg.descriptionHr ?? "",
       isActive: pkg.isActive,
     });
     setSaveError(null);
@@ -119,7 +125,7 @@ export default function SubscriptionPackagesPage() {
   };
 
   const handleSave = async () => {
-    if (!form.title || !form.priceMonthly || !form.priceYearly) return;
+    if (!form.titleEn || !form.titleHr || !form.priceMonthly || !form.priceYearly) return;
     setSaving(true);
     setSaveError(null);
     const method = editing ? "PUT" : "POST";
@@ -158,7 +164,7 @@ export default function SubscriptionPackagesPage() {
   };
 
   const filtered = useMemo(
-    () => packages.filter((p) => p.title.toLowerCase().includes(search.toLowerCase())),
+    () => packages.filter((p) => (p.titleEn || "").toLowerCase().includes(search.toLowerCase()) || (p.titleHr || "").toLowerCase().includes(search.toLowerCase())),
     [packages, search]
   );
 
@@ -225,14 +231,15 @@ export default function SubscriptionPackagesPage() {
               {filtered.map((pkg) => (
                 <TableRow key={pkg.id} hover>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{pkg.title}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{pkg.titleEn}</Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{pkg.titleHr}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography
                       variant="body2"
                       color="text.secondary"
                       sx={{ maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                      dangerouslySetInnerHTML={{ __html: pkg.description ?? "—" }}
+                      dangerouslySetInnerHTML={{ __html: pkg.descriptionEn || pkg.descriptionHr || "—" }}
                     />
                   </TableCell>
                   <TableCell>
@@ -283,33 +290,65 @@ export default function SubscriptionPackagesPage() {
           {editing ? "Edit Package" : "New Subscription Package"}
         </DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2.5, pt: "16px !important" }}>
-          <TextField
-            label="Title"
-            value={form.title}
-            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            fullWidth
-            size="small"
-            required
-          />
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              label="Title (English)"
+              value={form.titleEn}
+              onChange={(e) => setForm((f) => ({ ...f, titleEn: e.target.value }))}
+              fullWidth
+              size="small"
+              required
+            />
+            <TextField
+              label="Title (Croatian)"
+              value={form.titleHr}
+              onChange={(e) => setForm((f) => ({ ...f, titleHr: e.target.value }))}
+              fullWidth
+              size="small"
+              required
+            />
+          </Box>
 
-          {/* Rich text description */}
+          {/* Rich text description English */}
           <Box>
             <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: "block" }}>
-              Description
+              Description (English)
             </Typography>
             <Box sx={{
               ".ql-container": { borderRadius: "0 0 8px 8px", fontFamily: "inherit", fontSize: "0.875rem" },
               ".ql-toolbar": { borderRadius: "8px 8px 0 0", borderColor: "rgba(0,0,0,0.23)" },
-              ".ql-container.ql-snow": { borderColor: "rgba(0,0,0,0.23)", minHeight: 120 },
+              ".ql-container.ql-snow": { borderColor: "rgba(0,0,0,0.23)", minHeight: 100 },
               "&:focus-within .ql-toolbar, &:focus-within .ql-container": { borderColor: "#4f46e5" },
             }}>
               <ReactQuill
                 theme="snow"
-                value={form.description}
-                onChange={(val) => setForm((f) => ({ ...f, description: val }))}
+                value={form.descriptionEn}
+                onChange={(val) => setForm((f) => ({ ...f, descriptionEn: val }))}
                 modules={QUILL_MODULES}
                 formats={QUILL_FORMATS}
-                placeholder="Enter package description…"
+                placeholder="Enter package description in English…"
+              />
+            </Box>
+          </Box>
+
+          {/* Rich text description Croatian */}
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: "block" }}>
+              Description (Croatian)
+            </Typography>
+            <Box sx={{
+              ".ql-container": { borderRadius: "0 0 8px 8px", fontFamily: "inherit", fontSize: "0.875rem" },
+              ".ql-toolbar": { borderRadius: "8px 8px 0 0", borderColor: "rgba(0,0,0,0.23)" },
+              ".ql-container.ql-snow": { borderColor: "rgba(0,0,0,0.23)", minHeight: 100 },
+              "&:focus-within .ql-toolbar, &:focus-within .ql-container": { borderColor: "#4f46e5" },
+            }}>
+              <ReactQuill
+                theme="snow"
+                value={form.descriptionHr}
+                onChange={(val) => setForm((f) => ({ ...f, descriptionHr: val }))}
+                modules={QUILL_MODULES}
+                formats={QUILL_FORMATS}
+                placeholder="Enter package description in Croatian…"
               />
             </Box>
           </Box>
@@ -369,7 +408,7 @@ export default function SubscriptionPackagesPage() {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={saving || !form.title || !form.priceMonthly || !form.priceYearly}
+            disabled={saving || !form.titleEn || !form.titleHr || !form.priceMonthly || !form.priceYearly}
             sx={{ textTransform: "none", fontWeight: 600, bgcolor: "#4f46e5", "&:hover": { bgcolor: "#4338ca" } }}
           >
             {saving ? "Saving…" : editing ? "Save Changes" : "Create Package"}

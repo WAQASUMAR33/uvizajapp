@@ -26,8 +26,8 @@ async function getStats() {
         orderBy: { redeemedAt: "desc" },
         include: {
           customer: { select: { fullname: true, email: true } },
-          merchant: { select: { name: true } },
-          offer: { select: { title: true } },
+          merchant: { select: { nameEn: true, nameHr: true } },
+          offer: { select: { titleEn: true, titleHr: true } },
         },
       }),
     ]);
@@ -108,8 +108,8 @@ export default async function AdminDashboard() {
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{r.offer.title}</Typography>
-                    <Typography variant="caption" color="text.secondary">at {r.merchant.name}</Typography>
+                    <Typography variant="body2">{r.offer.titleEn || r.offer.titleHr}</Typography>
+                    <Typography variant="caption" color="text.secondary">at {r.merchant.nameEn || r.merchant.nameHr}</Typography>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="caption" color="text.secondary">{formatDate(r.redeemedAt)}</Typography>

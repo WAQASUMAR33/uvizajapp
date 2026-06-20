@@ -28,7 +28,8 @@ const QUILL_FORMATS = [
 ];
 
 export default function TermsPage() {
-  const [content, setContent]     = useState("");
+  const [contentEn, setContentEn] = useState("");
+  const [contentHr, setContentHr] = useState("");
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState(false);
@@ -39,7 +40,8 @@ export default function TermsPage() {
     fetch("/api/terms")
       .then((r) => r.json())
       .then((data) => {
-        setContent(data.content ?? "");
+        setContentEn(data.contentEn ?? "");
+        setContentHr(data.contentHr ?? "");
         setUpdatedAt(data.updatedAt ?? null);
       })
       .finally(() => setLoading(false));
@@ -53,7 +55,7 @@ export default function TermsPage() {
     const res  = await fetch("/api/terms", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ contentEn, contentHr }),
     });
     const data = await res.json();
 
@@ -115,37 +117,76 @@ export default function TermsPage() {
         </Paper>
       )}
 
-      {/* Editor */}
-      <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
-        {loading ? (
-          <Box sx={{ py: 10, textAlign: "center", color: "text.secondary" }}>Loading…</Box>
-        ) : (
-          <Box sx={{
-            ".ql-toolbar": {
-              borderTop: "none", borderLeft: "none", borderRight: "none",
-              borderBottom: "1px solid", borderColor: "divider",
-              bgcolor: "#f8fafc",
-            },
-            ".ql-container": {
-              border: "none",
-              fontSize: "0.9375rem",
-              fontFamily: "inherit",
-              minHeight: 480,
-            },
-            ".ql-editor": { minHeight: 480, p: 3, lineHeight: 1.75 },
-            "&:focus-within .ql-toolbar": { borderColor: "#4f46e5" },
-          }}>
-            <ReactQuill
-              theme="snow"
-              value={content}
-              onChange={setContent}
-              modules={QUILL_MODULES}
-              formats={QUILL_FORMATS}
-              placeholder="Write your Terms & Conditions here…"
-            />
+      {/* Editors */}
+      {loading ? (
+        <Paper variant="outlined" sx={{ py: 10, textAlign: "center", color: "text.secondary", borderRadius: 3 }}>
+          Loading…
+        </Paper>
+      ) : (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 3 }}>
+          {/* English Editor */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>English Version</Typography>
+            <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
+              <Box sx={{
+                ".ql-toolbar": {
+                  borderTop: "none", borderLeft: "none", borderRight: "none",
+                  borderBottom: "1px solid", borderColor: "divider",
+                  bgcolor: "#f8fafc",
+                },
+                ".ql-container": {
+                  border: "none",
+                  fontSize: "0.9375rem",
+                  fontFamily: "inherit",
+                  minHeight: 480,
+                },
+                ".ql-editor": { minHeight: 480, p: 3, lineHeight: 1.75 },
+                "&:focus-within .ql-toolbar": { borderColor: "#4f46e5" },
+              }}>
+                <ReactQuill
+                  theme="snow"
+                  value={contentEn}
+                  onChange={setContentEn}
+                  modules={QUILL_MODULES}
+                  formats={QUILL_FORMATS}
+                  placeholder="Write your Terms & Conditions in English here…"
+                />
+              </Box>
+            </Paper>
           </Box>
-        )}
-      </Paper>
+
+          {/* Croatian Editor */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>Croatian Version</Typography>
+            <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
+              <Box sx={{
+                ".ql-toolbar": {
+                  borderTop: "none", borderLeft: "none", borderRight: "none",
+                  borderBottom: "1px solid", borderColor: "divider",
+                  bgcolor: "#f8fafc",
+                },
+                ".ql-container": {
+                  border: "none",
+                  fontSize: "0.9375rem",
+                  fontFamily: "inherit",
+                  minHeight: 480,
+                },
+                ".ql-editor": { minHeight: 480, p: 3, lineHeight: 1.75 },
+                "&:focus-within .ql-toolbar": { borderColor: "#4f46e5" },
+              }}>
+                <ReactQuill
+                  theme="snow"
+                  value={contentHr}
+                  onChange={setContentHr}
+                  modules={QUILL_MODULES}
+                  formats={QUILL_FORMATS}
+                  placeholder="Write your Terms & Conditions in Croatian here…"
+                />
+              </Box>
+            </Paper>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }

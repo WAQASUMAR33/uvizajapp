@@ -27,8 +27,8 @@ export async function GET() {
       orderBy: { redeemedAt: "desc" },
       include: {
         customer: { select: { fullname: true, email: true } },
-        merchant: { select: { name: true } },
-        offer: { select: { title: true } },
+        merchant: { select: { nameEn: true, nameHr: true } },
+        offer: { select: { titleEn: true, titleHr: true } },
       },
     }),
   ]);

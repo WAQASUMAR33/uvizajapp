@@ -50,12 +50,12 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
             <Avatar sx={{ width: 36, height: 36, bgcolor: "#4f46e5", borderRadius: 2 }}>
               <Percent size={18} />
             </Avatar>
-            <Chip label={offer.discount || "Special Offer"} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
+            <Chip label={offer.discountEn || offer.discountHr || "Special Offer"} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
           </Box>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 700 }}>{offer.title}</Typography>
-          {offer.description && (
+          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 700 }}>{offer.titleEn || offer.titleHr}</Typography>
+          {(offer.descriptionEn || offer.descriptionHr) && (
             <Typography variant="caption" color="text.secondary" sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", mb: 1 }}>
-              {offer.description}
+              {offer.descriptionEn || offer.descriptionHr}
             </Typography>
           )}
           {offer.validUntil && (
@@ -78,7 +78,7 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
           </Box>
         </CardContent>
       </Card>
-
+ 
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="xs" slotProps={{ paper: { sx: { borderRadius: "20px" } } }}>
         <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1.5 }}>
           {canRedeem ? "Redeem Offer" : "Subscription Required"}
@@ -89,15 +89,17 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, py: 1 }}>
               <Avatar sx={{ width: 64, height: 64, bgcolor: "#e0e7ff", borderRadius: 3 }}><Percent size={32} color="#4f46e5" /></Avatar>
               <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>{offer.title}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>{offer.titleEn || offer.titleHr}</Typography>
                 {merchantName && <Typography variant="body2" color="text.secondary">at {merchantName}</Typography>}
               </Box>
-              <Chip label={offer.discount} sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.875rem", px: 1, py: 2 }} />
-              {offer.description && <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>{offer.description}</Typography>}
-              {offer.terms && (
+              {(offer.discountEn || offer.discountHr) && (
+                <Chip label={offer.discountEn || offer.discountHr} sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.875rem", px: 1, py: 2 }} />
+              )}
+              {(offer.descriptionEn || offer.descriptionHr) && <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>{offer.descriptionEn || offer.descriptionHr}</Typography>}
+              {(offer.termsEn || offer.termsHr) && (
                 <Box sx={{ bgcolor: "grey.50", borderRadius: 2, p: 2, width: "100%" }}>
                   <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 0.5 }}>Terms & Conditions</Typography>
-                  <Typography variant="caption" color="text.secondary">{offer.terms}</Typography>
+                  <Typography variant="caption" color="text.secondary">{offer.termsEn || offer.termsHr}</Typography>
                 </Box>
               )}
               <MuiButton variant="contained" fullWidth size="large" onClick={handleRedeem} disabled={loading} startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined} sx={{ borderRadius: "10px", mt: 1 }}>

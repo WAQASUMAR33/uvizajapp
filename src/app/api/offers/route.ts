@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   const offers = await prisma.offer.findMany({
     where,
-    include: { merchant: { select: { id: true, name: true, images: true, category: true } } },
+    include: { merchant: { select: { id: true, nameEn: true, nameHr: true, images: true, category: true } } },
     orderBy: { createdAt: "desc" },
   });
 

@@ -57,13 +57,17 @@ function firstImage(images: string[] | null): string | null {
 interface Merchant {
   id: string;
   merchantCode: string | null;
-  name: string;
+  nameEn: string;
+  nameHr: string;
   category: string;
-  city: string | null;
-  address: string | null;
+  cityEn: string | null;
+  cityHr: string | null;
+  addressEn: string | null;
+  addressHr: string | null;
   latitude: number | null;
   longitude: number | null;
-  description: string | null;
+  descriptionEn: string | null;
+  descriptionHr: string | null;
   phone: string | null;
   website: string | null;
   images: string[] | null;
@@ -73,12 +77,16 @@ interface Merchant {
 
 interface Offer {
   id: string;
-  title: string;
-  discount: string | null;
+  titleEn: string;
+  titleHr: string;
+  discountEn: string | null;
+  discountHr: string | null;
   discountValue: number | null;
   offerAmount: number | null;
-  description: string | null;
-  terms: string | null;
+  descriptionEn: string | null;
+  descriptionHr: string | null;
+  termsEn: string | null;
+  termsHr: string | null;
   validFrom: string;
   validUntil: string | null;
   isActive: boolean;
@@ -86,13 +94,13 @@ interface Offer {
 }
 
 const emptyMerchant: Partial<Merchant> = {
-  merchantCode: "", name: "", category: "CASUAL_DINING", city: "", address: "",
-  latitude: null, longitude: null, description: "", phone: "",
+  merchantCode: "", nameEn: "", nameHr: "", category: "CASUAL_DINING", cityEn: "", cityHr: "", addressEn: "", addressHr: "",
+  latitude: null, longitude: null, descriptionEn: "", descriptionHr: "", phone: "",
   website: "", images: [], savingsEstimate: 0,
 };
 
 const emptyOffer: Partial<Offer> = {
-  title: "", discount: "", discountValue: null, offerAmount: null, description: "", terms: "", isActive: true,
+  titleEn: "", titleHr: "", discountEn: "", discountHr: "", discountValue: null, offerAmount: null, descriptionEn: "", descriptionHr: "", termsEn: "", termsHr: "", isActive: true,
 };
 
 export default function AdminMerchantsPage() {
@@ -273,7 +281,8 @@ export default function AdminMerchantsPage() {
   };
 
   const filtered = merchants.filter((m) =>
-    m.name.toLowerCase().includes(search.toLowerCase())
+    (m.nameEn || "").toLowerCase().includes(search.toLowerCase()) ||
+    (m.nameHr || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const totalImages = existingImages.length + pendingPreviews.length;
@@ -346,7 +355,8 @@ export default function AdminMerchantsPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.name}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.nameEn}</Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{m.nameHr}</Typography>
                     {(m.images?.length ?? 0) > 0 && (
                       <Typography variant="caption" color="text.disabled">
                         {m.images!.length} image{m.images!.length !== 1 ? "s" : ""}
@@ -357,12 +367,12 @@ export default function AdminMerchantsPage() {
                     <Typography variant="body2" color="text.secondary">{getCategoryLabel(m.category)}</Typography>
                   </TableCell>
                   <TableCell>
-                    {(m.city || m.address || m.latitude != null) ? (
+                    {(m.cityEn || m.cityHr || m.addressEn || m.addressHr || m.latitude != null) ? (
                       <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.75, maxWidth: 200 }}>
                         <MapPin size={14} style={{ marginTop: 3, flexShrink: 0, color: "#94a3b8" }} />
                         <Box>
-                          {m.address && <Typography variant="body2" noWrap>{m.address}</Typography>}
-                          {m.city && <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{m.city}</Typography>}
+                          {(m.addressEn || m.addressHr) && <Typography variant="body2" noWrap>{m.addressEn || m.addressHr}</Typography>}
+                          {(m.cityEn || m.cityHr) && <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{m.cityEn || m.cityHr}</Typography>}
                           {m.latitude != null && m.longitude != null && (
                             <Typography variant="caption" sx={{ fontFamily: "monospace", color: "primary.main" }}>
                               {m.latitude.toFixed(5)}, {m.longitude.toFixed(5)}
@@ -414,9 +424,16 @@ export default function AdminMerchantsPage() {
         <DialogContent dividers>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2.5, pt: 1 }}>
             <TextField
-              label="Name *"
-              value={form.name || ""}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              label="Name (English) *"
+              value={form.nameEn || ""}
+              onChange={(e) => setForm({ ...form, nameEn: e.target.value })}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              label="Name (Croatian) *"
+              value={form.nameHr || ""}
+              onChange={(e) => setForm({ ...form, nameHr: e.target.value })}
               fullWidth
               size="small"
             />
@@ -442,9 +459,11 @@ export default function AdminMerchantsPage() {
                 {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
               </MuiSelect>
             </FormControl>
-            <TextField label="City" value={form.city || ""} onChange={(e) => setForm({ ...form, city: e.target.value })} size="small" fullWidth />
-            <Box sx={{ gridColumn: "1 / -1" }}>
-              <TextField label="Address" value={form.address || ""} onChange={(e) => setForm({ ...form, address: e.target.value })} size="small" fullWidth />
+            <TextField label="City (English)" value={form.cityEn || ""} onChange={(e) => setForm({ ...form, cityEn: e.target.value })} size="small" fullWidth />
+            <TextField label="City (Croatian)" value={form.cityHr || ""} onChange={(e) => setForm({ ...form, cityHr: e.target.value })} size="small" fullWidth />
+            <Box sx={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+              <TextField label="Address (English)" value={form.addressEn || ""} onChange={(e) => setForm({ ...form, addressEn: e.target.value })} size="small" fullWidth />
+              <TextField label="Address (Croatian)" value={form.addressHr || ""} onChange={(e) => setForm({ ...form, addressHr: e.target.value })} size="small" fullWidth />
             </Box>
 
             {/* Geo location */}
@@ -472,8 +491,9 @@ export default function AdminMerchantsPage() {
               </Box>
             </Box>
 
-            <Box sx={{ gridColumn: "1 / -1" }}>
-              <TextField label="Description" value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} multiline rows={3} size="small" fullWidth />
+            <Box sx={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+              <TextField label="Description (English)" value={form.descriptionEn || ""} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} multiline rows={2} size="small" fullWidth />
+              <TextField label="Description (Croatian)" value={form.descriptionHr || ""} onChange={(e) => setForm({ ...form, descriptionHr: e.target.value })} multiline rows={2} size="small" fullWidth />
             </Box>
             <TextField label="Phone" value={form.phone || ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} size="small" fullWidth />
             <TextField label="Website" value={form.website || ""} onChange={(e) => setForm({ ...form, website: e.target.value })} size="small" fullWidth />
@@ -645,7 +665,7 @@ export default function AdminMerchantsPage() {
         <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1.5 }}>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-              {offersMerchant?.name} — Offers
+              {offersMerchant?.nameEn || offersMerchant?.nameHr} — Offers
             </Typography>
             <Typography variant="caption" color="text.secondary">
               {offersLoading ? "Loading…" : `${offers.length} offer${offers.length !== 1 ? "s" : ""}`}
@@ -688,16 +708,17 @@ export default function AdminMerchantsPage() {
                 {offers.map((o) => (
                   <TableRow key={o.id}>
                     <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{o.title}</Typography>
-                      {o.description && (
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{o.titleEn}</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{o.titleHr}</Typography>
+                      {(o.descriptionEn || o.descriptionHr) && (
                         <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block", maxWidth: 280 }}>
-                          {o.description}
+                          {o.descriptionEn || o.descriptionHr}
                         </Typography>
                       )}
                     </TableCell>
                     <TableCell>
-                      {o.discount
-                        ? <Chip label={o.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
+                      {(o.discountEn || o.discountHr)
+                        ? <Chip label={o.discountEn || o.discountHr} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
                         : <Typography variant="body2" color="text.disabled">—</Typography>}
                     </TableCell>
                     <TableCell>
@@ -748,21 +769,40 @@ export default function AdminMerchantsPage() {
           <IconButton size="small" onClick={() => setOfferFormOpen(false)}><X size={18} /></IconButton>
         </DialogTitle>
         <DialogContent dividers sx={{ pt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            label="Title *"
-            value={offerForm.title || ""}
-            onChange={(e) => setOfferForm({ ...offerForm, title: e.target.value })}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Discount label"
-            value={offerForm.discount || ""}
-            onChange={(e) => setOfferForm({ ...offerForm, discount: e.target.value })}
-            placeholder="e.g. 20% OFF"
-            size="small"
-            fullWidth
-          />
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <TextField
+              label="Title (English) *"
+              value={offerForm.titleEn || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, titleEn: e.target.value })}
+              size="small"
+              fullWidth
+            />
+            <TextField
+              label="Title (Croatian) *"
+              value={offerForm.titleHr || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, titleHr: e.target.value })}
+              size="small"
+              fullWidth
+            />
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <TextField
+              label="Discount Label (English)"
+              value={offerForm.discountEn || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, discountEn: e.target.value })}
+              placeholder="e.g. 20% OFF"
+              size="small"
+              fullWidth
+            />
+            <TextField
+              label="Discount Label (Croatian)"
+              value={offerForm.discountHr || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, discountHr: e.target.value })}
+              placeholder="e.g. 20% POPUSTA"
+              size="small"
+              fullWidth
+            />
+          </Box>
           <TextField
             label="Discount Value (%)"
             type="number"
@@ -783,24 +823,46 @@ export default function AdminMerchantsPage() {
             fullWidth
             slotProps={{ input: { inputProps: { min: 0, step: 0.01 } } }}
           />
-          <TextField
-            label="Description"
-            value={offerForm.description || ""}
-            onChange={(e) => setOfferForm({ ...offerForm, description: e.target.value })}
-            multiline
-            rows={3}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            label="Terms & Conditions"
-            value={offerForm.terms || ""}
-            onChange={(e) => setOfferForm({ ...offerForm, terms: e.target.value })}
-            multiline
-            rows={2}
-            size="small"
-            fullWidth
-          />
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <TextField
+              label="Description (English)"
+              value={offerForm.descriptionEn || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, descriptionEn: e.target.value })}
+              multiline
+              rows={2}
+              size="small"
+              fullWidth
+            />
+            <TextField
+              label="Description (Croatian)"
+              value={offerForm.descriptionHr || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, descriptionHr: e.target.value })}
+              multiline
+              rows={2}
+              size="small"
+              fullWidth
+            />
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <TextField
+              label="Terms & Conditions (English)"
+              value={offerForm.termsEn || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, termsEn: e.target.value })}
+              multiline
+              rows={2}
+              size="small"
+              fullWidth
+            />
+            <TextField
+              label="Terms & Conditions (Croatian)"
+              value={offerForm.termsHr || ""}
+              onChange={(e) => setOfferForm({ ...offerForm, termsHr: e.target.value })}
+              multiline
+              rows={2}
+              size="small"
+              fullWidth
+            />
+          </Box>
           <TextField
             label="Valid until (optional)"
             type="date"

@@ -27,16 +27,18 @@ import { Plus, Edit2, Trash2, LayoutGrid, Search, X, Upload, ImageIcon } from "l
 
 interface Category {
   id: number;
-  name: string;
+  nameEn: string;
+  nameHr: string;
   slug: string;
   emoji: string;
   image: string | null;
-  description: string | null;
+  descriptionEn: string | null;
+  descriptionHr: string | null;
   isActive: boolean;
   createdAt: string;
 }
 
-const empty: Partial<Category> = { name: "", slug: "", emoji: "🍽️", image: null, description: "", isActive: true };
+const empty: Partial<Category> = { nameEn: "", nameHr: "", slug: "", emoji: "🍽️", image: null, descriptionEn: "", descriptionHr: "", isActive: true };
 
 function toSlug(name: string) {
   return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -90,8 +92,8 @@ export default function AdminCategoriesPage() {
     setOpen(true);
   };
 
-  const handleNameChange = (name: string) => {
-    setForm((prev) => ({ ...prev, name, slug: editing ? prev.slug : toSlug(name) }));
+  const handleNameEnChange = (nameEn: string) => {
+    setForm((prev) => ({ ...prev, nameEn, slug: editing ? prev.slug : toSlug(nameEn) }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +115,7 @@ export default function AdminCategoriesPage() {
   };
 
   const handleSave = async () => {
-    if (!form.name?.trim()) return;
+    if (!form.nameEn?.trim() || !form.nameHr?.trim()) return;
     setSaving(true);
     setUploadError("");
 
@@ -164,7 +166,8 @@ export default function AdminCategoriesPage() {
   };
 
   const filtered = categories.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
+    (c.nameEn || "").toLowerCase().includes(search.toLowerCase()) ||
+    (c.nameHr || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -219,7 +222,7 @@ export default function AdminCategoriesPage() {
                     {cat.image ? (
                       <Avatar
                         src={cat.image}
-                        alt={cat.name}
+                        alt={cat.nameEn || cat.nameHr}
                         variant="square"
                         sx={{ width: 52, height: 52, bgcolor: "#e0e7ff" }}
                       />
@@ -233,7 +236,8 @@ export default function AdminCategoriesPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{cat.name}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{cat.nameEn}</Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>{cat.nameHr}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="caption" sx={{ fontFamily: "monospace", color: "text.secondary" }}>
@@ -242,7 +246,7 @@ export default function AdminCategoriesPage() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {cat.description || "—"}
+                      {cat.descriptionEn || cat.descriptionHr || "—"}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -357,7 +361,7 @@ export default function AdminCategoriesPage() {
             </Box>
 
             {/* Name + Emoji */}
-            <Box sx={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: 2 }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr", gap: 2 }}>
               <TextField
                 label="Emoji"
                 value={form.emoji || ""}
@@ -366,12 +370,20 @@ export default function AdminCategoriesPage() {
                 slotProps={{ htmlInput: { style: { fontSize: "1.5rem", textAlign: "center" } } }}
               />
               <TextField
-                label="Category Name *"
-                value={form.name || ""}
-                onChange={(e) => handleNameChange(e.target.value)}
+                label="Name (English) *"
+                value={form.nameEn || ""}
+                onChange={(e) => handleNameEnChange(e.target.value)}
                 size="small"
                 fullWidth
                 placeholder="e.g. Casual Dining"
+              />
+              <TextField
+                label="Name (Croatian) *"
+                value={form.nameHr || ""}
+                onChange={(e) => setForm({ ...form, nameHr: e.target.value })}
+                size="small"
+                fullWidth
+                placeholder="e.g. Opušteno blagovanje"
               />
             </Box>
 
@@ -381,18 +393,29 @@ export default function AdminCategoriesPage() {
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
               size="small"
               fullWidth
-              helperText="Auto-generated from name — used in URLs"
+              helperText="Auto-generated from English name — used in URLs"
             />
 
             <TextField
-              label="Description"
-              value={form.description || ""}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              label="Description (English)"
+              value={form.descriptionEn || ""}
+              onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })}
               multiline
-              rows={3}
+              rows={2}
               size="small"
               fullWidth
-              placeholder="Short description of this category…"
+              placeholder="Short English description of this category…"
+            />
+
+            <TextField
+              label="Description (Croatian)"
+              value={form.descriptionHr || ""}
+              onChange={(e) => setForm({ ...form, descriptionHr: e.target.value })}
+              multiline
+              rows={2}
+              size="small"
+              fullWidth
+              placeholder="Short Croatian description of this category…"
             />
           </Box>
         </DialogContent>
@@ -402,7 +425,7 @@ export default function AdminCategoriesPage() {
           <MuiButton
             variant="contained"
             onClick={handleSave}
-            disabled={saving || !form.name?.trim()}
+            disabled={saving || !form.nameEn?.trim() || !form.nameHr?.trim()}
             startIcon={saving ? <CircularProgress size={14} color="inherit" /> : undefined}
           >
             {saving ? (selectedFile ? "Uploading…" : "Saving…") : editing ? "Save changes" : "Create category"}
@@ -419,7 +442,7 @@ export default function AdminCategoriesPage() {
         <DialogContent dividers>
           <Typography variant="body2" color="text.secondary">
             Are you sure you want to delete{" "}
-            <strong style={{ color: "#0f172a" }}>{deleteConfirm?.name}</strong>?
+            <strong style={{ color: "#0f172a" }}>{deleteConfirm?.nameEn || deleteConfirm?.nameHr}</strong>?
             This cannot be undone.
           </Typography>
         </DialogContent>

@@ -18,7 +18,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   const { id } = await params;
   try {
     const rows = await prisma.$queryRaw<any[]>`
-      SELECT id, title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt
+      SELECT id, titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive, createdAt, updatedAt
       FROM SubscriptionPackage
       WHERE id = ${parseInt(id)}
       LIMIT 1
@@ -38,25 +38,27 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   try {
-    const { title, priceMonthly, priceYearly, discountValue, description, isActive } = await req.json();
+    const { titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive } = await req.json();
     const monthly  = parseFloat(priceMonthly);
     const yearly   = parseFloat(priceYearly);
     const discount = discountValue === "" || discountValue == null ? null : parseFloat(discountValue);
 
     await prisma.$executeRaw`
       UPDATE SubscriptionPackage
-      SET title = ${title},
+      SET titleEn = ${titleEn},
+          titleHr = ${titleHr},
           priceMonthly = ${monthly},
           priceYearly = ${yearly},
           discountValue = ${discount},
-          description = ${description ?? null},
+          descriptionEn = ${descriptionEn ?? null},
+          descriptionHr = ${descriptionHr ?? null},
           isActive = ${isActive},
           updatedAt = NOW()
       WHERE id = ${parseInt(id)}
     `;
 
     const rows = await prisma.$queryRaw<any[]>`
-      SELECT id, title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt
+      SELECT id, titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive, createdAt, updatedAt
       FROM SubscriptionPackage
       WHERE id = ${parseInt(id)}
       LIMIT 1

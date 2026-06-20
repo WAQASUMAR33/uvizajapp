@@ -133,25 +133,31 @@ model Subscription {
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  emoji       String   @default("🍽️")
-  image       String?  @db.VarChar(500)
-  description String?  @db.Text
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  nameEn        String
+  nameHr        String
+  slug          String   @unique
+  emoji         String   @default("🍽️")
+  image         String?  @db.VarChar(500)
+  descriptionEn String?  @db.Text
+  descriptionHr String?  @db.Text
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Merchant {
   id              Int              @id @default(autoincrement())
   merchantCode    String?          @unique @db.VarChar(4)
-  name            String
-  description     String?          @db.Text
+  nameEn          String
+  nameHr          String
+  descriptionEn   String?          @db.Text
+  descriptionHr   String?          @db.Text
   category        MerchantCategory @default(CASUAL_DINING)
-  address         String?
-  city            String?
+  addressEn       String?
+  addressHr       String?
+  cityEn          String?
+  cityHr          String?
   latitude        Float?
   longitude       Float?
   phone           String?
@@ -170,19 +176,23 @@ model Merchant {
 }
 
 model Offer {
-  id          Int       @id @default(autoincrement())
-  merchantId  Int
-  title       String
-  description String?   @db.Text
-  discount      String?
+  id            Int       @id @default(autoincrement())
+  merchantId    Int
+  titleEn       String
+  titleHr       String
+  descriptionEn String?   @db.Text
+  descriptionHr String?   @db.Text
+  discountEn    String?
+  discountHr    String?
   discountValue Float?
   offerAmount   Float?
-  terms       String?   @db.Text
-  validFrom   DateTime  @default(now())
-  validUntil  DateTime?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  termsEn       String?   @db.Text
+  termsHr       String?   @db.Text
+  validFrom     DateTime  @default(now())
+  validUntil    DateTime?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   merchant    Merchant     @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   redemptions Redemption[]
@@ -190,11 +200,13 @@ model Offer {
 
 model SubscriptionPackage {
   id            Int            @id @default(autoincrement())
-  title         String         @db.VarChar(191)
+  titleEn       String         @db.VarChar(191)
+  titleHr       String         @db.VarChar(191)
   priceMonthly  Float
   priceYearly   Float
   discountValue Float?
-  description   String?        @db.Text
+  descriptionEn String?        @db.Text
+  descriptionHr String?        @db.Text
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -216,14 +228,15 @@ model MerchantRating {
 }
 
 model Redemption {
-  id            Int      @id @default(autoincrement())
-  customerId    Int
-  offerId       Int
-  merchantId    Int
-  offerAmount   Float?
-  offerDiscount String?
-  savings       Float    @default(0)
-  redeemedAt    DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  customerId      Int
+  offerId         Int
+  merchantId      Int
+  offerAmount     Float?
+  offerDiscountEn String?
+  offerDiscountHr String?
+  savings         Float    @default(0)
+  redeemedAt      DateTime @default(now())
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   offer    Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
@@ -232,6 +245,7 @@ model Redemption {
 
 model TermsAndConditions {
   id        Int      @id @default(autoincrement())
-  content   String   @db.LongText
+  contentEn String   @db.LongText
+  contentHr String   @db.LongText
   updatedAt DateTime @updatedAt
 }

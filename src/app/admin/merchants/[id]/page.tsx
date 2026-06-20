@@ -46,7 +46,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           Merchants
         </MuiButton>
         <Typography component="span" variant="caption" color="text.disabled" sx={{ mx: 1 }}>/</Typography>
-        <Typography component="span" variant="caption" color="text.primary" sx={{ fontWeight: 600 }}>{merchant.name}</Typography>
+        <Typography component="span" variant="caption" color="text.primary" sx={{ fontWeight: 600 }}>{merchant.nameEn || merchant.nameHr}</Typography>
       </Box>
 
       {/* ── Hero image ── */}
@@ -55,7 +55,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           <Box
             component="img"
             src={heroImage}
-            alt={merchant.name}
+            alt={merchant.nameEn || merchant.nameHr}
             sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
           />
         ) : (
@@ -88,9 +88,9 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
 
           {/* Name + description */}
           <Box sx={{ px: 4, py: 3, borderBottom: "1px solid", borderColor: "divider" }}>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>{merchant.name}</Typography>
-            {merchant.description ? (
-              <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.75 }}>{merchant.description}</Typography>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>{merchant.nameEn || merchant.nameHr}</Typography>
+            {(merchant.descriptionEn || merchant.descriptionHr) ? (
+              <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.75 }}>{merchant.descriptionEn || merchant.descriptionHr}</Typography>
             ) : (
               <Typography variant="body2" color="text.disabled" sx={{ fontStyle: "italic" }}>No description provided.</Typography>
             )}
@@ -122,20 +122,20 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
 
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Stack direction="row" sx={{ alignItems: "center", flexWrap: "wrap", gap: 1, mb: 0.5 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{offer.title}</Typography>
-                        {offer.discount && (
-                          <Chip label={offer.discount} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.7rem" }} />
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{offer.titleEn || offer.titleHr}</Typography>
+                        {(offer.discountEn || offer.discountHr) && (
+                          <Chip label={offer.discountEn || offer.discountHr} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.7rem" }} />
                         )}
                         {(offer as any).offerAmount != null && (
                           <Chip label={`€${(offer as any).offerAmount}`} size="small" sx={{ bgcolor: "#d1fae5", color: "#065f46", fontWeight: 700, fontSize: "0.7rem" }} />
                         )}
                       </Stack>
-                      {offer.description && (
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{offer.description}</Typography>
+                      {(offer.descriptionEn || offer.descriptionHr) && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{offer.descriptionEn || offer.descriptionHr}</Typography>
                       )}
-                      {offer.terms && (
+                      {(offer.termsEn || offer.termsHr) && (
                         <Typography variant="caption" color="text.disabled" sx={{ fontStyle: "italic" }}>
-                          {offer.terms}
+                          {offer.termsEn || offer.termsHr}
                         </Typography>
                       )}
                     </Box>
@@ -155,7 +155,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                     <Box
                       component="img"
                       src={img}
-                      alt={`${merchant.name} ${i + 2}`}
+                      alt={`${merchant.nameEn || merchant.nameHr} ${i + 2}`}
                       sx={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block", border: "1px solid", borderColor: "divider" }}
                     />
                   </Grid>
@@ -174,8 +174,8 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           <Table size="small">
             <TableBody>
               {[
-                merchant.address || merchant.city
-                  ? { icon: <MapPin size={15} />, label: "Location", value: [merchant.address, merchant.city].filter(Boolean).join(", ") }
+                merchant.addressEn || merchant.addressHr || merchant.cityEn || merchant.cityHr
+                  ? { icon: <MapPin size={15} />, label: "Location", value: [merchant.addressEn || merchant.addressHr, merchant.cityEn || merchant.cityHr].filter(Boolean).join(", ") }
                   : null,
                 merchant.phone
                   ? { icon: <Phone size={15} />, label: "Phone", value: merchant.phone }

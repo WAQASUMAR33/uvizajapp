@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     where: { customerId: parseInt(customerId) },
     include: {
       subscriptionPackage: {
-        select: { id: true, title: true, priceMonthly: true, priceYearly: true, description: true },
+        select: { id: true, titleEn: true, titleHr: true, priceMonthly: true, priceYearly: true, descriptionEn: true, descriptionHr: true },
       },
     },
   });
@@ -74,12 +74,12 @@ export async function POST(req: NextRequest) {
     // Derive price from the linked SubscriptionPackage when provided
     let price = plan === "MONTHLY" ? 9.99 : 79.99; // fallback defaults
 
-    let packageRecord: { id: number; title: string; priceMonthly: number; priceYearly: number; description: string | null } | null = null;
+    let packageRecord: { id: number; titleEn: string; titleHr: string; priceMonthly: number; priceYearly: number; descriptionEn: string | null; descriptionHr: string | null } | null = null;
 
     if (subscriptionPackageId) {
       packageRecord = await prisma.subscriptionPackage.findUnique({
         where: { id: parseInt(subscriptionPackageId) },
-        select: { id: true, title: true, priceMonthly: true, priceYearly: true, description: true },
+        select: { id: true, titleEn: true, titleHr: true, priceMonthly: true, priceYearly: true, descriptionEn: true, descriptionHr: true },
       });
 
       if (!packageRecord) {
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
       create: { customerId: id, ...writeData },
       include: {
         subscriptionPackage: {
-          select: { id: true, title: true, priceMonthly: true, priceYearly: true, description: true },
+          select: { id: true, titleEn: true, titleHr: true, priceMonthly: true, priceYearly: true, descriptionEn: true, descriptionHr: true },
         },
       },
     });

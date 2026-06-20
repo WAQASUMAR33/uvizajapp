@@ -12,7 +12,7 @@ import type { SafeMerchant } from "@/types";
 
 export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
   const images = getImageArray(merchant.images).map(toImageUrl);
-  const imgSrc = images[0] || `https://ui-avatars.com/api/?name=${encodeURIComponent(merchant.name)}&background=6366f1&color=fff&size=400`;
+  const imgSrc = images[0] || `https://ui-avatars.com/api/?name=${encodeURIComponent(merchant.nameEn || merchant.nameHr)}&background=6366f1&color=fff&size=400`;
 
   return (
     <Card
@@ -34,7 +34,7 @@ export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
         <CardMedia
           component="img"
           image={imgSrc}
-          alt={merchant.name}
+          alt={merchant.nameEn || merchant.nameHr}
           sx={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s", "&:hover": { transform: "scale(1.05)" } }}
         />
         <Box sx={{ position: "absolute", top: 10, left: 10 }}>
@@ -56,17 +56,20 @@ export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
         )}
       </Box>
       <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-        <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>{merchant.name}</Typography>
-        {merchant.description && (
+        <Typography variant="subtitle2" noWrap sx={{ fontWeight: 700 }}>{merchant.nameEn || merchant.nameHr}</Typography>
+        {(merchant.descriptionEn || merchant.descriptionHr) && (
           <Typography variant="caption" color="text.secondary" sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", mt: 0.5 }}>
-            {merchant.description}
+            {merchant.descriptionEn || merchant.descriptionHr}
           </Typography>
         )}
-        {(merchant.city || merchant.address) && (
+        {(merchant.cityEn || merchant.cityHr || merchant.addressEn || merchant.addressHr) && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 1 }}>
             <MapPin size={11} color="#94a3b8" />
             <Typography variant="caption" color="text.secondary" noWrap>
-              {merchant.city || merchant.address}
+              {[
+                merchant.addressEn || merchant.addressHr,
+                merchant.cityEn || merchant.cityHr
+              ].filter(Boolean).join(", ")}
             </Typography>
           </Box>
         )}

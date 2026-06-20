@@ -41,7 +41,7 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
       {/* ── Hero ── */}
       <Box sx={{ position: "relative", height: { xs: 220, md: 340 }, overflow: "hidden", bgcolor: "grey.100" }}>
         {mainImg ? (
-          <Box component="img" src={mainImg} alt={merchant.name} sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          <Box component="img" src={mainImg} alt={merchant.nameEn || merchant.nameHr} sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         ) : (
           <Box sx={{ width: "100%", height: "100%", bgcolor: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 1 }}>
             <ImageIcon size={56} color="#a5b4fc" />
@@ -59,12 +59,12 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
             sx={{ bgcolor: "rgba(255,255,255,0.15)", color: "#fff", fontWeight: 700, fontSize: "0.72rem", border: "1px solid rgba(255,255,255,0.3)", mb: 1 }}
           />
           <Typography variant="h4" sx={{ color: "#fff", fontWeight: 800, lineHeight: 1.2, textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
-            {merchant.name}
+            {merchant.nameEn || merchant.nameHr}
           </Typography>
-          {merchant.city && (
+          {(merchant.cityEn || merchant.cityHr) && (
             <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mt: 0.75 }}>
               <MapPin size={14} color="rgba(255,255,255,0.75)" />
-              <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.8)" }}>{merchant.city}</Typography>
+              <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.8)" }}>{merchant.cityEn || merchant.cityHr}</Typography>
             </Stack>
           )}
         </Box>
@@ -77,11 +77,11 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
         <Grid size={{ xs: 12, md: 8 }} sx={{ borderRight: { md: "1px solid" }, borderColor: { md: "divider" } }}>
 
           {/* About */}
-          {merchant.description && (
+          {(merchant.descriptionEn || merchant.descriptionHr) && (
             <Box sx={{ px: { xs: 2.5, md: 4 }, py: 3, borderBottom: "1px solid", borderColor: "divider" }}>
               <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>About</Typography>
               <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8, mt: 0.5 }}>
-                {merchant.description}
+                {merchant.descriptionEn || merchant.descriptionHr}
               </Typography>
             </Box>
           )}
@@ -106,7 +106,7 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
             ) : (
               <Stack spacing={2}>
                 {(merchant.offers as SafeOffer[]).map((offer) => (
-                  <OfferCard key={offer.id} offer={offer} userRole={userRole} merchantName={merchant.name} />
+                  <OfferCard key={offer.id} offer={offer} userRole={userRole} merchantName={merchant.nameEn || merchant.nameHr} />
                 ))}
               </Stack>
             )}
@@ -141,10 +141,10 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
           <Table size="small">
             <TableBody>
               {[
-                merchant.address
-                  ? { icon: <MapPin size={15} />, label: "Address", value: `${merchant.address}${merchant.city ? `, ${merchant.city}` : ""}` }
-                  : merchant.city
-                  ? { icon: <MapPin size={15} />, label: "City", value: merchant.city }
+                merchant.addressEn || merchant.addressHr
+                  ? { icon: <MapPin size={15} />, label: "Address", value: `${merchant.addressEn || merchant.addressHr}${merchant.cityEn || merchant.cityHr ? `, ${merchant.cityEn || merchant.cityHr}` : ""}` }
+                  : merchant.cityEn || merchant.cityHr
+                  ? { icon: <MapPin size={15} />, label: "City", value: merchant.cityEn || merchant.cityHr }
                   : null,
                 merchant.phone
                   ? { icon: <Phone size={15} />, label: "Phone", value: merchant.phone, href: `tel:${merchant.phone}` }

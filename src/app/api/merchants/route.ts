@@ -23,7 +23,12 @@ export async function GET(req: NextRequest) {
 
   const where: Record<string, unknown> = all ? {} : { isActive: true };
   if (category) where.category = category;
-  if (search)   where.name     = { contains: search };
+  if (search) {
+    where.OR = [
+      { nameEn: { contains: search } },
+      { nameHr: { contains: search } },
+    ];
+  }
 
   const [merchants, total] = await Promise.all([
     prisma.merchant.findMany({
@@ -31,11 +36,15 @@ export async function GET(req: NextRequest) {
       select: {
         id:              true,
         merchantCode:    true,
-        name:            true,
-        description:     true,
+        nameEn:          true,
+        nameHr:          true,
+        descriptionEn:   true,
+        descriptionHr:   true,
         category:        true,
-        address:         true,
-        city:            true,
+        addressEn:       true,
+        addressHr:       true,
+        cityEn:          true,
+        cityHr:          true,
         latitude:        true,
         longitude:       true,
         phone:           true,
@@ -50,15 +59,19 @@ export async function GET(req: NextRequest) {
         offers: {
           where:   { isActive: true },
           select: {
-            id:          true,
-            title:       true,
-            description: true,
-            discount:    true,
-            offerAmount: true,
-            terms:       true,
-            validFrom:   true,
-            validUntil:  true,
-            isActive:    true,
+            id:            true,
+            titleEn:       true,
+            titleHr:       true,
+            descriptionEn: true,
+            descriptionHr: true,
+            discountEn:    true,
+            discountHr:    true,
+            offerAmount:   true,
+            termsEn:       true,
+            termsHr:       true,
+            validFrom:     true,
+            validUntil:    true,
+            isActive:      true,
           },
           orderBy: { createdAt: "desc" },
         },

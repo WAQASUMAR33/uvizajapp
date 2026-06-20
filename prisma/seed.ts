@@ -61,89 +61,113 @@ async function main() {
   // Merchants
   const merchants = [
     {
-      name: "The Golden Fork",
-      description: "Award-winning fine dining experience with seasonal menus crafted by Michelin-star chefs.",
+      nameEn: "The Golden Fork",
+      nameHr: "Zlatna Vilica",
+      descriptionEn: "Award-winning fine dining experience with seasonal menus crafted by Michelin-star chefs.",
+      descriptionHr: "Nagrađivani vrhunski gastronomski doživljaj sa sezonskim jelovnicima koje su osmislili kuhari s Michelinovim zvjezdicama.",
       category: "PREMIUM_DINING" as const,
-      city: "Dubai",
-      address: "Downtown Dubai, Sheikh Mohammed Blvd",
+      cityEn: "Dubai",
+      cityHr: "Dubai",
+      addressEn: "Downtown Dubai, Sheikh Mohammed Blvd",
+      addressHr: "Downtown Dubai, Sheikh Mohammed Blvd",
       images: JSON.stringify(["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800"]),
       savingsEstimate: 45.0,
       offers: [
-        { title: "20% off your entire bill", discount: "20% OFF", description: "Valid Sunday to Thursday", terms: "Not valid on public holidays. Max 4 guests per table." },
-        { title: "Complimentary dessert", discount: "FREE DESSERT", description: "Free dessert for two with any main course", terms: "One per table. Dine-in only." },
+        { titleEn: "20% off your entire bill", titleHr: "20% popusta na cijeli račun", discountEn: "20% OFF", discountHr: "20% POPUSTA", descriptionEn: "Valid Sunday to Thursday", descriptionHr: "Vrijedi od nedjelje do četvrtka", termsEn: "Not valid on public holidays. Max 4 guests per table.", termsHr: "Ne vrijedi na državne praznike. Najviše 4 gosta po stolu." },
+        { titleEn: "Complimentary dessert", titleHr: "Besplatan desert", discountEn: "FREE DESSERT", discountHr: "BESPLATAN DESERT", descriptionEn: "Free dessert for two with any main course", descriptionHr: "Besplatan desert za dvoje uz bilo koje glavno jelo", termsEn: "One per table. Dine-in only.", termsHr: "Jedan po stolu. Samo za konzumaciju u restoranu." },
       ],
     },
     {
-      name: "Brew & Bloom Café",
-      description: "Artisan coffee roasters and brunch specialists. Cozy atmosphere, great music.",
+      nameEn: "Brew & Bloom Café",
+      nameHr: "Brew & Bloom Kafić",
+      descriptionEn: "Artisan coffee roasters and brunch specialists. Cozy atmosphere, great music.",
+      descriptionHr: "Kafići s vrhunskom prženom kavom i stručnjaci za kasni doručak. Ugodna atmosfera, odlična glazba.",
       category: "CAFES" as const,
-      city: "Dubai",
-      address: "Jumeirah Beach Road, Al Wasl",
+      cityEn: "Dubai",
+      cityHr: "Dubai",
+      addressEn: "Jumeirah Beach Road, Al Wasl",
+      addressHr: "Jumeirah Beach Road, Al Wasl",
       images: JSON.stringify(["https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800"]),
       savingsEstimate: 15.0,
       offers: [
-        { title: "Buy 1 Get 1 Coffee", discount: "BOGO", description: "Any specialty coffee drink", terms: "Valid on weekdays only. Excludes bottled drinks." },
-        { title: "15% off brunch menu", discount: "15% OFF", description: "On all brunch items Saturday and Sunday", terms: "Brunch hours 9am-2pm only." },
+        { titleEn: "Buy 1 Get 1 Coffee", titleHr: "Kupi 1 dobiješ 1 kavu", discountEn: "BOGO", discountHr: "1+1 GRATIS", descriptionEn: "Any specialty coffee drink", descriptionHr: "Bilo koji specijalitet od kave", termsEn: "Valid on weekdays only. Excludes bottled drinks.", termsHr: "Vrijedi samo radnim danom. Ne uključuje flaširana pića." },
+        { titleEn: "15% off brunch menu", titleHr: "15% popusta na meni za brunch", discountEn: "15% OFF", discountHr: "15% POPUSTA", descriptionEn: "On all brunch items Saturday and Sunday", descriptionHr: "Na sve stavke za brunch subotom i nedjeljom", termsEn: "Brunch hours 9am-2pm only.", termsHr: "Samo tijekom bruncha od 9 do 14 sati." },
       ],
     },
     {
-      name: "Saffron & Spice",
-      description: "Casual Indian dining with authentic recipes passed down three generations.",
+      nameEn: "Saffron & Spice",
+      nameHr: "Šafran i Začini",
+      descriptionEn: "Casual Indian dining with authentic recipes passed down three generations.",
+      descriptionHr: "Opušteni indijski restoran s autentičnim receptima koji se prenose kroz tri generacije.",
       category: "CASUAL_DINING" as const,
-      city: "Dubai",
-      address: "Business Bay, Al Mustaqbal St",
+      cityEn: "Dubai",
+      cityHr: "Dubai",
+      addressEn: "Business Bay, Al Mustaqbal St",
+      addressHr: "Business Bay, Al Mustaqbal St",
       images: JSON.stringify(["https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800"]),
       savingsEstimate: 20.0,
       offers: [
-        { title: "25% off lunch set menu", discount: "25% OFF", description: "Full 3-course lunch for AED 59", terms: "Weekdays 12pm-3pm only. Min 2 guests." },
+        { titleEn: "25% off lunch set menu", titleHr: "25% popusta na ručak set meni", discountEn: "25% OFF", discountHr: "25% POPUSTA", descriptionEn: "Full 3-course lunch for AED 59", descriptionHr: "Cijeli ručak u 3 slijeda za 59 AED", termsEn: "Weekdays 12pm-3pm only. Min 2 guests.", termsHr: "Samo radnim danom od 12 do 15 sati. Min. 2 gosta." },
       ],
     },
     {
-      name: "Sunrise Brunch Co.",
-      description: "The city's best weekend brunch destination. Live music, free-flowing beverages.",
+      nameEn: "Sunrise Brunch Co.",
+      nameHr: "Sunrise Brunch Co.",
+      descriptionEn: "The city's best weekend brunch destination. Live music, free-flowing beverages.",
+      descriptionHr: "Najbolje gradsko odredište za vikend brunch. Glazba uživo, neograničeno piće.",
       category: "BRUNCH" as const,
-      city: "Abu Dhabi",
-      address: "Corniche Road, Abu Dhabi",
+      cityEn: "Abu Dhabi",
+      cityHr: "Abu Dhabi",
+      addressEn: "Corniche Road, Abu Dhabi",
+      addressHr: "Corniche Road, Abu Dhabi",
       images: JSON.stringify(["https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800"]),
       savingsEstimate: 60.0,
       offers: [
-        { title: "Soft brunch package upgrade", discount: "FREE UPGRADE", description: "Upgrade from non-alcoholic to soft package", terms: "Saturdays only. Advance booking required." },
-        { title: "Third guest dines free", discount: "3RD GUEST FREE", description: "Every 3rd guest dines on us", terms: "Groups of 6 or more. Valid on Fridays." },
-        { title: "10% off à la carte", discount: "10% OFF", description: "Entire à la carte menu", terms: "Not valid during brunch hours." },
+        { titleEn: "Soft brunch package upgrade", titleHr: "Nadogradnja na bezalkoholni paket", discountEn: "FREE UPGRADE", discountHr: "BESPLATNA NADOGRADNJA", descriptionEn: "Upgrade from non-alcoholic to soft package", descriptionHr: "Nadogradnja s osnovnog na bezalkoholni paket", termsEn: "Saturdays only. Advance booking required.", termsHr: "Samo subotom. Potrebna rezervacija unaprijed." },
+        { titleEn: "Third guest dines free", titleHr: "Treći gost jede besplatno", discountEn: "3RD GUEST FREE", discountHr: "3. GOST GRATIS", descriptionEn: "Every 3rd guest dines on us", descriptionHr: "Svaki treći gost jede na naš račun", termsEn: "Groups of 6 or more. Valid on Fridays.", termsHr: "Grupe od 6 ili više osoba. Vrijedi petkom." },
+        { titleEn: "10% off à la carte", titleHr: "10% popusta na à la carte", discountEn: "10% OFF", discountHr: "10% POPUSTA", descriptionEn: "Entire à la carte menu", descriptionHr: "Cijeli à la carte jelovnik", termsEn: "Not valid during brunch hours.", termsHr: "Ne vrijedi tijekom bruncha." },
       ],
     },
     {
-      name: "Noir Lounge",
-      description: "Sophisticated cocktail bar with live jazz every Friday. Dress code applies.",
+      nameEn: "Noir Lounge",
+      nameHr: "Noir Lounge",
+      descriptionEn: "Sophisticated cocktail bar with live jazz every Friday. Dress code applies.",
+      descriptionHr: "Sofisticirani koktel bar s jazzom uživo svakog petka. Primjenjuje se pravilo odijevanja.",
       category: "BARS_NIGHTLIFE" as const,
-      city: "Dubai",
-      address: "DIFC, Gate Village",
+      cityEn: "Dubai",
+      cityHr: "Dubai",
+      addressEn: "DIFC, Gate Village",
+      addressHr: "DIFC, Gate Village",
       images: JSON.stringify(["https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=800"]),
       savingsEstimate: 35.0,
       offers: [
-        { title: "2 cocktails for the price of 1", discount: "BOGO COCKTAILS", description: "On all signature cocktails 6pm-8pm", terms: "Monday to Thursday happy hours only." },
+        { titleEn: "2 cocktails for the price of 1", titleHr: "2 koktela po cijeni 1", discountEn: "BOGO COCKTAILS", discountHr: "2 ZA 1 KOKTELI", descriptionEn: "On all signature cocktails 6pm-8pm", descriptionHr: "Na sve koktele s potpisom od 18 do 20 sati", termsEn: "Monday to Thursday happy hours only.", termsHr: "Samo ponedjeljkom do četvrtka tijekom happy houra." },
       ],
     },
     {
-      name: "Ember Steakhouse",
-      description: "Premium dry-aged steaks, oysters, and an extensive wine cellar.",
+      nameEn: "Ember Steakhouse",
+      nameHr: "Ember Steakhouse",
+      descriptionEn: "Premium dry-aged steaks, oysters, and an extensive wine cellar.",
+      descriptionHr: "Vrhunski odležani odresci, kamenice i bogat vinski podrum.",
       category: "PREMIUM_DINING" as const,
-      city: "Dubai",
-      address: "Palm Jumeirah, Atlantis",
+      cityEn: "Dubai",
+      cityHr: "Dubai",
+      addressEn: "Palm Jumeirah, Atlantis",
+      addressHr: "Palm Jumeirah, Atlantis",
       images: JSON.stringify(["https://images.unsplash.com/photo-1544025162-d76694265947?w=800"]),
       savingsEstimate: 80.0,
       offers: [
-        { title: "Complimentary bottle of wine", discount: "FREE WINE", description: "House wine with any 2 mains", terms: "Dinner service only, 7pm onwards. Reservation required." },
-        { title: "30% off set dinner menu", discount: "30% OFF", description: "3-course prix-fixe dinner", terms: "Sunday and Monday only. Min 2 guests." },
+        { titleEn: "Complimentary bottle of wine", titleHr: "Besplatna boca vina", discountEn: "FREE WINE", discountHr: "BESPLATNO VINO", descriptionEn: "House wine with any 2 mains", descriptionHr: "Domaće vino uz bilo koja 2 glavna jela", termsEn: "Dinner service only, 7pm onwards. Reservation required.", termsHr: "Samo tijekom večere, od 19 sati. Potrebna rezervacija." },
+        { titleEn: "30% off set dinner menu", titleHr: "30% popusta na fiksni meni", discountEn: "30% OFF", discountHr: "30% POPUSTA", descriptionEn: "3-course prix-fixe dinner", descriptionHr: "Večera u 3 slijeda po fiksnoj cijeni", termsEn: "Sunday and Monday only. Min 2 guests.", termsHr: "Samo nedjeljom i ponedjeljkom. Min. 2 gosta." },
       ],
     },
   ];
 
   for (const m of merchants) {
     const { offers, ...merchantData } = m;
-    const existing = await prisma.merchant.findFirst({ where: { name: merchantData.name } });
+    const existing = await prisma.merchant.findFirst({ where: { nameEn: merchantData.nameEn } });
     if (existing) {
-      console.log("Skipping (exists):", merchantData.name);
+      console.log("Skipping (exists):", merchantData.nameEn);
       continue;
     }
     const merchant = await prisma.merchant.create({
@@ -159,7 +183,7 @@ async function main() {
         },
       },
     });
-    console.log("Merchant:", merchant.name);
+    console.log("Merchant:", merchant.nameEn);
   }
 
   console.log("Seed complete!");

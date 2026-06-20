@@ -17,7 +17,7 @@ function serialize(rows: any[]) {
 export async function GET() {
   try {
     const rows = await prisma.$queryRaw<any[]>`
-      SELECT id, title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt
+      SELECT id, titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive, createdAt, updatedAt
       FROM SubscriptionPackage
       ORDER BY createdAt ASC
     `;
@@ -34,19 +34,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { title, priceMonthly, priceYearly, discountValue, description, isActive } = await req.json();
+    const { titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive } = await req.json();
     const monthly  = parseFloat(priceMonthly);
     const yearly   = parseFloat(priceYearly);
     const discount = discountValue === "" || discountValue == null ? null : parseFloat(discountValue);
     const active   = isActive ?? true;
 
     await prisma.$executeRaw`
-      INSERT INTO SubscriptionPackage (title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt)
-      VALUES (${title}, ${monthly}, ${yearly}, ${discount}, ${description ?? null}, ${active}, NOW(), NOW())
+      INSERT INTO SubscriptionPackage (titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive, createdAt, updatedAt)
+      VALUES (${titleEn}, ${titleHr}, ${monthly}, ${yearly}, ${discount}, ${descriptionEn ?? null}, ${descriptionHr ?? null}, ${active}, NOW(), NOW())
     `;
 
     const [pkg] = await prisma.$queryRaw<any[]>`
-      SELECT id, title, priceMonthly, priceYearly, discountValue, description, isActive, createdAt, updatedAt
+      SELECT id, titleEn, titleHr, priceMonthly, priceYearly, discountValue, descriptionEn, descriptionHr, isActive, createdAt, updatedAt
       FROM SubscriptionPackage
       WHERE id = LAST_INSERT_ID()
     `;

@@ -7,16 +7,16 @@ const redemptionSelectIncludes = {
   customer: { select: { id: true, fullname: true, email: true, phoneNumber: true, imageUrl: true } },
   merchant: {
     select: {
-      id: true, merchantCode: true, name: true, description: true, category: true,
-      address: true, city: true, latitude: true, longitude: true, phone: true,
+      id: true, merchantCode: true, nameEn: true, nameHr: true, descriptionEn: true, descriptionHr: true, category: true,
+      addressEn: true, addressHr: true, cityEn: true, cityHr: true, latitude: true, longitude: true, phone: true,
       website: true, images: true, isActive: true, savingsEstimate: true,
       avgRating: true, ratingCount: true,
     },
   },
   offer: {
     select: {
-      id: true, title: true, description: true, discount: true, offerAmount: true,
-      terms: true, validFrom: true, validUntil: true, isActive: true,
+      id: true, titleEn: true, titleHr: true, descriptionEn: true, descriptionHr: true, discountEn: true, discountHr: true, offerAmount: true,
+      termsEn: true, termsHr: true, validFrom: true, validUntil: true, isActive: true,
     },
   },
 } as const;
@@ -26,14 +26,20 @@ async function withSnapshotFields(redemptions: any[]) {
   if (!redemptions.length) return redemptions;
   const ids = redemptions.map((r) => r.id);
   const rows: any[] = await prisma.$queryRawUnsafe(
-    `SELECT id, offerAmount, offerDiscount FROM Redemption WHERE id IN (${ids.join(",")})`
+    `SELECT id, offerAmount, offerDiscountEn, offerDiscountHr FROM Redemption WHERE id IN (${ids.join(",")})`
   );
-  const map: Record<number, { offerAmount: number | null; offerDiscount: string | null }> = {};
-  for (const r of rows) map[r.id] = { offerAmount: r.offerAmount ?? null, offerDiscount: r.offerDiscount ?? null };
+  const map: Record<number, { offerAmount: number | null; offerDiscountEn: string | null; offerDiscountHr: string | null }> = {};
+  for (const r of rows) {
+    map[r.id] = {
+      offerAmount: r.offerAmount ?? null,
+      offerDiscountEn: r.offerDiscountEn ?? null,
+      offerDiscountHr: r.offerDiscountHr ?? null,
+    };
+  }
   return redemptions.map((r) => ({
     ...r,
     merchant: { ...r.merchant, images: getImageArray(r.merchant?.images ?? null).map(toImageUrl) },
-    ...(map[r.id] ?? { offerAmount: null, offerDiscount: null }),
+    ...(map[r.id] ?? { offerAmount: null, offerDiscountEn: null, offerDiscountHr: null }),
   }));
 }
 
@@ -123,9 +129,10 @@ export async function POST(req: NextRequest) {
 
     // Snapshot offer amount + discount label via raw SQL (fields not yet in generated client)
     await prisma.$executeRawUnsafe(
-      `UPDATE Redemption SET offerAmount = ?, offerDiscount = ? WHERE id = ?`,
+      `UPDATE Redemption SET offerAmount = ?, offerDiscountEn = ?, offerDiscountHr = ? WHERE id = ?`,
       offer.offerAmount ?? null,
-      offer.discount ?? null,
+      offer.discountEn ?? null,
+      offer.discountHr ?? null,
       redemption.id
     );
 
