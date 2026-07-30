@@ -4,15 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-const VALID_ROLES = ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"];
-
 function isAuthorized(session: any) {
   const role = (session?.user as any)?.role;
   return role === "SUPER_ADMIN" || role === "ADMIN";
-}
-
-function isSuperAdmin(session: any) {
-  return (session?.user as any)?.role === "SUPER_ADMIN";
 }
 
 // GET /api/users?search=&role=&page=1&limit=50
@@ -37,27 +31,35 @@ export async function GET(req: NextRequest) {
     const like = `%${search}%`;
     params.push(like, like);
   }
-  if (role && VALID_ROLES.includes(role)) {
-    conditions.push("role = ?");
-    params.push(role);
+  if (role && role !== "all") {
+    conditions.push("(role = ? OR roleId = ?)");
+    params.push(role, parseInt(role) || 0);
   }
 
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
   const [rows, countRows]: [any[], any[]] = await Promise.all([
     prisma.$queryRawUnsafe<any[]>(
-      `SELECT id, name, email, role, image, createdAt, updatedAt
-       FROM User ${where} ORDER BY createdAt DESC LIMIT ${limit} OFFSET ${skip}`,
+      `SELECT u.id, u.name, u.email, u.role, u.roleId, u.permissions, u.image, u.createdAt, u.updatedAt, r.name AS roleName, r.permissions AS rolePermissions
+       FROM User u
+       LEFT JOIN Role r ON u.roleId = r.id
+       ${where} ORDER BY u.createdAt DESC LIMIT ${limit} OFFSET ${skip}`,
       ...params
     ),
     prisma.$queryRawUnsafe<any[]>(
-      `SELECT COUNT(*) AS total FROM User ${where}`,
+      `SELECT COUNT(*) AS total FROM User u ${where}`,
       ...params
     ),
   ]);
 
   return NextResponse.json({
-    users: rows.map((r) => ({ ...r, id: Number(r.id) })),
+    users: rows.map((r) => ({
+      ...r,
+      id: Number(r.id),
+      roleId: r.roleId ? Number(r.roleId) : null,
+      permissions: typeof r.permissions === "string" && r.permissions ? JSON.parse(r.permissions) : null,
+      rolePermissions: typeof r.rolePermissions === "string" && r.rolePermissions ? JSON.parse(r.rolePermissions) : null,
+    })),
     total: Number(countRows[0]?.total ?? 0),
     page,
     limit,
@@ -72,13 +74,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const { name, email, password, role } = body ?? {};
+  const { name, email, password, role, roleId, permissions } = body ?? {};
 
-  if (!email || !password || !role) {
-    return NextResponse.json({ error: "name, email, password and role are required" }, { status: 400 });
-  }
-  if (!VALID_ROLES.includes(role)) {
-    return NextResponse.json({ error: `role must be one of: ${VALID_ROLES.join(", ")}` }, { status: 400 });
+  if (!email || !password || (!role && !roleId)) {
+    return NextResponse.json({ error: "Name, email, password and role are required" }, { status: 400 });
   }
 
   const existing = await prisma.$queryRawUnsafe<any[]>(
@@ -89,13 +88,21 @@ export async function POST(req: NextRequest) {
   }
 
   const hashed = await bcrypt.hash(password, 12);
+  const permStr = Array.isArray(permissions) ? JSON.stringify(permissions) : null;
+  const userRole = role || "ADMIN";
+
   await prisma.$executeRawUnsafe(
-    "INSERT INTO User (name, email, password, role, createdAt, updatedAt) VALUES (?, ?, ?, ?, NOW(), NOW())",
-    name || null, email, hashed, role
+    "INSERT INTO User (name, email, password, role, roleId, permissions, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
+    name || null, email, hashed, userRole, roleId || null, permStr
   );
 
   const created = await prisma.$queryRawUnsafe<any[]>(
-    "SELECT id, name, email, role, createdAt FROM User WHERE email = ? LIMIT 1", email
+    "SELECT id, name, email, role, roleId, permissions, createdAt FROM User WHERE email = ? LIMIT 1", email
   );
-  return NextResponse.json({ ...created[0], id: Number(created[0].id) }, { status: 201 });
+  return NextResponse.json({
+    ...created[0],
+    id: Number(created[0].id),
+    roleId: created[0].roleId ? Number(created[0].roleId) : null,
+    permissions: created[0].permissions ? JSON.parse(created[0].permissions) : null,
+  }, { status: 201 });
 }

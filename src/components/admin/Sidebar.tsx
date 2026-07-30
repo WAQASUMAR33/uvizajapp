@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/redemptions",           label: "Redemptions",       icon: Receipt,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/subscription-packages", label: "Sub. Packages",     icon: Package,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
+  { href: "/admin/promocodes",            label: "Promo Codes",       icon: Tag,             roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
   { href: "/admin/terms",                 label: "Terms & Conditions",icon: FileText,        roles: ["SUPER_ADMIN", "ADMIN"] },
   { href: "/admin/users",                 label: "User Management",   icon: Users,           roles: ["SUPER_ADMIN", "ADMIN"] },
 ];
@@ -43,7 +44,10 @@ export function AdminSidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const isActive = (href: string) => href === "/admin" ? pathname === href : pathname.startsWith(href);
 
-  const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(role as Role));
+  const visibleItems = NAV_ITEMS.filter((item) => {
+    if (role === "SUPER_ADMIN" || role === "ADMIN") return true;
+    return item.roles.includes(role as Role);
+  });
 
   return (
     <Drawer
