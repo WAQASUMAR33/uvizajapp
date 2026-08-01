@@ -30,6 +30,8 @@ import {
   Plus, Edit2, Trash2, Store, Search, Eye, MapPin, X, Upload, ImageIcon, Tag,
 } from "lucide-react";
 import { MapPickerModal } from "@/components/admin/MapPickerModal";
+import { useSession } from "next-auth/react";
+import { hasPermission } from "@/lib/permissions";
 import { getCategoryLabel, formatDate } from "@/lib/utils";
 import { CATEGORIES } from "@/types";
 
@@ -104,6 +106,9 @@ const emptyOffer: Partial<Offer> = {
 };
 
 export default function AdminMerchantsPage() {
+  const { data: session } = useSession();
+  const canManageOffers = hasPermission(session?.user, "offers");
+
   /* ── merchants ─────────────────────────────────────────────────────── */
   const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [loading, setLoading]     = useState(true);
@@ -243,24 +248,28 @@ export default function AdminMerchantsPage() {
   };
 
   const openOffers = (m: Merchant) => {
+    if (!canManageOffers) return;
     setOffersMerchant(m);
     setOffersOpen(true);
     loadOffers(m.id);
   };
 
   const openCreateOffer = () => {
+    if (!canManageOffers) return;
     setEditingOffer(null);
     setOfferForm({ ...emptyOffer, merchantId: offersMerchant?.id });
     setOfferFormOpen(true);
   };
 
   const openEditOffer = (o: Offer) => {
+    if (!canManageOffers) return;
     setEditingOffer(o);
     setOfferForm(o);
     setOfferFormOpen(true);
   };
 
   const handleSaveOffer = async () => {
+    if (!canManageOffers) return;
     setOfferSaving(true);
     const url    = editingOffer ? `/api/offers/${editingOffer.id}` : "/api/offers";
     const method = editingOffer ? "PUT" : "POST";
@@ -275,6 +284,7 @@ export default function AdminMerchantsPage() {
   };
 
   const handleDeleteOffer = async (id: string) => {
+    if (!canManageOffers) return;
     if (!confirm("Delete this offer?")) return;
     await fetch(`/api/offers/${id}`, { method: "DELETE" });
     if (offersMerchant) loadOffers(offersMerchant.id);
@@ -393,11 +403,13 @@ export default function AdminMerchantsPage() {
                     <Tooltip title="View detail">
                       <IconButton size="small" component={Link} href={`/admin/merchants/${m.id}`}><Eye size={16} /></IconButton>
                     </Tooltip>
-                    <Tooltip title="Manage offers">
-                      <IconButton size="small" onClick={() => openOffers(m)} sx={{ color: "text.secondary" }}>
-                        <Tag size={16} />
-                      </IconButton>
-                    </Tooltip>
+                    {canManageOffers && (
+                      <Tooltip title="Manage offers">
+                        <IconButton size="small" onClick={() => openOffers(m)} sx={{ color: "text.secondary" }}>
+                          <Tag size={16} />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <Tooltip title={m.isActive ? "Deactivate" : "Activate"}>
                       <Switch size="small" checked={m.isActive} onChange={() => handleToggle(m)} color="success" />
                     </Tooltip>
@@ -672,9 +684,11 @@ export default function AdminMerchantsPage() {
             </Typography>
           </Box>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <MuiButton variant="contained" size="small" startIcon={<Plus size={14} />} onClick={openCreateOffer} sx={{ borderRadius: "8px" }}>
-              Add Offer
-            </MuiButton>
+            {canManageOffers && (
+              <MuiButton variant="contained" size="small" startIcon={<Plus size={14} />} onClick={openCreateOffer} sx={{ borderRadius: "8px" }}>
+                Add Offer
+              </MuiButton>
+            )}
             <IconButton size="small" onClick={() => setOffersOpen(false)}><X size={18} /></IconButton>
           </Box>
         </DialogTitle>
@@ -687,9 +701,11 @@ export default function AdminMerchantsPage() {
             <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
               <Tag size={32} style={{ marginBottom: 8, opacity: 0.3 }} />
               <Typography variant="body2">No offers yet</Typography>
-              <MuiButton size="small" variant="outlined" startIcon={<Plus size={14} />} onClick={openCreateOffer} sx={{ mt: 2 }}>
-                Add first offer
-              </MuiButton>
+              {canManageOffers && (
+                <MuiButton size="small" variant="outlined" startIcon={<Plus size={14} />} onClick={openCreateOffer} sx={{ mt: 2 }}>
+                  Add first offer
+                </MuiButton>
+              )}
             </Box>
           ) : (
             <Table>
@@ -701,7 +717,7 @@ export default function AdminMerchantsPage() {
                   <TableCell>Amount (€)</TableCell>
                   <TableCell>Valid Until</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  {canManageOffers && <TableCell align="right">Actions</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -743,14 +759,16 @@ export default function AdminMerchantsPage() {
                         sx={{ bgcolor: o.isActive ? "#d1fae5" : "#f1f5f9", color: o.isActive ? "#065f46" : "#475569", fontWeight: 600, fontSize: "0.72rem" }}
                       />
                     </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Edit">
-                        <IconButton size="small" onClick={() => openEditOffer(o)}><Edit2 size={15} /></IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton size="small" color="error" onClick={() => handleDeleteOffer(o.id)}><Trash2 size={15} /></IconButton>
-                      </Tooltip>
-                    </TableCell>
+                    {canManageOffers && (
+                      <TableCell align="right">
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => openEditOffer(o)}><Edit2 size={15} /></IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton size="small" color="error" onClick={() => handleDeleteOffer(o.id)}><Trash2 size={15} /></IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
