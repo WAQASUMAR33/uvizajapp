@@ -33,7 +33,8 @@ async function getMerchant(id: string) {
 
 export default async function MerchantDetailPage({ params }: { params: { id: string } | Promise<{ id: string }> }) {
   const resolvedParams = await Promise.resolve(params);
-  const merchant = await getMerchant(resolvedParams.id);
+  const idStr = resolvedParams?.id ?? (params as any)?.id;
+  const merchant = await getMerchant(idStr);
   if (!merchant) notFound();
 
   const images    = getImageArray(merchant.images).map(toImageUrl);
@@ -54,7 +55,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           Merchants
         </MuiButton>
         <Typography component="span" variant="caption" color="text.disabled" sx={{ mx: 1 }}>/</Typography>
-        <Typography component="span" variant="caption" color="text.primary" sx={{ fontWeight: 600 }}>{merchant.nameEn || merchant.nameHr}</Typography>
+        <Typography component="span" variant="caption" color="text.primary" sx={{ fontWeight: 600 }}>{merchant.nameEn || merchant.nameHr || "Merchant Details"}</Typography>
       </Box>
 
       {/* ── Hero image ── */}
@@ -63,7 +64,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           <Box
             component="img"
             src={heroImage}
-            alt={merchant.nameEn || merchant.nameHr}
+            alt={merchant.nameEn || merchant.nameHr || "Merchant"}
             sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
           />
         ) : (
@@ -76,7 +77,7 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
         {/* Status overlay */}
         <Box sx={{ position: "absolute", top: 16, right: 16, display: "flex", gap: 1 }}>
           <Chip
-            label={getCategoryLabel(merchant.category)}
+            label={getCategoryLabel(merchant.category || "")}
             size="small"
             sx={{ bgcolor: "rgba(255,255,255,0.92)", color: "#4338ca", fontWeight: 700, fontSize: "0.72rem" }}
           />
@@ -111,10 +112,10 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                 <Tag size={18} color="#4f46e5" />
                 <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Active Offers</Typography>
               </Stack>
-              <Typography variant="caption" color="text.secondary">{merchant.offers.length} of 3 shown</Typography>
+              <Typography variant="caption" color="text.secondary">{(merchant.offers || []).length} of 3 shown</Typography>
             </Box>
 
-            {merchant.offers.length === 0 ? (
+            {!merchant.offers || merchant.offers.length === 0 ? (
               <Box sx={{ py: 5, textAlign: "center", bgcolor: "#f8fafc", border: "1px dashed", borderColor: "divider" }}>
                 <Tag size={28} color="#cbd5e1" style={{ marginBottom: 8 }} />
                 <Typography variant="body2" color="text.secondary">No active offers</Typography>
@@ -186,16 +187,16 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                   ? { icon: <MapPin size={15} />, label: "Location", value: [merchant.addressEn || merchant.addressHr, merchant.cityEn || merchant.cityHr].filter(Boolean).join(", ") }
                   : null,
                 merchant.phone
-                  ? { icon: <Phone size={15} />, label: "Phone", value: merchant.phone }
+                  ? { icon: <Phone size={15} />, label: "Phone", value: String(merchant.phone) }
                   : null,
                 merchant.website
-                  ? { icon: <Globe size={15} />, label: "Website", value: merchant.website, link: true }
+                  ? { icon: <Globe size={15} />, label: "Website", value: String(merchant.website), link: true }
                   : null,
-                merchant.savingsEstimate > 0
+                merchant.savingsEstimate && Number(merchant.savingsEstimate) > 0
                   ? { icon: <Percent size={15} />, label: "Est. Savings", value: `$${merchant.savingsEstimate} per visit` }
                   : null,
-                merchant.latitude != null
-                  ? { icon: <MapPin size={15} color="#4f46e5" />, label: "Coordinates", value: `${merchant.latitude.toFixed(6)}, ${merchant.longitude?.toFixed(6)}`, mono: true }
+                merchant.latitude != null && merchant.longitude != null
+                  ? { icon: <MapPin size={15} color="#4f46e5" />, label: "Coordinates", value: `${Number(merchant.latitude).toFixed(6)}, ${Number(merchant.longitude).toFixed(6)}`, mono: true }
                   : null,
               ].filter(Boolean).map((row: any) => (
                 <TableRow key={row.label} sx={{ "&:last-child td": { borderBottom: 0 } }}>
@@ -209,13 +210,13 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                     {row.link ? (
                       <Typography
                         component="a"
-                        href={row.value}
+                        href={String(row.value)}
                         target="_blank"
                         rel="noopener noreferrer"
                         variant="body2"
                         sx={{ color: "primary.main", textDecoration: "none", "&:hover": { textDecoration: "underline" }, wordBreak: "break-all" }}
                       >
-                        {row.value.replace(/^https?:\/\//, "")}
+                        {String(row.value).replace(/^https?:\/\//, "")}
                       </Typography>
                     ) : (
                       <Typography variant="body2" sx={{ fontFamily: row.mono ? "monospace" : "inherit", color: row.mono ? "primary.main" : "text.primary", fontWeight: row.mono ? 600 : 400, wordBreak: "break-all" }}>
