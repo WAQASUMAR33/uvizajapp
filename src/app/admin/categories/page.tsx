@@ -24,6 +24,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import { Plus, Edit2, Trash2, LayoutGrid, Search, X, Upload, ImageIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { hasPermission } from "@/lib/permissions";
 
 interface Category {
   id: number;
@@ -45,6 +47,9 @@ function toSlug(name: string) {
 }
 
 export default function AdminCategoriesPage() {
+  const { data: session } = useSession();
+  const canManageCategories = hasPermission(session?.user, "categories");
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading]       = useState(true);
   const [search, setSearch]         = useState("");
@@ -178,9 +183,11 @@ export default function AdminCategoriesPage() {
           <Typography variant="h5" sx={{ fontWeight: 700 }}>Categories</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{categories.length} total</Typography>
         </Box>
-        <MuiButton variant="contained" startIcon={<Plus size={16} />} onClick={openCreate}>
-          Add Category
-        </MuiButton>
+        {canManageCategories && (
+          <MuiButton variant="contained" startIcon={<Plus size={16} />} onClick={openCreate}>
+            Add Category
+          </MuiButton>
+        )}
       </Box>
 
       {/* Search */}
@@ -262,19 +269,23 @@ export default function AdminCategoriesPage() {
                         <LayoutGrid size={16} />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title={cat.isActive ? "Deactivate" : "Activate"}>
-                      <Switch size="small" checked={cat.isActive} onChange={() => handleToggle(cat)} color="success" />
-                    </Tooltip>
-                    <Tooltip title="Edit">
-                      <IconButton size="small" onClick={() => openEdit(cat)}>
-                        <Edit2 size={16} />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton size="small" color="error" onClick={() => setDeleteConfirm(cat)}>
-                        <Trash2 size={16} />
-                      </IconButton>
-                    </Tooltip>
+                    {canManageCategories && (
+                      <>
+                        <Tooltip title={cat.isActive ? "Deactivate" : "Activate"}>
+                          <Switch size="small" checked={cat.isActive} onChange={() => handleToggle(cat)} color="success" />
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => openEdit(cat)}>
+                            <Edit2 size={16} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton size="small" color="error" onClick={() => setDeleteConfirm(cat)}>
+                            <Trash2 size={16} />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

@@ -18,41 +18,84 @@ export interface UserAuthDetails {
   rolePermissions?: string[] | null;
 }
 
+const ALL_SYSTEM_PERMISSIONS: PermissionKey[] = [
+  "dashboard",
+  "merchants",
+  "categories",
+  "offers",
+  "customers",
+  "redemptions",
+  "subscriptions",
+  "subscription_packages",
+  "terms",
+  "users",
+  "roles",
+];
+
+const ADMIN_DEFAULT_PERMISSIONS: PermissionKey[] = [
+  "dashboard",
+  "merchants",
+  "categories",
+  "offers",
+  "customers",
+  "redemptions",
+  "subscriptions",
+  "subscription_packages",
+  "terms",
+  "users",
+];
+
+const ACCOUNTANT_DEFAULT_PERMISSIONS: PermissionKey[] = [
+  "dashboard",
+  "customers",
+  "redemptions",
+  "subscriptions",
+  "subscription_packages",
+];
+
+const SALESMAN_DEFAULT_PERMISSIONS: PermissionKey[] = [
+  "dashboard",
+  "merchants",
+];
+
 /**
  * Returns an array of unique permissions granted to the user.
- * SUPER_ADMIN and ADMIN get all system permissions.
- * Other roles inherit their custom user permissions (overrides) or role default permissions.
+ * 
+ * 1. Priority 1 (User-Specific Overrides): If Array.isArray(user.permissions), return user.permissions.
+ *    This applies to ALL roles (Admin, Salesman, Accountant, and Custom Roles).
+ * 2. Priority 2 (Custom Role Permissions): If Array.isArray(user.rolePermissions) and non-empty, return user.rolePermissions.
+ * 3. Priority 3 (System Role Defaults): Default system role fallback definitions.
  */
 export function getUserPermissions(user?: any): string[] {
   if (!user || !user.role) return [];
 
-  const role = String(user.role).toUpperCase();
-
-  // Full access for ADMIN and SUPER_ADMIN
-  if (role === "SUPER_ADMIN" || role === "ADMIN") {
-    return [
-      "dashboard",
-      "merchants",
-      "categories",
-      "offers",
-      "customers",
-      "redemptions",
-      "subscriptions",
-      "subscription_packages",
-      "terms",
-      "users",
-      "roles",
-    ];
-  }
-
-  // If user has specific permission overrides set (array), prioritize them
-  if (Array.isArray(user.permissions) && user.permissions.length > 0) {
+  // Priority 1: User-level explicit permissions (overrides for ANY role)
+  if (Array.isArray(user.permissions)) {
     return user.permissions;
   }
 
-  // Fallback to role-level default permissions
+  // Priority 2: Custom Role assigned permissions (from Role table)
   if (Array.isArray(user.rolePermissions) && user.rolePermissions.length > 0) {
     return user.rolePermissions;
+  }
+
+  // Priority 3: System Role Defaults
+  const role = String(user.role).toUpperCase();
+
+  if (role === "SUPER_ADMIN") {
+    return ALL_SYSTEM_PERMISSIONS;
+  }
+
+  if (role === "ADMIN") {
+    return ADMIN_DEFAULT_PERMISSIONS;
+  }
+
+  if (role === "ACCOUNTANT") {
+    return ACCOUNTANT_DEFAULT_PERMISSIONS;
+  }
+
+  if (role === "SALESMAN") {
+    return SALESMAN_DEFAULT_PERMISSIONS;
   }
 
   return [];
@@ -66,8 +109,8 @@ export function hasPermission(user?: any, permission?: PermissionKey | string): 
 
   const role = String(user.role).toUpperCase();
 
-  // ADMIN and SUPER_ADMIN always have permission
-  if (role === "SUPER_ADMIN" || role === "ADMIN") {
+  // If SUPER_ADMIN has no explicit overrides, full access by default
+  if (role === "SUPER_ADMIN" && !Array.isArray(user.permissions)) {
     return true;
   }
 

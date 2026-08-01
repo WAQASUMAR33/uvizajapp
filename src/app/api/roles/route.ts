@@ -30,9 +30,10 @@ const DEFAULT_SYSTEM_ROLES = [
   },
 ];
 
+import { hasPermission } from "@/lib/permissions";
+
 function isAuthorized(session: any) {
-  const role = (session?.user as any)?.role;
-  return role === "SUPER_ADMIN" || role === "ADMIN";
+  return session && (hasPermission(session.user, "roles") || hasPermission(session.user, "users"));
 }
 
 // GET /api/roles — list all system & custom roles

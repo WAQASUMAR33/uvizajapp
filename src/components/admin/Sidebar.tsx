@@ -50,8 +50,8 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
   const userObj = user || { role };
 
   const visibleItems = NAV_ITEMS.filter((item) => {
-    if (role === "SUPER_ADMIN" || role === "ADMIN") return true;
-    if (item.permissionKey && hasPermission(userObj, item.permissionKey)) return true;
+    if (role === "SUPER_ADMIN" && !Array.isArray(userObj.permissions)) return true;
+    if (item.permissionKey) return hasPermission(userObj, item.permissionKey);
     return item.roles.includes(role as Role);
   });
 

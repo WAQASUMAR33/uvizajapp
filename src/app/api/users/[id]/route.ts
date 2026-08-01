@@ -3,10 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { hasPermission } from "@/lib/permissions";
 
 function isAuthorized(session: any) {
-  const role = (session?.user as any)?.role;
-  return role === "SUPER_ADMIN" || role === "ADMIN";
+  return session && hasPermission(session.user, "users");
 }
 
 // GET /api/users/:id
