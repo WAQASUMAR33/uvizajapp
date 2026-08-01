@@ -30,12 +30,14 @@ export async function POST(req: NextRequest) {
   const sub = await prisma.subscription.findUnique({
     where: { customerId: parseInt(customerId) },
     select: {
-      status:    true,
-      plan:      true,
-      startDate: true,
-      endDate:   true,
-      price:     true,
-      currency:  true,
+      status:         true,
+      plan:           true,
+      startDate:      true,
+      endDate:        true,
+      price:          true,
+      currency:       true,
+      promoCode:      true,
+      discountAmount: true,
       subscriptionPackage: {
         select: { id: true, titleEn: true, titleHr: true, priceMonthly: true, priceYearly: true, descriptionEn: true, descriptionHr: true },
       },
@@ -50,6 +52,8 @@ export async function POST(req: NextRequest) {
       startDate:           null,
       endDate:             null,
       daysRemaining:       0,
+      promoCode:           null,
+      discountAmount:      0,
       subscriptionPackage: null,
     });
   }
@@ -69,6 +73,8 @@ export async function POST(req: NextRequest) {
     endDate:             sub.endDate,
     price:               sub.price,
     currency:            sub.currency,
+    promoCode:           sub.promoCode,
+    discountAmount:      sub.discountAmount,
     daysRemaining,
     subscriptionPackage: sub.subscriptionPackage,
   });

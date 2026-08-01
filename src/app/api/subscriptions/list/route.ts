@@ -6,6 +6,8 @@ export async function GET() {
   const subscriptions = await prisma.subscription.findMany({
     include: {
       customer: { select: { fullname: true, email: true } },
+      subscriptionPackage: { select: { id: true, titleEn: true, titleHr: true } },
+      promoCodeRecord: true,
     },
     orderBy: { createdAt: "desc" },
   });

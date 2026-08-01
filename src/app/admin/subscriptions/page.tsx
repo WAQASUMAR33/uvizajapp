@@ -11,7 +11,7 @@ import TableCell from "@mui/material/TableCell";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
 import InputAdornment from "@mui/material/InputAdornment";
-import { CreditCard, Search, Crown } from "lucide-react";
+import { CreditCard, Search, Crown, Tag } from "lucide-react";
 import { formatDate, formatCurrency } from "@/lib/utils";
 
 interface Sub {
@@ -23,6 +23,8 @@ interface Sub {
   price: number;
   currency: string;
   platform: string | null;
+  promoCode: string | null;
+  discountAmount: number | null;
   customer: { fullname: string; email: string };
 }
 
@@ -49,7 +51,8 @@ export default function AdminSubscriptionsPage() {
   const filtered = subs.filter(
     (s) =>
       s.customer.email.toLowerCase().includes(search.toLowerCase()) ||
-      s.customer.fullname.toLowerCase().includes(search.toLowerCase())
+      s.customer.fullname.toLowerCase().includes(search.toLowerCase()) ||
+      (s.promoCode && s.promoCode.toLowerCase().includes(search.toLowerCase()))
   );
 
   const totalRevenue = subs.filter((s) => s.status === "ACTIVE").reduce((sum, s) => sum + s.price, 0);
@@ -70,7 +73,7 @@ export default function AdminSubscriptionsPage() {
       </Box>
 
       <TextField
-        placeholder="Search subscribers…"
+        placeholder="Search subscribers or coupons…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         size="small"
@@ -92,6 +95,7 @@ export default function AdminSubscriptionsPage() {
               <TableRow>
                 <TableCell>User</TableCell>
                 <TableCell>Plan</TableCell>
+                <TableCell>Coupon / Discount</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Price</TableCell>
                 <TableCell>Expires</TableCell>
@@ -109,6 +113,25 @@ export default function AdminSubscriptionsPage() {
                     </TableCell>
                     <TableCell>
                       <Chip icon={<Crown size={12} />} label={s.plan} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 600, fontSize: "0.72rem" }} />
+                    </TableCell>
+                    <TableCell>
+                      {s.promoCode ? (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Chip
+                            icon={<Tag size={12} />}
+                            label={s.promoCode}
+                            size="small"
+                            sx={{ bgcolor: "#e0e7ff", color: "#3730a3", fontWeight: 700, fontSize: "0.72rem" }}
+                          />
+                          {s.discountAmount ? (
+                            <Typography variant="caption" color="error.main" sx={{ fontWeight: 600 }}>
+                              (-{formatCurrency(s.discountAmount, s.currency)})
+                            </Typography>
+                          ) : null}
+                        </Box>
+                      ) : (
+                        <Typography variant="caption" color="text.disabled">—</Typography>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Chip label={s.status} size="small" sx={{ bgcolor: sc.bg, color: sc.color, fontWeight: 600, fontSize: "0.72rem" }} />

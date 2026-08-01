@@ -132,6 +132,9 @@ model Subscription {
   id                    Int                  @id @default(autoincrement())
   customerId            Int                  @unique
   subscriptionPackageId Int?
+  promoCodeId           Int?
+  promoCode             String?              @db.VarChar(50)
+  discountAmount        Float                @default(0)
   plan                  SubscriptionPlan     @default(ANNUAL)
   status                SubscriptionStatus   @default(ACTIVE)
   startDate             DateTime             @default(now())
@@ -145,6 +148,7 @@ model Subscription {
 
   customer             Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
   subscriptionPackage  SubscriptionPackage?  @relation(fields: [subscriptionPackageId], references: [id])
+  promoCodeRecord      PromoCode?            @relation(fields: [promoCodeId], references: [id])
 }
 
 model Category {
@@ -281,4 +285,6 @@ model PromoCode {
   isActive          Boolean   @default(true)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+
+  subscriptions Subscription[]
 }

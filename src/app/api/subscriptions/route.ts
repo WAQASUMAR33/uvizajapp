@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 // }
 export async function POST(req: NextRequest) {
   try {
-    const { customerId, subscriptionPackageId, plan, paymentRef, platform } = await req.json();
+    const { customerId, subscriptionPackageId, plan, paymentRef, platform, promoCode, coupon } = await req.json();
 
     if (!customerId) {
       return NextResponse.json({ error: "customerId is required" }, { status: 400 });
@@ -92,6 +92,46 @@ export async function POST(req: NextRequest) {
       price = plan === "MONTHLY" ? packageRecord.priceMonthly : packageRecord.priceYearly;
     }
 
+    // Handle Promo Code Discount if provided
+    let appliedPromoCodeId: number | null = null;
+    let appliedPromoCodeStr: string | null = null;
+    let discountAmount = 0;
+
+    const codeToUse = typeof promoCode === "string" ? promoCode.trim() : (typeof coupon === "string" ? coupon.trim() : "");
+    if (codeToUse) {
+      const foundCode = await prisma.promoCode.findFirst({
+        where: { code: codeToUse, isActive: true },
+      });
+
+      if (foundCode) {
+        const now = new Date();
+        const isValidDate = (!foundCode.validFrom || foundCode.validFrom <= now) && (!foundCode.validUntil || foundCode.validUntil >= now);
+        const hasUsesLeft = foundCode.maxUses == null || foundCode.usedCount < foundCode.maxUses;
+
+        if (isValidDate && hasUsesLeft) {
+          appliedPromoCodeId = foundCode.id;
+          appliedPromoCodeStr = foundCode.code;
+
+          if (foundCode.discountType === "PERCENTAGE") {
+            discountAmount = price * (foundCode.discountValue / 100);
+            if (foundCode.maxDiscountAmount != null && discountAmount > foundCode.maxDiscountAmount) {
+              discountAmount = foundCode.maxDiscountAmount;
+            }
+          } else {
+            discountAmount = Math.min(price, foundCode.discountValue);
+          }
+
+          // Increment usage count for the promo code
+          await prisma.promoCode.update({
+            where: { id: foundCode.id },
+            data: { usedCount: { increment: 1 } },
+          });
+        }
+      }
+    }
+
+    const finalPrice = Math.max(0, parseFloat((price - discountAmount).toFixed(2)));
+
     // Calculate end date based on plan duration
     const endDate = new Date();
     if (plan === "MONTHLY") {
@@ -106,11 +146,14 @@ export async function POST(req: NextRequest) {
       plan,
       status:               "ACTIVE" as const,
       endDate,
-      price,
+      price:                finalPrice,
       currency:             "EUR",
       paymentRef:           paymentRef ?? null,
       platform:             platform   ?? null,
       subscriptionPackageId: subscriptionPackageId ? parseInt(subscriptionPackageId) : null,
+      promoCodeId:          appliedPromoCodeId,
+      promoCode:            appliedPromoCodeStr,
+      discountAmount:       parseFloat(discountAmount.toFixed(2)),
     };
 
     const subscription = await prisma.subscription.upsert({
@@ -121,6 +164,7 @@ export async function POST(req: NextRequest) {
         subscriptionPackage: {
           select: { id: true, titleEn: true, titleHr: true, priceMonthly: true, priceYearly: true, descriptionEn: true, descriptionHr: true },
         },
+        promoCodeRecord: true,
       },
     });
 
