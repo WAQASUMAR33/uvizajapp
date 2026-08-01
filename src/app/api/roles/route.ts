@@ -7,13 +7,13 @@ const DEFAULT_SYSTEM_ROLES = [
   {
     name: "Super Admin",
     description: "Full unrestricted access to system settings, database & staff management.",
-    permissions: JSON.stringify(["dashboard", "merchants", "categories", "customers", "redemptions", "subscriptions", "subscription_packages", "terms", "users", "roles"]),
+    permissions: JSON.stringify(["dashboard", "merchants", "categories", "offers", "customers", "redemptions", "subscriptions", "subscription_packages", "terms", "users", "roles"]),
     isSystem: true,
   },
   {
     name: "Admin",
-    description: "Manage merchants, categories, customers, subscriptions, terms & staff users.",
-    permissions: JSON.stringify(["dashboard", "merchants", "categories", "customers", "redemptions", "subscriptions", "subscription_packages", "terms", "users"]),
+    description: "Manage merchants, categories, offers, customers, subscriptions, terms & staff users.",
+    permissions: JSON.stringify(["dashboard", "merchants", "categories", "offers", "customers", "redemptions", "subscriptions", "subscription_packages", "terms", "users"]),
     isSystem: true,
   },
   {

@@ -18,14 +18,22 @@ import MuiButton from "@mui/material/Button";
 import { ArrowLeft, MapPin, Phone, Globe, Percent, Tag, ImageIcon } from "lucide-react";
 
 async function getMerchant(id: string) {
-  return prisma.merchant.findUnique({
-    where: { id: parseInt(id) },
-    include: { offers: { where: { isActive: true }, orderBy: { createdAt: "asc" }, take: 3 } },
-  });
+  const merchantId = parseInt(id, 10);
+  if (isNaN(merchantId)) return null;
+  try {
+    return await prisma.merchant.findUnique({
+      where: { id: merchantId },
+      include: { offers: { where: { isActive: true }, orderBy: { createdAt: "asc" }, take: 3 } },
+    });
+  } catch (e) {
+    console.error("Error fetching merchant detail:", e);
+    return null;
+  }
 }
 
-export default async function MerchantDetailPage({ params }: { params: { id: string } }) {
-  const merchant = await getMerchant(params.id);
+export default async function MerchantDetailPage({ params }: { params: { id: string } | Promise<{ id: string }> }) {
+  const resolvedParams = await Promise.resolve(params);
+  const merchant = await getMerchant(resolvedParams.id);
   if (!merchant) notFound();
 
   const images    = getImageArray(merchant.images).map(toImageUrl);

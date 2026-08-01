@@ -15,6 +15,8 @@ import {
   CreditCard, LayoutGrid, LogOut, Package, FileText,
 } from "lucide-react";
 
+import { hasPermission, PermissionKey } from "@/lib/permissions";
+
 const DRAWER_WIDTH = 256;
 
 type Role = "SUPER_ADMIN" | "ADMIN" | "ACCOUNTANT" | "SALESMAN";
@@ -24,28 +26,32 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   roles: Role[];
+  permissionKey?: PermissionKey;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/admin",                        label: "Dashboard",         icon: LayoutDashboard, roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"] },
-  { href: "/admin/merchants",              label: "Merchants",         icon: Store,           roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"] },
-  { href: "/admin/categories",            label: "Categories",        icon: LayoutGrid,      roles: ["SUPER_ADMIN", "ADMIN"] },
-  { href: "/admin/customers",             label: "Customers",         icon: UserCheck,       roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  { href: "/admin/redemptions",           label: "Redemptions",       icon: Receipt,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  { href: "/admin/subscription-packages", label: "Sub. Packages",     icon: Package,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  { href: "/admin/promocodes",            label: "Promo Codes",       icon: Tag,             roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"] },
-  { href: "/admin/terms",                 label: "Terms & Conditions",icon: FileText,        roles: ["SUPER_ADMIN", "ADMIN"] },
-  { href: "/admin/users",                 label: "User Management",   icon: Users,           roles: ["SUPER_ADMIN", "ADMIN"] },
+  { href: "/admin",                        label: "Dashboard",         icon: LayoutDashboard, roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT", "SALESMAN"], permissionKey: "dashboard" },
+  { href: "/admin/merchants",              label: "Merchants",         icon: Store,           roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"],             permissionKey: "merchants" },
+  { href: "/admin/categories",            label: "Categories",        icon: LayoutGrid,      roles: ["SUPER_ADMIN", "ADMIN"],                          permissionKey: "categories" },
+  { href: "/admin/customers",             label: "Customers",         icon: UserCheck,       roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "customers" },
+  { href: "/admin/redemptions",           label: "Redemptions",       icon: Receipt,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "redemptions" },
+  { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "subscriptions" },
+  { href: "/admin/subscription-packages", label: "Sub. Packages",     icon: Package,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "subscription_packages" },
+  { href: "/admin/promocodes",            label: "Promo Codes",       icon: Tag,             roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "offers" },
+  { href: "/admin/terms",                 label: "Terms & Conditions",icon: FileText,        roles: ["SUPER_ADMIN", "ADMIN"],                          permissionKey: "terms" },
+  { href: "/admin/users",                 label: "User Management",   icon: Users,           roles: ["SUPER_ADMIN", "ADMIN"],                          permissionKey: "users" },
 ];
 
 
-export function AdminSidebar({ role }: { role: string }) {
+export function AdminSidebar({ role, user }: { role: string; user?: any }) {
   const pathname = usePathname();
   const isActive = (href: string) => href === "/admin" ? pathname === href : pathname.startsWith(href);
 
+  const userObj = user || { role };
+
   const visibleItems = NAV_ITEMS.filter((item) => {
     if (role === "SUPER_ADMIN" || role === "ADMIN") return true;
+    if (item.permissionKey && hasPermission(userObj, item.permissionKey)) return true;
     return item.roles.includes(role as Role);
   });
 

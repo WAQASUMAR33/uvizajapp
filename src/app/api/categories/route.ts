@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasPermission } from "@/lib/permissions";
 
 export async function GET() {
   const categories = await prisma.category.findMany({ orderBy: { createdAt: "asc" } });
@@ -10,7 +11,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== "ADMIN")
+  if (!session || !hasPermission(session.user, "categories"))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {

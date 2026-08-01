@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasPermission } from "@/lib/permissions";
 
 // GET /api/customers?page=1&limit=50&search=john&status=all
 // status: "all" | "active" | "inactive"
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== "ADMIN") {
+  if (!session || !hasPermission(session.user, "customers")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

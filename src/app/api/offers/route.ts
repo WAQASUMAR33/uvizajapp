@@ -31,9 +31,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })));
 }
 
+import { hasPermission } from "@/lib/permissions";
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== "ADMIN") {
+  if (!session || !hasPermission(session.user, "offers")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

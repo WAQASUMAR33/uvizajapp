@@ -65,6 +65,7 @@ const AVAILABLE_PERMISSIONS = [
   { key: "dashboard",             label: "Dashboard Analytics",    icon: "📊", description: "View overall dashboard metrics & summary statistics" },
   { key: "merchants",             label: "Merchant Management",    icon: "🏪", description: "Add, edit, view and manage restaurant & merchant listings" },
   { key: "categories",            label: "Category Management",   icon: "🏷️", description: "Manage dining categories, images and tags" },
+  { key: "offers",                label: "Offer Management",      icon: "🎁", description: "Create, edit, view and manage merchant deals & discount offers" },
   { key: "customers",             label: "Customer Accounts",     icon: "👥", description: "View registered users, subscriber details and profiles" },
   { key: "redemptions",           label: "Redemptions Audit",     icon: "🎟️", description: "Audit offer redemptions history and claims" },
   { key: "subscriptions",         label: "Subscriptions & Billing",icon: "💳", description: "Manage customer subscriptions, plans and payment statuses" },
