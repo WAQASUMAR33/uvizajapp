@@ -20,6 +20,8 @@ import DialogActions from "@mui/material/DialogActions";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import Tabs from "@mui/material/Tabs";
@@ -97,6 +99,7 @@ export default function AdminSupportPage() {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [editStatus, setEditStatus] = useState<string>("PENDING");
   const [editAdminNotes, setEditAdminNotes] = useState<string>("");
+  const [sendEmailNotification, setSendEmailNotification] = useState<boolean>(true);
   const [saving, setSaving] = useState(false);
 
   // Notification state
@@ -148,6 +151,8 @@ export default function AdminSupportPage() {
         body: JSON.stringify({
           status: editStatus,
           adminNotes: editAdminNotes,
+          sendEmail: sendEmailNotification,
+          replyMessage: editAdminNotes,
         }),
       });
 
@@ -522,13 +527,24 @@ export default function AdminSupportPage() {
                   </FormControl>
 
                   <TextField
-                    label="Staff Reach-Out Notes (Internal)"
+                    label="Staff Response / Reach-Out Notes"
                     multiline
                     rows={3}
-                    placeholder="Log details of phone calls made, emails sent, or resolution notes for other staff members..."
+                    placeholder="Type response to member or internal notes..."
                     value={editAdminNotes}
                     onChange={(e) => setEditAdminNotes(e.target.value)}
                     fullWidth
+                  />
+
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={sendEmailNotification}
+                        onChange={(e) => setSendEmailNotification(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label={`Send automated response email to customer (${selectedTicket.email})`}
                   />
                 </Box>
               </Box>

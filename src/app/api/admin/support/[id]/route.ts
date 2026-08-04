@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { SupportStatus } from "@prisma/client";
+import { sendSupportReplyEmail } from "@/lib/mail";
 
 // PATCH /api/admin/support/[id]
 export async function PATCH(
@@ -30,7 +31,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { status, adminNotes } = body;
+    const { status, adminNotes, sendEmail, replyMessage } = body;
 
     const dataToUpdate: any = {};
 
@@ -69,6 +70,20 @@ export async function PATCH(
         },
       },
     });
+
+    // Send email notification to customer if requested
+    if (sendEmail && (replyMessage || adminNotes)) {
+      const textToSend = replyMessage || adminNotes;
+      sendSupportReplyEmail({
+        to: updatedTicket.email,
+        customerName: updatedTicket.name,
+        ticketId: updatedTicket.id,
+        subject: updatedTicket.subject,
+        originalMessage: updatedTicket.message,
+        replyMessage: textToSend,
+        status: updatedTicket.status,
+      }).catch((err) => console.error("Async email error:", err));
+    }
 
     return NextResponse.json({ ticket: updatedTicket });
   } catch (error) {
