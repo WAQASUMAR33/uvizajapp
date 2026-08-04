@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
@@ -337,94 +338,96 @@ export default function AdminSupportPage() {
             </Typography>
           </Box>
         ) : (
-          <Table>
-            <TableHead sx={{ bgcolor: "#f8fafc" }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Sender / Member</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Subject & Inquiry</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Contact Info</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Received At</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600, color: "text.secondary" }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tickets.map((t) => (
-                <TableRow key={t.id} hover sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                      <Avatar
-                        src={t.customer?.imageUrl || undefined}
-                        sx={{ width: 38, height: 38, bgcolor: "#4f46e5", fontSize: "0.875rem", fontWeight: 600 }}
-                      >
-                        {t.name.charAt(0).toUpperCase()}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                          {t.name}
-                        </Typography>
-                        {t.customer?.subscription ? (
-                          <Chip
-                            icon={<Crown size={12} />}
-                            label={t.customer.subscription.plan}
-                            size="small"
-                            sx={{ height: 20, fontSize: "0.6875rem", bgcolor: "#fef3c7", color: "#b45309", fontWeight: 700 }}
-                          />
-                        ) : (
-                          <Typography variant="caption" color="text.secondary">
-                            {t.customerId ? "Registered Member" : "Guest Inquiry"}
+          <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+            <Table sx={{ minWidth: 850 }}>
+              <TableHead sx={{ bgcolor: "#f8fafc" }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Sender / Member</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Subject & Inquiry</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Contact Info</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>Received At</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, color: "text.secondary" }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tickets.map((t) => (
+                  <TableRow key={t.id} hover sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Avatar
+                          src={t.customer?.imageUrl || undefined}
+                          sx={{ width: 38, height: 38, bgcolor: "#4f46e5", fontSize: "0.875rem", fontWeight: 600 }}
+                        >
+                          {t.name.charAt(0).toUpperCase()}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {t.name}
                           </Typography>
+                          {t.customer?.subscription ? (
+                            <Chip
+                              icon={<Crown size={12} />}
+                              label={t.customer.subscription.plan}
+                              size="small"
+                              sx={{ height: 20, fontSize: "0.6875rem", bgcolor: "#fef3c7", color: "#b45309", fontWeight: 700 }}
+                            />
+                          ) : (
+                            <Typography variant="caption" color="text.secondary">
+                              {t.customerId ? "Registered Member" : "Guest Inquiry"}
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
+                    </TableCell>
+
+                    <TableCell sx={{ maxWidth: 280 }}>
+                      <Typography variant="subtitle2" noWrap sx={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {t.subject}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {t.message}
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell>
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, color: "text.secondary" }}>
+                          <Mail size={14} />
+                          <Typography variant="body2">{t.email}</Typography>
+                        </Box>
+                        {t.phone && (
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, color: "text.secondary" }}>
+                            <Phone size={14} />
+                            <Typography variant="body2">{t.phone}</Typography>
+                          </Box>
                         )}
                       </Box>
-                    </Box>
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell sx={{ maxWidth: 280 }}>
-                    <Typography variant="subtitle2" noWrap sx={{ fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {t.subject}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {t.message}
-                    </Typography>
-                  </TableCell>
+                    <TableCell>{getStatusChip(t.status)}</TableCell>
 
-                  <TableCell>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, color: "text.secondary" }}>
-                        <Mail size={14} />
-                        <Typography variant="body2">{t.email}</Typography>
-                      </Box>
-                      {t.phone && (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, color: "text.secondary" }}>
-                          <Phone size={14} />
-                          <Typography variant="body2">{t.phone}</Typography>
-                        </Box>
-                      )}
-                    </Box>
-                  </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {formatDate(t.createdAt)}
+                      </Typography>
+                    </TableCell>
 
-                  <TableCell>{getStatusChip(t.status)}</TableCell>
-
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {formatDate(t.createdAt)}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell align="right">
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleOpenTicket(t)}
-                      sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-                    >
-                      View & Manage
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    <TableCell align="right">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleOpenTicket(t)}
+                        sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+                      >
+                        View & Manage
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Paper>
 
