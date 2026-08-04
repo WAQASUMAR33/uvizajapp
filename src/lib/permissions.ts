@@ -9,7 +9,8 @@ export type PermissionKey =
   | "subscription_packages"
   | "terms"
   | "users"
-  | "roles";
+  | "roles"
+  | "support";
 
 export interface UserAuthDetails {
   id?: string | number;
@@ -30,6 +31,7 @@ const ALL_SYSTEM_PERMISSIONS: PermissionKey[] = [
   "terms",
   "users",
   "roles",
+  "support",
 ];
 
 const ADMIN_DEFAULT_PERMISSIONS: PermissionKey[] = [
@@ -43,6 +45,7 @@ const ADMIN_DEFAULT_PERMISSIONS: PermissionKey[] = [
   "subscription_packages",
   "terms",
   "users",
+  "support",
 ];
 
 const ACCOUNTANT_DEFAULT_PERMISSIONS: PermissionKey[] = [
@@ -51,6 +54,7 @@ const ACCOUNTANT_DEFAULT_PERMISSIONS: PermissionKey[] = [
   "redemptions",
   "subscriptions",
   "subscription_packages",
+  "support",
 ];
 
 const SALESMAN_DEFAULT_PERMISSIONS: PermissionKey[] = [

@@ -12,7 +12,7 @@ import Box from "@mui/material/Box";
 import Image from "next/image";
 import {
   LayoutDashboard, Store, Tag, Users, UserCheck, Receipt,
-  CreditCard, LayoutGrid, LogOut, Package, FileText,
+  CreditCard, LayoutGrid, LogOut, Package, FileText, Headphones,
 } from "lucide-react";
 
 import { hasPermission, PermissionKey } from "@/lib/permissions";
@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/merchants",              label: "Merchants",         icon: Store,           roles: ["SUPER_ADMIN", "ADMIN", "SALESMAN"],             permissionKey: "merchants" },
   { href: "/admin/categories",            label: "Categories",        icon: LayoutGrid,      roles: ["SUPER_ADMIN", "ADMIN"],                          permissionKey: "categories" },
   { href: "/admin/customers",             label: "Customers",         icon: UserCheck,       roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "customers" },
+  { href: "/admin/support",               label: "Support Messages",  icon: Headphones,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "support" },
   { href: "/admin/redemptions",           label: "Redemptions",       icon: Receipt,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "redemptions" },
   { href: "/admin/subscriptions",         label: "Subscriptions",     icon: CreditCard,      roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "subscriptions" },
   { href: "/admin/subscription-packages", label: "Sub. Packages",     icon: Package,         roles: ["SUPER_ADMIN", "ADMIN", "ACCOUNTANT"],             permissionKey: "subscription_packages" },

@@ -35,6 +35,13 @@ enum MerchantCategory {
   BARS_NIGHTLIFE
 }
 
+enum SupportStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
 // ─── Admin auth (NextAuth) & Roles ────────────────────────────────────────────
 
 model Role {
@@ -124,6 +131,7 @@ model Customer {
   subscription    Subscription?
   redemptions     Redemption[]
   merchantRatings MerchantRating[]
+  supportTickets  SupportTicket[]
 }
 
 // ─── Business models ──────────────────────────────────────────────────────────
@@ -287,4 +295,20 @@ model PromoCode {
   updatedAt         DateTime  @updatedAt
 
   subscriptions Subscription[]
+}
+
+model SupportTicket {
+  id         Int           @id @default(autoincrement())
+  customerId Int?
+  name       String        @db.VarChar(191)
+  email      String        @db.VarChar(191)
+  phone      String?       @db.VarChar(50)
+  subject    String        @db.VarChar(191)
+  message    String        @db.Text
+  status     SupportStatus @default(PENDING)
+  adminNotes String?       @db.Text
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
