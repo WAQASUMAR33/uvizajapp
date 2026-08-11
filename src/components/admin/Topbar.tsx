@@ -34,13 +34,7 @@ export function AdminTopbar({ user }: AdminTopbarProps) {
         color: "text.primary",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", minHeight: "64px !important", px: 3 }}>
-        {/* Brand */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 40, width: "auto" }} />
-        </Box>
-
+      <Toolbar sx={{ justifyContent: "flex-end", minHeight: "64px !important", px: 3 }}>
         {/* User menu */}
         <Box>
           <IconButton

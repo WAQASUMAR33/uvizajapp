@@ -10,14 +10,8 @@ import MuiButton from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
-import Divider from "@mui/material/Divider";
-import Chip from "@mui/material/Chip";
-import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  Mail, Lock, Eye, EyeOff, ArrowRight,
-  Crown, Utensils, MapPin, Star,
-} from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -62,15 +56,9 @@ function LoginForm() {
         flexDirection: "column",
         alignItems: "center"
       }}>
-        {/* Logo */}
-        <Box sx={{ display: "flex", alignItems: "center", mb: 5 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 60, width: "auto" }} />
-        </Box>
-
         <Box sx={{ width: "100%" }}>
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>Welcome back</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>Login</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Sign in to your account to continue</Typography>
           </Box>
 

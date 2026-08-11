@@ -65,14 +65,14 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
         "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
           boxSizing: "border-box",
-          background: "linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)",
+          background: "linear-gradient(180deg, #0066FF 0%, #0052CC 100%)",
           borderRight: "none",
           color: "#fff",
         },
       }}
     >
       {/* Logo */}
-      <Box sx={{ px: 3, py: 2.5, borderBottom: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "center" }}>
+      <Box sx={{ px: 3, py: 2.5, borderBottom: "1px solid rgba(255,255,255,0.15)", display: "flex", justifyContent: "center" }}>
         <Image
           src="/uzivaj_logo.png"
           alt="Ujivaj"
@@ -95,15 +95,15 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
               sx={{
                 borderRadius: "10px",
                 mb: 0.25,
-                color: active ? "#fff" : "#94a3b8",
+                color: active ? "#fff" : "rgba(255,255,255,0.8)",
                 "&.Mui-selected": {
-                  backgroundColor: "rgba(255,255,255,0.12)",
-                  "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" },
+                  backgroundColor: "rgba(255,255,255,0.22)",
+                  "&:hover": { backgroundColor: "rgba(255,255,255,0.28)" },
                 },
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.07)", color: "#fff" },
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.12)", color: "#fff" },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: active ? "#f59e0b" : "inherit" }}>
+              <ListItemIcon sx={{ minWidth: 36, color: active ? "#ffc107" : "inherit" }}>
                 <Icon size={18} />
               </ListItemIcon>
               <ListItemText
@@ -115,7 +115,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
         })}
       </List>
 
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.15)" }} />
 
       {/* Sign out */}
       <Box sx={{ px: 1.5, py: 1.5 }}>
@@ -123,8 +123,8 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
           onClick={() => signOut({ callbackUrl: "/login" })}
           sx={{
             borderRadius: "10px",
-            color: "#94a3b8",
-            "&:hover": { backgroundColor: "rgba(239,68,68,0.12)", color: "#fca5a5" },
+            color: "rgba(255,255,255,0.8)",
+            "&:hover": { backgroundColor: "rgba(255,255,255,0.15)", color: "#fff" },
           }}
         >
           <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
