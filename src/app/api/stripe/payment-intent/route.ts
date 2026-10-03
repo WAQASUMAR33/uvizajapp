@@ -83,25 +83,15 @@ export async function POST(req: NextRequest) {
       { apiVersion: "2025-02-24.acacia" }
     );
 
-    // Create a Stripe recurring price dynamically
-    const stripePrice = await stripe.prices.create({
+    // Create PaymentIntent for the mobile PaymentSheet with off_session setup for recurring renewals
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: unitAmountCents,
       currency: "eur",
-      unit_amount: unitAmountCents,
-      recurring: {
-        interval: plan === "MONTHLY" ? "month" : "year",
-      },
-      product_data: {
-        name: packageName,
-      },
-    });
-
-    // Create an incomplete subscription so the mobile app can collect payment details
-    const subscription = await stripe.subscriptions.create({
       customer: stripeCustomer.id,
-      items: [{ price: stripePrice.id }],
-      payment_behavior: "default_incomplete",
-      payment_settings: { save_default_payment_method: "on_subscription" },
-      expand: ["latest_invoice.payment_intent"],
+      setup_future_usage: "off_session",
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
         customerId: customer.id.toString(),
         subscriptionPackageId: subscriptionPackageId ? subscriptionPackageId.toString() : "",
@@ -111,12 +101,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const latestInvoice = subscription.latest_invoice as { payment_intent?: { client_secret?: string } } | null;
-    const clientSecret = latestInvoice?.payment_intent?.client_secret;
-
     return NextResponse.json({
-      subscriptionId: subscription.id,
-      clientSecret: clientSecret || null,
+      subscriptionId: paymentIntent.id,
+      paymentIntentId: paymentIntent.id,
+      clientSecret: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customer: stripeCustomer.id,
       publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",

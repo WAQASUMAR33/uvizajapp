@@ -12,7 +12,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { ShieldCheck, Store, LayoutGrid, User, Crown, LogOut, Sparkles } from "lucide-react";
 
-const DRAWER_WIDTH = 240;
+const DRAWER_WIDTH = 260;
 
 const mainLinks = [
   { href: "/admin",      label: "Dashboard",  icon: ShieldCheck },
@@ -43,13 +43,13 @@ export function MainSidebar({ role }: { role?: string }) {
       }}
     >
       <Box sx={{ px: 2.5, py: 2.5, borderBottom: "1px solid", borderColor: "divider", display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Box sx={{ width: 32, height: 32, borderRadius: "9px", background: "linear-gradient(135deg,#f59e0b,#eab308)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(245,158,11,0.3)" }}>
-          <Sparkles size={16} color="#fff" />
+        <Box sx={{ width: 36, height: 36, borderRadius: "10px", background: "linear-gradient(135deg,#f59e0b,#eab308)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(245,158,11,0.3)" }}>
+          <Sparkles size={18} color="#fff" />
         </Box>
-        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Ujivaj</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: "1.05rem" }}>Ujivaj</Typography>
       </Box>
 
-      <List sx={{ flex: 1, px: 1.5, py: 1.5 }} disablePadding>
+      <List sx={{ flex: 1, px: 2, py: 2 }} disablePadding>
         {mainLinks.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (
@@ -59,18 +59,20 @@ export function MainSidebar({ role }: { role?: string }) {
               href={href}
               selected={active}
               sx={{
-                borderRadius: "10px",
-                mb: 0.25,
+                borderRadius: "12px",
+                py: 1.25,
+                px: 2,
+                mb: 0.75,
                 "&.Mui-selected": { bgcolor: "#e0e7ff", color: "#4338ca", "&:hover": { bgcolor: "#c7d2fe" } },
                 "&:hover": { bgcolor: "action.hover" },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: active ? "#4f46e5" : "text.secondary" }}>
-                <Icon size={18} />
+              <ListItemIcon sx={{ minWidth: 38, color: active ? "#4f46e5" : "text.secondary" }}>
+                <Icon size={20} />
               </ListItemIcon>
               <ListItemText
                 primary={label}
-                slotProps={{ primary: { style: { fontSize: "0.875rem", fontWeight: active ? 600 : 400 } } }}
+                slotProps={{ primary: { style: { fontSize: "0.9375rem", fontWeight: active ? 600 : 500 } } }}
               />
             </ListItemButton>
           );
@@ -79,15 +81,15 @@ export function MainSidebar({ role }: { role?: string }) {
 
       <Divider />
 
-      <Box sx={{ px: 1.5, py: 1.5 }}>
+      <Box sx={{ px: 2, py: 2 }}>
         <ListItemButton
           onClick={() => signOut({ callbackUrl: "/login" })}
-          sx={{ borderRadius: "10px", "&:hover": { bgcolor: "#fee2e2", color: "#dc2626" } }}
+          sx={{ borderRadius: "12px", py: 1.25, px: 2, "&:hover": { bgcolor: "#fee2e2", color: "#dc2626" } }}
         >
-          <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
-            <LogOut size={18} />
+          <ListItemIcon sx={{ minWidth: 38, color: "inherit" }}>
+            <LogOut size={20} />
           </ListItemIcon>
-          <ListItemText primary="Sign out" slotProps={{ primary: { style: { fontSize: "0.875rem" } } }} />
+          <ListItemText primary="Sign out" slotProps={{ primary: { style: { fontSize: "0.9375rem", fontWeight: 500 } } }} />
         </ListItemButton>
       </Box>
     </Drawer>
