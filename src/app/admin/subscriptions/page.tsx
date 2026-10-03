@@ -24,7 +24,9 @@ import {
   Filter,
   Package,
   Clock,
-  ArrowUpDown
+  ArrowUpDown,
+  Ban,
+  AlertTriangle
 } from "lucide-react";
 import { formatDate, formatCurrency } from "@/lib/utils";
 
@@ -123,6 +125,9 @@ export default function AdminSubscriptionsPage() {
   const [sortBy, setSortBy] = useState<string>("NEWEST");
   const [selectedSub, setSelectedSub] = useState<Sub | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [confirmCancelSub, setConfirmCancelSub] = useState<Sub | null>(null);
+  const [cancellingId, setCancellingId] = useState<number | string | null>(null);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -148,6 +153,52 @@ export default function AdminSubscriptionsPage() {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
+  }
+
+  // Cancel Stripe / Database Subscription
+  async function handleCancelSubscription(sub: Sub) {
+    setCancellingId(sub.id);
+    try {
+      const res = await fetch("/api/admin/subscriptions/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subscriptionId: sub.id,
+          customerId: sub.customerId,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to cancel subscription");
+      }
+
+      // Update local state list
+      setSubs((prev) =>
+        prev.map((item) =>
+          item.id === sub.id ? { ...item, status: "CANCELLED" } : item
+        )
+      );
+
+      // Update selected modal sub if open
+      if (selectedSub && selectedSub.id === sub.id) {
+        setSelectedSub((prev) => (prev ? { ...prev, status: "CANCELLED" } : null));
+      }
+
+      setNotification({
+        type: "success",
+        message: data.message || `Subscription #${sub.id} has been cancelled successfully.`,
+      });
+      setConfirmCancelSub(null);
+    } catch (err: any) {
+      console.error(err);
+      setNotification({
+        type: "error",
+        message: err.message || "Failed to cancel subscription. Please try again.",
+      });
+    } finally {
+      setCancellingId(null);
+    }
   }
 
   // Filtered & Sorted Subscriptions
@@ -317,6 +368,32 @@ export default function AdminSubscriptionsPage() {
           </Link>
         </div>
       </div>
+
+      {/* Alert / Notification Feedback */}
+      {notification && (
+        <div
+          className={`p-4 rounded-2xl flex items-center justify-between text-sm font-medium animate-in fade-in duration-200 border ${
+            notification.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200 shadow-xs"
+              : "bg-rose-50 text-rose-800 border-rose-200 shadow-xs"
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            {notification.type === "success" ? (
+              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle size={18} className="text-rose-600 shrink-0" />
+            )}
+            <span>{notification.message}</span>
+          </div>
+          <button
+            onClick={() => setNotification(null)}
+            className="p-1 hover:bg-black/5 rounded-lg text-slate-500 cursor-pointer"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
 
       {/* ======================================================== */}
       {/* 2. STATS KPI CARDS                                       */}
@@ -689,15 +766,36 @@ export default function AdminSubscriptionsPage() {
 
                       {/* Actions */}
                       <td className="py-4 px-5 text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedSub(s);
-                          }}
-                          className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 text-xs font-semibold text-slate-600 transition-all cursor-pointer"
-                        >
-                          View
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          {s.status === "ACTIVE" ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setConfirmCancelSub(s);
+                              }}
+                              disabled={cancellingId === s.id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                              title="Cancel subscription in Stripe & database"
+                            >
+                              <Ban size={13} className={cancellingId === s.id ? "animate-spin" : ""} />
+                              <span>Cancel</span>
+                            </button>
+                          ) : s.status === "CANCELLED" ? (
+                            <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-1 rounded-md border border-slate-200/60">
+                              Cancelled
+                            </span>
+                          ) : null}
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSub(s);
+                            }}
+                            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 text-xs font-semibold text-slate-600 transition-all cursor-pointer"
+                          >
+                            View
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -873,13 +971,111 @@ export default function AdminSubscriptionsPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+              {selectedSub.status === "ACTIVE" ? (
+                <button
+                  onClick={() => setConfirmCancelSub(selectedSub)}
+                  disabled={cancellingId === selectedSub.id}
+                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm disabled:opacity-50"
+                >
+                  <Ban size={14} />
+                  <span>Cancel Stripe Subscription</span>
+                </button>
+              ) : (
+                <span className="text-xs font-semibold text-slate-400">
+                  Status: {selectedSub.status}
+                </span>
+              )}
+
               <button
                 onClick={() => setSelectedSub(null)}
                 className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer transition-colors"
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 6. CONFIRM CANCEL SUBSCRIPTION DIALOG                   */}
+      {/* ======================================================== */}
+      {confirmCancelSub && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200">
+          <div
+            className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4 border border-rose-100 shadow-xs">
+                <AlertTriangle size={24} />
+              </div>
+
+              <h3 className="text-lg font-bold text-slate-900">
+                Cancel Stripe Subscription?
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                Are you sure you want to cancel the subscription for{" "}
+                <strong className="text-slate-800">
+                  {confirmCancelSub.customer.fullname || confirmCancelSub.customer.email}
+                </strong>
+                ?
+              </p>
+
+              <div className="mt-4 p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-2 text-xs text-slate-600">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Package / Plan:</span>
+                  <span className="font-semibold text-slate-800">
+                    {confirmCancelSub.subscriptionPackage?.titleEn || confirmCancelSub.plan}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Rate:</span>
+                  <span className="font-semibold text-slate-800">
+                    {formatCurrency(confirmCancelSub.price, confirmCancelSub.currency)}
+                  </span>
+                </div>
+                {confirmCancelSub.paymentRef && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-400">Payment Ref:</span>
+                    <span className="font-mono text-[11px] text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200 truncate max-w-[200px]">
+                      {confirmCancelSub.paymentRef}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="text-[11px] text-rose-700 bg-rose-50/70 p-3 rounded-xl border border-rose-200/60 mt-3 leading-relaxed">
+                ⚠️ This action will immediately cancel any recurring billing on Stripe and update the subscriber record to <strong>CANCELLED</strong>.
+              </div>
+
+              <div className="mt-6 flex items-center justify-end gap-2.5">
+                <button
+                  onClick={() => setConfirmCancelSub(null)}
+                  disabled={cancellingId !== null}
+                  className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  Keep Subscription
+                </button>
+                <button
+                  onClick={() => handleCancelSubscription(confirmCancelSub)}
+                  disabled={cancellingId !== null}
+                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm disabled:opacity-50"
+                >
+                  {cancellingId === confirmCancelSub.id ? (
+                    <>
+                      <RefreshCw size={13} className="animate-spin" />
+                      <span>Cancelling...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Ban size={13} />
+                      <span>Yes, Cancel Subscription</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
