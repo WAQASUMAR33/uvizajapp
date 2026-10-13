@@ -24,6 +24,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
+    if (customer.logType === "email" && customer.isEmailVerified === false) {
+      return NextResponse.json(
+        { error: "Please verify your email before logging in. Check your inbox for the verification link." },
+        { status: 403 }
+      );
+    }
+
     const { password: _, ...safeCustomer } = customer;
     return NextResponse.json(safeCustomer);
   } catch {

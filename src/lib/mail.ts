@@ -139,4 +139,52 @@ export async function sendSupportReplyEmail({
   }
 }
 
+export async function sendCustomerEmailVerificationLink(to: string, verifyUrl: string, fullname?: string) {
+  try {
+    const transporter = createTransporter();
+    const displayName = fullname ? ` ${fullname}` : "";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://uvizajapp.vercel.app";
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM ?? `"Ujivaj Support" <${process.env.SMTP_USER}>`,
+      to,
+      subject: "Verify your Ujivaj account email",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <img src="${appUrl}/uzivaj_logo.png" alt="Ujivaj" style="height: 48px; width: auto;" />
+          </div>
+          <div style="background-color: #ffffff; padding: 28px 24px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <h2 style="margin: 0 0 12px; color: #1e1b4b; font-size: 20px; font-weight: 700;">Verify your email address</h2>
+            <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 20px;">
+              Hello${displayName},<br/><br/>
+              Thank you for registering with Ujivaj! Please click the button below to verify your email address and activate your account.
+            </p>
+            <div style="text-align: center; margin: 28px 0;">
+              <a href="${verifyUrl}" style="display: inline-block; padding: 14px 36px; background-color: #4f46e5; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; letter-spacing: 0.3px;">
+                Verify Email Address
+              </a>
+            </div>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5; margin: 0 0 16px;">
+              This link is valid for <strong>24 hours</strong>. If you did not sign up for an account, please ignore this email.
+            </p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+            <p style="color: #94a3b8; font-size: 12px; line-height: 1.5; margin: 0; word-break: break-all;">
+              Button not working? Copy and paste this link in your browser:<br/>
+              <a href="${verifyUrl}" style="color: #4f46e5; text-decoration: underline;">${verifyUrl}</a>
+            </p>
+          </div>
+          <div style="margin-top: 24px; text-align: center; color: #94a3b8; font-size: 12px;">
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Ujivaj. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    });
+    console.log(`[Mail] Verification email sent successfully to ${to}`);
+  } catch (error: any) {
+    console.error(`[Mail] Failed to send verification email via SMTP: ${error?.message || error}`);
+    console.log(`[Mail] Fallback verify URL: ${verifyUrl}`);
+  }
+}
+
+
 
