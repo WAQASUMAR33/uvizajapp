@@ -9,6 +9,7 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
 import { Home, ArrowLeft, AlertCircle } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function NotFound() {
   return (
@@ -25,6 +26,9 @@ export default function NotFound() {
         p: 3,
       }}
     >
+      <Box sx={{ position: "absolute", top: 24, right: 24, zIndex: 10 }}>
+        <ThemeToggle variant="icon" />
+      </Box>
       {/* Decorative Glows */}
       <Box
         sx={{

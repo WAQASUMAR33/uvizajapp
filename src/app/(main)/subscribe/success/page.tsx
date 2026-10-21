@@ -3,55 +3,116 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
 import { CheckCircle2, ArrowRight, ShieldCheck, Sparkles, UtensilsCrossed } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-16 text-center">
-      <div className="relative inline-flex items-center justify-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-lg shadow-emerald-50">
-          <CheckCircle2 className="w-12 h-12" />
-        </div>
-        <div className="absolute -top-1 -right-1 bg-amber-400 text-white rounded-full p-1.5 shadow">
-          <Sparkles className="w-4 h-4" />
-        </div>
-      </div>
+    <Box sx={{ maxWidth: 560, mx: "auto", px: 3, py: { xs: 6, sm: 10 }, textAlign: "center" }}>
+      <Paper
+        elevation={2}
+        sx={{
+          p: { xs: 4, sm: 6 },
+          borderRadius: "24px",
+          border: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", mb: 3 }}>
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              bgcolor: "rgba(16, 185, 129, 0.12)",
+              color: "success.main",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 20px rgba(16, 185, 129, 0.25)",
+            }}
+          >
+            <CheckCircle2 size={48} />
+          </Box>
+          <Box
+            sx={{
+              position: "absolute",
+              top: -4,
+              right: -4,
+              bgcolor: "secondary.main",
+              color: "#ffffff",
+              borderRadius: "50%",
+              p: 0.75,
+              display: "flex",
+              boxShadow: "0 2px 8px rgba(245, 158, 11, 0.4)",
+            }}
+          >
+            <Sparkles size={16} />
+          </Box>
+        </Box>
 
-      <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
-        Welcome to VIP Membership!
-      </h1>
-      <p className="text-slate-600 text-base mb-6 leading-relaxed">
-        Your payment has been processed successfully and your subscription is now active. You have full access to exclusive perks, merchant savings, and special offers.
-      </p>
+        <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: "-0.02em", mb: 1.5 }}>
+          Welcome to VIP Membership!
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.7 }}>
+          Your payment has been processed successfully and your subscription is active. You now have full access to exclusive restaurant discounts and VIP perks.
+        </Typography>
 
-      {sessionId && (
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-8 text-left text-xs text-slate-500 break-all flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-          <span>
-            <strong className="text-slate-700">Receipt Ref:</strong> {sessionId.slice(0, 24)}...
-          </span>
-        </div>
-      )}
+        {sessionId && (
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: "14px",
+              bgcolor: "action.hover",
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 4,
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              textAlign: "left",
+            }}
+          >
+            <ShieldCheck size={20} color="#10b981" style={{ flexShrink: 0 }} />
+            <Typography variant="caption" color="text.secondary" sx={{ wordBreak: "break-all" }}>
+              <strong>Receipt Ref:</strong> {sessionId.slice(0, 24)}...
+            </Typography>
+          </Box>
+        )}
 
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <Link href="/merchants" className="w-full sm:w-auto">
-          <Button variant="default" size="lg" className="w-full sm:w-auto px-6 py-3 font-semibold">
-            <UtensilsCrossed className="w-4 h-4 mr-2" />
-            Explore Merchants & Perks
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, justifyContent: "center" }}>
+          <Button
+            component={Link}
+            href="/merchants"
+            variant="contained"
+            color="primary"
+            size="large"
+            startIcon={<UtensilsCrossed size={18} />}
+            sx={{ borderRadius: "12px", py: 1.3, px: 3, fontWeight: 700 }}
+          >
+            Explore Merchants
           </Button>
-        </Link>
-        <Link href="/profile" className="w-full sm:w-auto">
-          <Button variant="outline" size="lg" className="w-full sm:w-auto px-6 py-3 font-semibold">
+          <Button
+            component={Link}
+            href="/profile"
+            variant="outlined"
+            size="large"
+            endIcon={<ArrowRight size={18} />}
+            sx={{ borderRadius: "12px", py: 1.3, px: 3, fontWeight: 600 }}
+          >
             Go to Profile
-            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
-        </Link>
-      </div>
-    </div>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
 
@@ -59,9 +120,9 @@ export default function SubscribeSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-xl mx-auto px-4 py-16 text-center text-slate-500">
-          Loading your confirmation...
-        </div>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
+          <CircularProgress color="primary" />
+        </Box>
       }
     >
       <SuccessContent />

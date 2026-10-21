@@ -14,7 +14,19 @@ import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
 import LinearProgress from "@mui/material/LinearProgress";
-import { Sparkles, Mail, Lock, User, ArrowRight, Crown, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useColorMode } from "@/components/ThemeRegistry";
+import {
+  Sparkles,
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  Crown,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+} from "lucide-react";
 
 const PERKS = [
   "Access exclusive deals at 200+ dining spots",
@@ -31,6 +43,9 @@ const STATS = [
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { mode } = useColorMode();
+  const isDark = mode === "dark";
+
   const [name, setName]         = useState("");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -61,152 +76,298 @@ export default function RegisterPage() {
   const pwColor    = pwStrength < 34 ? "error" : pwStrength < 67 ? "warning" : "success";
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: { xs: "column", lg: "row" },
+        bgcolor: "background.default",
+        color: "text.primary",
+      }}
+    >
       {/* ── Left branded panel ── */}
-      <Box sx={{
-        display: { xs: "none", lg: "flex" },
-        width: "52%",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        p: 6,
-        background: "linear-gradient(145deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%)",
-        position: "relative",
-        overflow: "hidden",
-      }}>
+      <Box
+        sx={{
+          display: { xs: "none", lg: "flex" },
+          width: { lg: "50%", xl: "54%" },
+          flexDirection: "column",
+          justifyContent: "space-between",
+          p: { lg: 6, xl: 8 },
+          background: isDark
+            ? "linear-gradient(145deg, #0f172a 0%, #1e1b4b 50%, #0b0f19 100%)"
+            : "linear-gradient(145deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)",
+          position: "relative",
+          overflow: "hidden",
+          borderRight: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         {[
           { top: -80, right: -80, w: 320, color: "rgba(139,92,246,0.2)" },
           { top: "33%", left: -64, w: 288, color: "rgba(99,102,241,0.15)" },
-          { bottom: -96, right: "25%", w: 320, color: "rgba(245,158,11,0.1)" },
+          { bottom: -96, right: "25%", w: 320, color: "rgba(245,158,11,0.12)" },
         ].map((b, i) => (
-          <Box key={i} sx={{ position: "absolute", width: b.w, height: b.w, borderRadius: "50%", bgcolor: b.color, filter: "blur(48px)", top: (b as any).top, left: (b as any).left, right: (b as any).right, bottom: (b as any).bottom }} />
+          <Box
+            key={i}
+            sx={{
+              position: "absolute",
+              width: b.w,
+              height: b.w,
+              borderRadius: "50%",
+              bgcolor: b.color,
+              filter: "blur(54px)",
+              top: (b as any).top,
+              left: (b as any).left,
+              right: (b as any).right,
+              bottom: (b as any).bottom,
+              pointerEvents: "none",
+            }}
+          />
         ))}
 
-        <Box sx={{ position: "relative", display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Box sx={{ width: 40, height: 40, borderRadius: "12px", background: "linear-gradient(135deg,#f59e0b,#eab308)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(245,158,11,0.35)" }}>
-            <Sparkles size={20} color="#fff" />
-          </Box>
-          <Typography variant="h6" sx={{ color: "#fff", fontWeight: 700 }}>Ujivaj</Typography>
+        <Box sx={{ position: "relative", display: "flex", alignItems: "center", gap: 2 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+          <Chip
+            label="Membership"
+            size="small"
+            sx={{
+              bgcolor: "rgba(255,255,255,0.12)",
+              color: "#fbbf24",
+              border: "1px solid rgba(255,255,255,0.2)",
+              fontWeight: 700,
+            }}
+          />
         </Box>
 
-        <Box sx={{ position: "relative" }}>
-          <Chip label="Free to Join" icon={<Crown size={12} />} size="small" sx={{ mb: 3, bgcolor: "rgba(255,255,255,0.1)", color: "#fbbf24", border: "1px solid rgba(255,255,255,0.15)", fontWeight: 600 }} />
-          <Typography variant="h3" sx={{ color: "#fff", fontWeight: 800, lineHeight: 1.15, mb: 2 }}>
-            Start saving<br />
-            <Box component="span" sx={{ background: "linear-gradient(90deg,#fbbf24,#f59e0b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+        <Box sx={{ position: "relative", my: "auto", py: 6 }}>
+          <Chip
+            label="Free to Join"
+            icon={<Crown size={12} />}
+            size="small"
+            sx={{
+              mb: 3,
+              bgcolor: "rgba(255,255,255,0.1)",
+              color: "#fbbf24",
+              border: "1px solid rgba(255,255,255,0.18)",
+              fontWeight: 700,
+            }}
+          />
+          <Typography variant="h2" sx={{ color: "#fff", fontWeight: 800, lineHeight: 1.18, mb: 2 }}>
+            Start saving <br />
+            <Box
+              component="span"
+              sx={{
+                background: "linear-gradient(90deg,#fbbf24,#f59e0b)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               today.
             </Box>
           </Typography>
-          <Typography sx={{ color: "#a5b4fc", fontSize: "1.0625rem", lineHeight: 1.7, maxWidth: 360, mb: 4 }}>
-            Create your free account and unlock exclusive dining deals at premium spots near you.
+          <Typography sx={{ color: "#c7d2fe", fontSize: "1.05rem", lineHeight: 1.7, maxWidth: 400, mb: 4 }}>
+            Create your free account and unlock exclusive dining privileges at premium establishments.
           </Typography>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 4 }}>
             {PERKS.map((perk) => (
               <Box key={perk} sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
                 <CheckCircle2 size={18} color="#34d399" style={{ marginTop: 2, flexShrink: 0 }} />
-                <Typography sx={{ color: "#c7d2fe", fontSize: "0.875rem" }}>{perk}</Typography>
+                <Typography sx={{ color: "#e0e7ff", fontSize: "0.875rem", fontWeight: 500 }}>
+                  {perk}
+                </Typography>
               </Box>
             ))}
           </Box>
 
-          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2, maxWidth: 460 }}>
             {STATS.map(({ value, label }) => (
-              <Paper key={label} sx={{ p: 2, textAlign: "center", bgcolor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3 }}>
-                <Typography variant="h5" sx={{ color: "#fff", fontWeight: 800 }}>{value}</Typography>
-                <Typography sx={{ color: "#818cf8", fontSize: "0.75rem", mt: 0.5 }}>{label}</Typography>
+              <Paper
+                key={label}
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  bgcolor: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.14)",
+                  borderRadius: "14px",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                <Typography variant="h5" sx={{ color: "#fff", fontWeight: 800 }}>
+                  {value}
+                </Typography>
+                <Typography sx={{ color: "#a5b4fc", fontSize: "0.75rem", mt: 0.5, fontWeight: 600 }}>
+                  {label}
+                </Typography>
               </Paper>
             ))}
           </Box>
         </Box>
 
-        <Typography sx={{ position: "relative", color: "#4338ca", fontSize: "0.75rem" }}>
-          © 2026 Ujivaj. All rights reserved.
+        <Typography sx={{ position: "relative", color: "#818cf8", fontSize: "0.75rem" }}>
+          © {new Date().getFullYear()} Ujivaj Inc. All rights reserved.
         </Typography>
       </Box>
 
       {/* ── Right form panel ── */}
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", p: { xs: 3, sm: 6 }, bgcolor: "background.default" }}>
-        <Box sx={{ display: { xs: "flex", lg: "none" }, alignItems: "center", gap: 1.5, mb: 4 }}>
-          <Box sx={{ width: 36, height: 36, borderRadius: "10px", background: "linear-gradient(135deg,#f59e0b,#eab308)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Sparkles size={18} color="#fff" />
-          </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>Ujivaj</Typography>
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          p: { xs: 3, sm: 6, lg: 8 },
+          position: "relative",
+        }}
+      >
+        <Box sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+          <ThemeToggle variant="icon" />
         </Box>
 
-        <Box sx={{ width: "100%", maxWidth: 380 }}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>Create your account</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Free forever. No credit card required.</Typography>
-          </Box>
+        <Box sx={{ width: "100%", maxWidth: 420, my: "auto" }}>
+          <Paper
+            elevation={isDark ? 3 : 1}
+            sx={{
+              p: { xs: 3.5, sm: 4.5 },
+              borderRadius: "20px",
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <Box sx={{ mb: 3.5 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: "-0.01em" }}>
+                Create your account
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+                Free forever. No credit card required.
+              </Typography>
+            </Box>
 
-          {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
+            {error && <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>{error}</Alert>}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-            <TextField
-              label="Full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              fullWidth
-              slotProps={{ input: { startAdornment: <InputAdornment position="start"><User size={16} /></InputAdornment> } }}
-            />
-            <TextField
-              label="Email address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              fullWidth
-              slotProps={{ input: { startAdornment: <InputAdornment position="start"><Mail size={16} /></InputAdornment> } }}
-            />
-            <Box>
-              <TextField
-                label="Password"
-                type={showPass ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+              <Box>
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1 }}>
+                  Full Name
+                </Typography>
+                <TextField
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Jane Doe"
+                  fullWidth
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <User size={16} className="text-slate-400" />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1 }}>
+                  Email Address
+                </Typography>
+                <TextField
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="jane@example.com"
+                  required
+                  fullWidth
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Mail size={16} className="text-slate-400" />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1 }}>
+                  Password
+                </Typography>
+                <TextField
+                  type={showPass ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="At least 8 characters"
+                  required
+                  fullWidth
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock size={16} className="text-slate-400" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton size="small" onClick={() => setShowPass(!showPass)} edge="end" tabIndex={-1}>
+                            {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                    htmlInput: { minLength: 8 },
+                  }}
+                />
+                {password.length > 0 && (
+                  <LinearProgress
+                    variant="determinate"
+                    value={pwStrength}
+                    color={pwColor as any}
+                    sx={{ mt: 1, borderRadius: 2, height: 4 }}
+                  />
+                )}
+              </Box>
+
+              <MuiButton
+                type="submit"
+                variant="contained"
+                size="large"
                 fullWidth
-                slotProps={{ input: {
-                  startAdornment: <InputAdornment position="start"><Lock size={16} /></InputAdornment>,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton size="small" onClick={() => setShowPass(!showPass)} edge="end" tabIndex={-1}>
-                        {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }, htmlInput: { minLength: 8 } }}
-              />
-              {password.length > 0 && (
-                <LinearProgress variant="determinate" value={pwStrength} color={pwColor as any} sx={{ mt: 1, borderRadius: 2, height: 4 }} />
-              )}
+                disabled={loading}
+                endIcon={loading ? <CircularProgress size={16} color="inherit" /> : <ArrowRight size={16} />}
+                sx={{ borderRadius: "12px", py: 1.4, fontWeight: 700 }}
+              >
+                {loading ? "Creating account..." : "Create free account"}
+              </MuiButton>
             </Box>
 
-            <MuiButton
-              type="submit"
-              variant="contained"
-              size="large"
-              fullWidth
-              disabled={loading}
-              endIcon={loading ? <CircularProgress size={16} color="inherit" /> : <ArrowRight size={16} />}
-              sx={{ borderRadius: "10px", py: 1.5, fontWeight: 700, boxShadow: "0 4px 14px rgba(79,70,229,0.4)" }}
-            >
-              Create free account
-            </MuiButton>
-          </Box>
+            <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "center", mt: 2.5, lineHeight: 1.6 }}>
+              By creating an account you agree to our{" "}
+              <Box component={Link} href="/admin/terms" sx={{ color: "primary.main", textDecoration: "none", fontWeight: 600 }}>
+                Terms & Privacy Policy
+              </Box>
+              .
+            </Typography>
 
-          <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "center", mt: 2.5, lineHeight: 1.6 }}>
-            By creating an account you agree to our{" "}
-            <Box component="span" sx={{ color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>Terms</Box>
-            {" "}and{" "}
-            <Box component="span" sx={{ color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>Privacy Policy</Box>.
-          </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", mt: 3 }}>
+              Already have an account?{" "}
+              <Box
+                component={Link}
+                href="/login"
+                sx={{ color: "primary.main", fontWeight: 700, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
+              >
+                Sign in
+              </Box>
+            </Typography>
+          </Paper>
+        </Box>
 
-          <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", mt: 3 }}>
-            Already have an account?{" "}
-            <Box component={Link} href="/login" sx={{ color: "primary.main", fontWeight: 600, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
-              Sign in
-            </Box>
+        <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
+          <Typography variant="caption" color="text.secondary">
+            Ujivaj Hospitality & Dining Network
           </Typography>
         </Box>
       </Box>

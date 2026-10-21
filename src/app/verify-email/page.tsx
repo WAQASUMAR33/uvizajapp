@@ -2,7 +2,15 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { CheckCircle2, XCircle, Mail, ArrowRight, Sparkles } from "lucide-react";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -70,195 +78,179 @@ function VerifyEmailContent() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%)",
-      padding: "24px",
-      fontFamily: "system-ui, -apple-system, sans-serif"
-    }}>
-      <div style={{
-        maxWidth: "460px",
-        width: "100%",
-        backgroundColor: "#ffffff",
-        borderRadius: "16px",
-        padding: "40px 32px",
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
-        textAlign: "center"
-      }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
+        color: "text.primary",
+        p: 3,
+        position: "relative",
+      }}
+    >
+      <Box sx={{ position: "absolute", top: 24, right: 24 }}>
+        <ThemeToggle variant="icon" />
+      </Box>
+
+      <Box sx={{ width: "100%", maxWidth: 460 }}>
         {/* Logo */}
-        <div style={{ marginBottom: "28px" }}>
-          <img
-            src="/uzivaj_logo.png"
-            alt="Ujivaj Logo"
-            style={{ height: "52px", width: "auto", margin: "0 auto", display: "inline-block" }}
-          />
-        </div>
-
-        {/* Loading State */}
-        {status === "loading" && (
-          <div>
-            <div style={{
-              width: "48px",
-              height: "48px",
-              border: "4px solid #e0e7ff",
-              borderTopColor: "#4f46e5",
-              borderRadius: "50%",
-              animation: "spin 1s linear infinite",
-              margin: "0 auto 20px"
-            }} />
-            <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#1e1b4b", marginBottom: "8px" }}>
-              Verifying Email
-            </h2>
-            <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
-              {message}
-            </p>
-          </div>
-        )}
-
-        {/* Success State */}
-        {status === "success" && (
-          <div>
-            <div style={{
-              width: "64px",
-              height: "64px",
-              borderRadius: "50%",
-              backgroundColor: "#dcfce7",
-              color: "#16a34a",
-              display: "flex",
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 3.5 }}>
+          <Box
+            sx={{
+              display: "inline-flex",
               alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 20px",
-              fontSize: "32px",
-              fontWeight: "bold"
-            }}>
-              ✓
-            </div>
-            <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#1e1b4b", marginBottom: "12px" }}>
-              Email Verified!
-            </h2>
-            <p style={{ color: "#475569", fontSize: "15px", lineHeight: "1.6", marginBottom: "28px" }}>
-              Your email address has been verified. You can now open the Ujivaj mobile app and log into your account.
-            </p>
-            <div style={{
-              padding: "16px",
-              backgroundColor: "#f8fafc",
-              borderRadius: "10px",
-              border: "1px solid #e2e8f0",
-              color: "#64748b",
-              fontSize: "13px"
-            }}>
-              🎉 You are all set! Return to the app to start saving.
-            </div>
-          </div>
-        )}
+              px: 3,
+              py: 1.5,
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, #0f172a, #1e1b4b)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+          </Box>
+        </Box>
 
-        {/* Error State */}
-        {status === "error" && (
-          <div>
-            <div style={{
-              width: "64px",
-              height: "64px",
-              borderRadius: "50%",
-              backgroundColor: "#fee2e2",
-              color: "#dc2626",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 20px",
-              fontSize: "32px",
-              fontWeight: "bold"
-            }}>
-              ✕
-            </div>
-            <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#1e1b4b", marginBottom: "10px" }}>
-              Verification Failed
-            </h2>
-            <p style={{ color: "#64748b", fontSize: "14px", lineHeight: "1.5", marginBottom: "24px" }}>
-              {message}
-            </p>
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3.5, sm: 5 },
+            borderRadius: "20px",
+            border: "1px solid",
+            borderColor: "divider",
+            textAlign: "center",
+          }}
+        >
+          {/* Loading State */}
+          {status === "loading" && (
+            <Box sx={{ py: 3 }}>
+              <CircularProgress size={48} color="primary" sx={{ mb: 3 }} />
+              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
+                Verifying Email
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {message}
+              </Typography>
+            </Box>
+          )}
 
-            {/* Resend Form */}
-            <div style={{
-              borderTop: "1px solid #e2e8f0",
-              paddingTop: "24px",
-              textAlign: "left"
-            }}>
-              <p style={{ fontSize: "13px", fontWeight: "600", color: "#334155", marginBottom: "8px" }}>
-                Request a new verification link:
-              </p>
-              <form onSubmit={handleResend} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your email address"
-                  value={resendEmail}
-                  onChange={(e) => setResendEmail(e.target.value)}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                    fontSize: "14px",
-                    outline: "none"
-                  }}
-                />
-                <button
-                  type="submit"
-                  disabled={resendLoading}
-                  style={{
-                    padding: "11px",
-                    backgroundColor: "#4f46e5",
-                    color: "#ffffff",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontWeight: "600",
-                    fontSize: "14px",
-                    cursor: resendLoading ? "not-allowed" : "pointer",
-                    opacity: resendLoading ? 0.7 : 1
-                  }}
-                >
-                  {resendLoading ? "Sending..." : "Resend Verification Link"}
-                </button>
-              </form>
-              {resendStatus && (
-                <p style={{
-                  marginTop: "12px",
-                  fontSize: "13px",
-                  color: resendStatus.includes("sent") ? "#16a34a" : "#dc2626",
-                  textAlign: "center"
-                }}>
-                  {resendStatus}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+          {/* Success State */}
+          {status === "success" && (
+            <Box>
+              <Box
+                sx={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: "50%",
+                  bgcolor: "rgba(16, 185, 129, 0.12)",
+                  color: "success.main",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: 2.5,
+                  boxShadow: "0 4px 18px rgba(16, 185, 129, 0.25)",
+                }}
+              >
+                <CheckCircle2 size={40} />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5 }}>
+                Email Verified!
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                Your email address has been successfully verified. You can now open the Ujivaj mobile application and log into your account.
+              </Typography>
 
-      <style jsx global>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+              <Alert severity="success" icon={<Sparkles size={18} />} sx={{ borderRadius: "12px", textAlign: "left" }}>
+                You are all set! Return to the Ujivaj app to start enjoying dining savings.
+              </Alert>
+            </Box>
+          )}
+
+          {/* Error State */}
+          {status === "error" && (
+            <Box>
+              <Box
+                sx={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: "50%",
+                  bgcolor: "rgba(239, 68, 68, 0.12)",
+                  color: "error.main",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: 2.5,
+                  boxShadow: "0 4px 18px rgba(239, 68, 68, 0.25)",
+                }}
+              >
+                <XCircle size={40} />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
+                Verification Failed
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                {message}
+              </Typography>
+
+              {/* Resend Form */}
+              <Box sx={{ pt: 3, borderTop: "1px solid", borderColor: "divider", textAlign: "left" }}>
+                <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1.5 }}>
+                  Request a new verification link:
+                </Typography>
+                <Box component="form" onSubmit={handleResend} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <TextField
+                    type="email"
+                    required
+                    placeholder="Enter your email address"
+                    value={resendEmail}
+                    onChange={(e) => setResendEmail(e.target.value)}
+                    fullWidth
+                    slotProps={{
+                      input: {
+                        startAdornment: <Mail size={16} className="text-slate-400 mr-2" />,
+                      },
+                    }}
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={resendLoading}
+                    endIcon={resendLoading ? <CircularProgress size={16} color="inherit" /> : <ArrowRight size={16} />}
+                    sx={{ borderRadius: "12px", py: 1.3, fontWeight: 700 }}
+                  >
+                    {resendLoading ? "Sending..." : "Resend Verification Link"}
+                  </Button>
+                </Box>
+                {resendStatus && (
+                  <Alert
+                    severity={resendStatus.includes("sent") ? "success" : "error"}
+                    sx={{ mt: 2, borderRadius: "12px" }}
+                  >
+                    {resendStatus}
+                  </Alert>
+                )}
+              </Box>
+            </Box>
+          )}
+        </Paper>
+      </Box>
+    </Box>
   );
 }
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
-      <div style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#f8fafc"
-      }}>
-        <p style={{ color: "#64748b" }}>Loading...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <CircularProgress color="primary" />
+        </Box>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
   );

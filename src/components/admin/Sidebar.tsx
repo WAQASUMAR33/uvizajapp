@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 
 import { hasPermission, PermissionKey } from "@/lib/permissions";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const DRAWER_WIDTH = 275;
 
@@ -265,7 +266,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
             priority
           />
         </div>
-        <span className="text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30">
+        <span className="text-xs uppercase tracking-wider font-bold px-2 py-0.5 rounded-none bg-amber-400/15 text-amber-300 border border-amber-400/30">
           Admin
         </span>
       </Box>
@@ -284,7 +285,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
             value={filterQuery}
             onChange={(e) => setFilterQuery(e.target.value)}
             placeholder="Filter menu... (Ctrl+K)"
-            className="w-full pl-9 pr-8 py-2.5 bg-white/10 hover:bg-white/[0.14] focus:bg-white/[0.18] border border-white/15 focus:border-amber-400/50 rounded-xl text-sm text-white placeholder-blue-200/50 focus:outline-none transition-all shadow-inner"
+            className="w-full pl-9 pr-8 py-2.5 bg-white/10 hover:bg-white/[0.14] focus:bg-white/[0.18] border border-white/15 focus:border-amber-400/50 rounded-none text-sm text-white placeholder-blue-200/50 focus:outline-none transition-all shadow-inner"
           />
           {filterQuery && (
             <button
@@ -312,7 +313,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
           "&::-webkit-scrollbar": { width: 5 },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: "rgba(255,255,255,0.18)",
-            borderRadius: 4,
+            borderRadius: 0,
           },
         }}
       >
@@ -340,7 +341,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group cursor-pointer ${
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-none text-sm font-medium transition-all duration-150 group cursor-pointer ${
                     active
                       ? "bg-white/20 text-white font-semibold shadow-sm border border-white/20"
                       : "text-blue-100/90 hover:bg-white/10 hover:text-white"
@@ -360,7 +361,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {item.badge && (
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-none bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                         {item.badge}
                       </span>
                     )}
@@ -395,7 +396,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group cursor-pointer relative ${
+                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-none text-sm font-medium transition-all duration-150 group cursor-pointer relative ${
                           active
                             ? "bg-white/20 text-white font-semibold shadow-[0_2px_12px_rgba(0,0,0,0.2)] border border-white/25 backdrop-blur-sm"
                             : "text-blue-100/90 hover:bg-white/[0.09] hover:text-white"
@@ -403,7 +404,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
                       >
                         {/* Active left indicator glow */}
                         {active && (
-                          <div className="absolute left-0 top-2 bottom-2 w-1.5 bg-amber-400 rounded-r-full shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
                         )}
 
                         <div className="flex items-center gap-3 min-w-0 pl-1">
@@ -420,7 +421,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
                         </div>
 
                         {item.badge ? (
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 shrink-0">
+                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-none bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 shrink-0">
                             {item.badge}
                           </span>
                         ) : active ? (
@@ -437,26 +438,31 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
       </Box>
 
       {/* ======================================================== */}
-      {/* 4. FOOTER: USER BADGE & SIGN OUT                        */}
+      {/* 4. FOOTER: THEME TOGGLE & SIGN OUT                     */}
       {/* ======================================================== */}
       <Box
         sx={{
           p: 2,
           borderTop: "1px solid rgba(255, 255, 255, 0.08)",
           background: "rgba(0, 0, 0, 0.2)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 1.5,
         }}
       >
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 1 }}>
+          <span className="text-xs font-semibold text-blue-200/80">Theme Mode</span>
+          <ThemeToggle variant="pill" size="small" sx={{ borderRadius: 0 }} />
+        </Box>
+
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 border border-transparent hover:border-rose-400/30 transition-all cursor-pointer group"
+          className="w-full flex items-center justify-between px-3.5 py-2 rounded-none text-sm font-semibold text-rose-300 hover:text-white hover:bg-rose-500/20 border border-transparent hover:border-rose-400/30 transition-all cursor-pointer group"
         >
-          <div className="flex items-center gap-3">
-            <LogOut size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+          <div className="flex items-center gap-2.5">
+            <LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             <span>Sign out</span>
           </div>
-          <span className="text-xs text-blue-200/60 uppercase tracking-wider font-medium">
-            v2.4
-          </span>
         </button>
       </Box>
     </Drawer>

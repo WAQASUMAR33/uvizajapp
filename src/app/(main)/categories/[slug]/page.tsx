@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { MerchantCard } from "@/components/merchants/MerchantCard";
 import { CATEGORIES } from "@/types";
 import { getCategoryFromSlug } from "@/lib/utils";
-import { Store } from "lucide-react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import { Store, ArrowLeft } from "lucide-react";
 import type { SafeMerchant } from "@/types";
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -12,34 +18,60 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const category = CATEGORIES.find((c) => c.value === categoryValue);
   if (!category) notFound();
 
-  const merchants = await prisma.merchant.findMany({
+  const merchants = (await prisma.merchant.findMany({
     where: { isActive: true, category: categoryValue as any },
     include: { offers: { where: { isActive: true }, take: 3 } },
     orderBy: { createdAt: "desc" },
-  }) as SafeMerchant[];
+  })) as SafeMerchant[];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center gap-4">
-        <span className="text-5xl">{category.emoji}</span>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{category.label}</h1>
-          <p className="text-slate-500 mt-1">{merchants.length} merchant{merchants.length !== 1 ? "s" : ""}</p>
-        </div>
-      </div>
+    <Box sx={{ maxWidth: 1152, mx: "auto", px: 3, py: 4 }}>
+      <Breadcrumbs sx={{ mb: 2 }}>
+        <Typography component={Link} href="/categories" color="inherit" variant="caption" sx={{ textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
+          Categories
+        </Typography>
+        <Typography color="text.primary" variant="caption" sx={{ fontWeight: 700 }}>
+          {category.label}
+        </Typography>
+      </Breadcrumbs>
+
+      <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 3 }}>
+        <Typography sx={{ fontSize: "3.5rem", lineHeight: 1 }}>{category.emoji}</Typography>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: "-0.01em" }}>
+            {category.label}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {merchants.length} partner establishment{merchants.length !== 1 ? "s" : ""} offering exclusive perks
+          </Typography>
+        </Box>
+      </Box>
 
       {merchants.length === 0 ? (
-        <div className="text-center py-24 text-slate-400">
-          <Store className="w-12 h-12 mx-auto mb-4 opacity-30" />
-          <p className="text-lg font-medium">No merchants in this category yet</p>
-        </div>
+        <Box sx={{ py: 12, textAlign: "center", color: "text.secondary" }}>
+          <Store size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
+          <Typography variant="h6" color="text.secondary">
+            No merchants in this category yet
+          </Typography>
+          <Button
+            component={Link}
+            href="/merchants"
+            variant="outlined"
+            startIcon={<ArrowLeft size={16} />}
+            sx={{ mt: 3, borderRadius: "10px" }}
+          >
+            Explore all venues
+          </Button>
+        </Box>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <Grid container spacing={3}>
           {merchants.map((merchant) => (
-            <MerchantCard key={merchant.id} merchant={merchant} />
+            <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={merchant.id}>
+              <MerchantCard merchant={merchant} />
+            </Grid>
           ))}
-        </div>
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 }

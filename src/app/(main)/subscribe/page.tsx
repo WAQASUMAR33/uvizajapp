@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import InputAdornment from "@mui/material/InputAdornment";
 import { Check, Crown, Sparkles, ShieldCheck, Tag, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { SUBSCRIPTION_PLANS } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
@@ -88,7 +97,6 @@ export default function SubscribePage() {
       }
 
       if (data.url) {
-        // Redirect to Stripe's secure hosted Checkout page
         window.location.href = data.url;
       } else {
         throw new Error("Stripe checkout URL was not returned");
@@ -102,52 +110,96 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-10">
-        <Crown className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Choose Your Membership</h1>
-        <p className="text-slate-500 mt-2 text-lg">
+    <Box sx={{ maxWidth: 1024, mx: "auto", px: 3, py: { xs: 4, sm: 6 } }}>
+      {/* Header */}
+      <Box sx={{ textAlign: "center", mb: 5 }}>
+        <Box
+          sx={{
+            width: 56,
+            height: 56,
+            borderRadius: "16px",
+            background: "linear-gradient(135deg, #f59e0b, #d97706)",
+            color: "#ffffff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            mx: "auto",
+            mb: 2,
+            boxShadow: "0 6px 20px rgba(245, 158, 11, 0.35)",
+          }}
+        >
+          <Crown size={28} />
+        </Box>
+        <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: "-0.02em" }}>
+          Choose Your Membership
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 1, maxWidth: 600, mx: "auto" }}>
           Unlock exclusive dining offers, complimentary courses, and VIP perks across top venues
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       {/* Plan Billing Cycle Toggle */}
-      <div className="flex justify-center mb-10">
-        <div className="bg-slate-100 p-1.5 rounded-2xl inline-flex items-center gap-1 border border-slate-200">
-          <button
-            type="button"
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 5 }}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 0.75,
+            borderRadius: "9999px",
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "action.hover",
+            display: "inline-flex",
+            gap: 0.5,
+          }}
+        >
+          <Button
             onClick={() => setSelectedPlan("MONTHLY")}
-            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
-              selectedPlan === "MONTHLY"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            variant={selectedPlan === "MONTHLY" ? "contained" : "text"}
+            color={selectedPlan === "MONTHLY" ? "primary" : "inherit"}
+            size="small"
+            sx={{
+              borderRadius: "9999px",
+              px: 3,
+              py: 1,
+              fontWeight: 700,
+              fontSize: "0.875rem",
+            }}
           >
             Monthly Billing
-          </button>
-          <button
-            type="button"
+          </Button>
+
+          <Button
             onClick={() => setSelectedPlan("ANNUAL")}
-            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-              selectedPlan === "ANNUAL"
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            variant={selectedPlan === "ANNUAL" ? "contained" : "text"}
+            color={selectedPlan === "ANNUAL" ? "primary" : "inherit"}
+            size="small"
+            sx={{
+              borderRadius: "9999px",
+              px: 3,
+              py: 1,
+              fontWeight: 700,
+              fontSize: "0.875rem",
+              gap: 1,
+            }}
           >
             <span>Annual Billing</span>
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full font-bold ${
-                selectedPlan === "ANNUAL" ? "bg-amber-400 text-slate-900" : "bg-emerald-100 text-emerald-700"
-              }`}
-            >
-              Save 33%
-            </span>
-          </button>
-        </div>
-      </div>
+            <Chip
+              label="Save 33%"
+              size="small"
+              sx={{
+                bgcolor: selectedPlan === "ANNUAL" ? "#fbbf24" : "success.main",
+                color: "#0f172a",
+                fontWeight: 800,
+                fontSize: "0.7rem",
+                height: 20,
+              }}
+            />
+          </Button>
+        </Paper>
+      </Box>
 
       {/* Packages / Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <Grid container spacing={3} sx={{ mb: 5 }}>
         {packages.length > 0 ? (
           packages.map((pkg) => {
             const isSelected = selectedPackageId === pkg.id;
@@ -155,180 +207,251 @@ export default function SubscribePage() {
             const isRecommended = packages.length > 1 ? pkg.id === packages[1]?.id : true;
 
             return (
-              <button
-                key={pkg.id}
-                type="button"
-                onClick={() => setSelectedPackageId(pkg.id)}
-                className={`relative text-left rounded-3xl border-2 p-6 transition-all duration-200 cursor-pointer flex flex-col justify-between ${
-                  isSelected
-                    ? "border-indigo-600 bg-indigo-50/60 shadow-lg shadow-indigo-100"
-                    : "border-slate-200 bg-white hover:border-indigo-300"
-                }`}
-              >
-                {isRecommended && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                      Recommended
-                    </span>
-                  </div>
-                )}
+              <Grid size={{ xs: 12, md: 4 }} key={pkg.id}>
+                <Paper
+                  onClick={() => setSelectedPackageId(pkg.id)}
+                  elevation={isSelected ? 4 : 0}
+                  variant={isSelected ? "elevation" : "outlined"}
+                  sx={{
+                    p: 3.5,
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                    border: "2px solid",
+                    borderColor: isSelected ? "primary.main" : "divider",
+                    bgcolor: isSelected ? "action.selected" : "background.paper",
+                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      borderColor: "primary.main",
+                      transform: "translateY(-4px)",
+                    },
+                  }}
+                >
+                  {isRecommended && (
+                    <Box sx={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)" }}>
+                      <Chip
+                        label="Recommended"
+                        color="secondary"
+                        size="small"
+                        sx={{ fontWeight: 800, fontSize: "0.75rem", px: 1 }}
+                      />
+                    </Box>
+                  )}
 
-                <div>
-                  <div
-                    className={`w-4 h-4 rounded-full border-2 mb-4 flex items-center justify-center ${
-                      isSelected ? "border-indigo-600 bg-indigo-600" : "border-slate-300"
-                    }`}
-                  >
-                    {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                  </div>
+                  <Box>
+                    <Box
+                      sx={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        border: "2px solid",
+                        borderColor: isSelected ? "primary.main" : "text.disabled",
+                        bgcolor: isSelected ? "primary.main" : "transparent",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mb: 2.5,
+                      }}
+                    >
+                      {isSelected && <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#ffffff" }} />}
+                    </Box>
 
-                  <h3 className="font-bold text-slate-900 text-xl">{pkg.titleEn}</h3>
-                  <p className="text-slate-500 text-sm mt-1">{pkg.descriptionEn || "Full VIP access"}</p>
+                    <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                      {pkg.titleEn}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {pkg.descriptionEn || "Full VIP Dining Access"}
+                    </Typography>
 
-                  <div className="mt-4 mb-5">
-                    <span className="text-3xl font-extrabold text-slate-900">{formatCurrency(price)}</span>
-                    <span className="text-slate-400 text-sm ml-1">
-                      / {selectedPlan === "MONTHLY" ? "month" : "year"}
-                    </span>
-                  </div>
-                </div>
+                    <Box sx={{ mt: 2.5, mb: 3 }}>
+                      <Typography variant="h4" sx={{ fontWeight: 800, display: "inline" }}>
+                        {formatCurrency(price)}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ ml: 1, fontWeight: 600 }}>
+                        / {selectedPlan === "MONTHLY" ? "month" : "year"}
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                <ul className="space-y-2.5 pt-4 border-t border-slate-100">
-                  <li className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <span>Unlimited merchant redemptions</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <span>Digital VIP member pass</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm text-slate-600">
-                    <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <span>Cancel or switch anytime</span>
-                  </li>
-                </ul>
-              </button>
+                  <Box sx={{ pt: 2.5, borderTop: "1px solid", borderColor: "divider", display: "flex", flexDirection: "column", gap: 1.5 }}>
+                    {["Unlimited restaurant redemptions", "Digital VIP member pass", "Cancel or switch anytime"].map((feature) => (
+                      <Box key={feature} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Check size={16} color="#10b981" />
+                        <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                          {feature}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Paper>
+              </Grid>
             );
           })
         ) : (
           SUBSCRIPTION_PLANS.map((plan) => {
             const isSelected = selectedPlan === plan.id;
             return (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setSelectedPlan(plan.id as "MONTHLY" | "ANNUAL")}
-                className={`relative text-left rounded-3xl border-2 p-6 transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? "border-indigo-600 bg-indigo-50 shadow-lg shadow-indigo-100"
-                    : "border-slate-200 bg-white hover:border-indigo-300"
-                }`}
-              >
-                {plan.recommended && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                      Best Value
-                    </span>
-                  </div>
-                )}
-
-                <div
-                  className={`w-4 h-4 rounded-full border-2 mb-4 flex items-center justify-center ${
-                    isSelected ? "border-indigo-600 bg-indigo-600" : "border-slate-300"
-                  }`}
+              <Grid size={{ xs: 12, md: 6 }} key={plan.id}>
+                <Paper
+                  onClick={() => setSelectedPlan(plan.id as "MONTHLY" | "ANNUAL")}
+                  elevation={isSelected ? 4 : 0}
+                  variant={isSelected ? "elevation" : "outlined"}
+                  sx={{
+                    p: 3.5,
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    border: "2px solid",
+                    borderColor: isSelected ? "primary.main" : "divider",
+                    bgcolor: isSelected ? "action.selected" : "background.paper",
+                    position: "relative",
+                    transition: "all 0.2s",
+                    "&:hover": { borderColor: "primary.main", transform: "translateY(-4px)" },
+                  }}
                 >
-                  {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                </div>
+                  {plan.recommended && (
+                    <Box sx={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)" }}>
+                      <Chip label="Best Value" color="secondary" size="small" sx={{ fontWeight: 800 }} />
+                    </Box>
+                  )}
 
-                <h3 className="font-bold text-slate-900 text-xl">{plan.name}</h3>
-                <p className="text-slate-500 text-sm mt-1">{plan.description}</p>
+                  <Box
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: "50%",
+                      border: "2px solid",
+                      borderColor: isSelected ? "primary.main" : "text.disabled",
+                      bgcolor: isSelected ? "primary.main" : "transparent",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mb: 2.5,
+                    }}
+                  >
+                    {isSelected && <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#ffffff" }} />}
+                  </Box>
 
-                <div className="mt-4 mb-5">
-                  <span className="text-3xl font-bold text-slate-900">{formatCurrency(plan.price)}</span>
-                  <span className="text-slate-400 text-sm ml-1">/ {plan.period}</span>
-                </div>
+                  <Typography variant="h6" sx={{ fontWeight: 800 }}>{plan.name}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{plan.description}</Typography>
 
-                <ul className="space-y-2">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
-                      <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </button>
+                  <Box sx={{ mt: 2.5, mb: 3 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 800, display: "inline" }}>
+                      {formatCurrency(plan.price)}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ ml: 1, fontWeight: 600 }}>
+                      / {plan.period}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ pt: 2.5, borderTop: "1px solid", borderColor: "divider", display: "flex", flexDirection: "column", gap: 1.5 }}>
+                    {plan.features.map((f) => (
+                      <Box key={f} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Check size={16} color="#10b981" />
+                        <Typography variant="caption" sx={{ fontWeight: 500 }}>{f}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Paper>
+              </Grid>
             );
           })
         )}
-      </div>
+      </Grid>
 
-      {/* User Information & Promo Code Section */}
-      <div className="max-w-md mx-auto bg-white border border-slate-200 rounded-3xl p-6 shadow-sm mb-8 space-y-4">
+      {/* User Information & Promo Code Card */}
+      <Paper
+        variant="outlined"
+        sx={{
+          maxWidth: 500,
+          mx: "auto",
+          p: 3.5,
+          borderRadius: "20px",
+          borderColor: "divider",
+          mb: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2.5,
+        }}
+      >
         {!session?.user?.email && (
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+          <Box>
+            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1 }}>
               Account Email
-            </label>
-            <input
+            </Typography>
+            <TextField
               type="email"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
               required
+              fullWidth
             />
-            <p className="text-xs text-slate-400 mt-1">Your subscription will be linked to this email address.</p>
-          </div>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: "block" }}>
+              Your subscription membership will be linked to this email address.
+            </Typography>
+          </Box>
         )}
 
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-            <Tag className="w-3.5 h-3.5 text-indigo-600" />
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <Tag size={14} />
             Promo Code (Optional)
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="e.g. SUMMER50"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm uppercase tracking-wider font-mono"
-            />
-          </div>
-        </div>
+          </Typography>
+          <TextField
+            type="text"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+            placeholder="e.g. VIP2026"
+            fullWidth
+            slotProps={{
+              htmlInput: { style: { fontFamily: "monospace", textTransform: "uppercase" } },
+            }}
+          />
+        </Box>
 
         {errorMsg && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            <span>{errorMsg}</span>
-          </div>
+          <Alert severity="error" icon={<AlertCircle size={18} />} sx={{ borderRadius: "12px" }}>
+            {errorMsg}
+          </Alert>
         )}
-      </div>
+      </Paper>
 
-      {/* Submit Button & Badges */}
-      <div className="text-center">
+      {/* Submit Button & Security Footnote */}
+      <Box sx={{ textAlign: "center" }}>
         <Button
-          variant="gold"
-          size="lg"
-          loading={loading}
+          variant="contained"
+          color="secondary"
+          size="large"
+          disabled={loading}
           onClick={handleStripeCheckout}
-          className="px-12 py-3.5 text-base font-semibold shadow-md"
+          startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <Sparkles size={18} />}
+          sx={{
+            px: 6,
+            py: 1.5,
+            fontSize: "1rem",
+            fontWeight: 800,
+            borderRadius: "14px",
+            boxShadow: "0 6px 24px rgba(245, 158, 11, 0.4)",
+          }}
         >
-          <Sparkles className="w-5 h-5 mr-2" />
-          Pay with Stripe — {formatCurrency(currentPrice)}
+          {loading ? "Preparing Checkout..." : `Pay with Stripe — ${formatCurrency(currentPrice)}`}
         </Button>
 
-        <div className="flex items-center justify-center gap-4 text-slate-400 text-xs mt-4">
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            256-bit Encrypted Checkout
-          </span>
-          <span>•</span>
-          <span>Powered by Stripe</span>
-          <span>•</span>
-          <span>Cancel anytime</span>
-        </div>
-      </div>
-    </div>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, color: "text.secondary", mt: 2.5, flexWrap: "wrap" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+            <ShieldCheck size={16} color="#10b981" />
+            <Typography variant="caption" sx={{ fontWeight: 600 }}>256-bit Encrypted Checkout</Typography>
+          </Box>
+          <Typography variant="caption">•</Typography>
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>Powered by Stripe</Typography>
+          <Typography variant="caption">•</Typography>
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>Cancel anytime</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 }

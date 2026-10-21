@@ -44,17 +44,58 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
 
   return (
     <>
-      <Card sx={{ background: "linear-gradient(135deg,#eef2ff,#f5f3ff)", border: "1px solid #e0e7ff", borderRadius: 3, boxShadow: "none", transition: "all 0.2s", "&:hover": { boxShadow: 3 } }}>
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-            <Avatar sx={{ width: 36, height: 36, bgcolor: "#4f46e5", borderRadius: 2 }}>
-              <Percent size={18} />
-            </Avatar>
-            <Chip label={offer.discountEn || offer.discountHr || "Special Offer"} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.72rem" }} />
+      <Card
+        sx={{
+          bgcolor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: "16px",
+          boxShadow: 1,
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "&:hover": {
+            boxShadow: 4,
+            borderColor: "primary.main",
+            transform: "translateY(-2px)",
+          },
+        }}
+      >
+        <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              <Avatar
+                sx={{
+                  width: 36,
+                  height: 36,
+                  bgcolor: "action.selected",
+                  color: "primary.main",
+                  borderRadius: "10px",
+                }}
+              >
+                <Percent size={18} />
+              </Avatar>
+              <Chip
+                label={offer.discountEn || offer.discountHr || "Special Offer"}
+                size="small"
+                color="secondary"
+                sx={{ fontWeight: 800, fontSize: "0.75rem" }}
+              />
+            </Box>
           </Box>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 700 }}>{offer.titleEn || offer.titleHr}</Typography>
+          <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 800 }}>
+            {offer.titleEn || offer.titleHr}
+          </Typography>
           {(offer.descriptionEn || offer.descriptionHr) && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", mb: 1 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                mb: 1,
+              }}
+            >
               {offer.descriptionEn || offer.descriptionHr}
             </Typography>
           )}
@@ -87,34 +128,38 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
         <DialogContent dividers>
           {canRedeem ? (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, py: 1 }}>
-              <Avatar sx={{ width: 64, height: 64, bgcolor: "#e0e7ff", borderRadius: 3 }}><Percent size={32} color="#4f46e5" /></Avatar>
+              <Avatar sx={{ width: 64, height: 64, bgcolor: "action.selected", color: "primary.main", borderRadius: "16px" }}>
+                <Percent size={32} />
+              </Avatar>
               <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>{offer.titleEn || offer.titleHr}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 800 }}>{offer.titleEn || offer.titleHr}</Typography>
                 {merchantName && <Typography variant="body2" color="text.secondary">at {merchantName}</Typography>}
               </Box>
               {(offer.discountEn || offer.discountHr) && (
-                <Chip label={offer.discountEn || offer.discountHr} sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.875rem", px: 1, py: 2 }} />
+                <Chip label={offer.discountEn || offer.discountHr} color="secondary" sx={{ fontWeight: 800, fontSize: "0.875rem", px: 1, py: 2 }} />
               )}
               {(offer.descriptionEn || offer.descriptionHr) && <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>{offer.descriptionEn || offer.descriptionHr}</Typography>}
               {(offer.termsEn || offer.termsHr) && (
-                <Box sx={{ bgcolor: "grey.50", borderRadius: 2, p: 2, width: "100%" }}>
-                  <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 0.5 }}>Terms & Conditions</Typography>
+                <Box sx={{ bgcolor: "action.hover", border: "1px solid", borderColor: "divider", borderRadius: "12px", p: 2, width: "100%" }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, display: "block", mb: 0.5, textTransform: "uppercase", letterSpacing: "0.04em" }}>Terms & Conditions</Typography>
                   <Typography variant="caption" color="text.secondary">{offer.termsEn || offer.termsHr}</Typography>
                 </Box>
               )}
-              <MuiButton variant="contained" fullWidth size="large" onClick={handleRedeem} disabled={loading} startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined} sx={{ borderRadius: "10px", mt: 1 }}>
+              <MuiButton variant="contained" color="primary" fullWidth size="large" onClick={handleRedeem} disabled={loading} startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined} sx={{ borderRadius: "12px", py: 1.3, mt: 1, fontWeight: 700 }}>
                 Confirm Redemption
               </MuiButton>
             </Box>
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, py: 1 }}>
-              <Avatar sx={{ width: 64, height: 64, bgcolor: "#fef3c7", borderRadius: 3 }}><Lock size={32} color="#f59e0b" /></Avatar>
+              <Avatar sx={{ width: 64, height: 64, bgcolor: "action.selected", color: "secondary.main", borderRadius: "16px" }}>
+                <Lock size={32} />
+              </Avatar>
               <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>Unlock This Offer</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 800 }}>Unlock This Offer</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Subscribe to Ujivaj to redeem exclusive offers at premium merchants.</Typography>
               </Box>
-              <MuiButton variant="contained" color="secondary" fullWidth size="large" onClick={() => { setOpen(false); window.location.href = "/subscribe"; }} sx={{ borderRadius: "10px" }}>
-                View Plans
+              <MuiButton variant="contained" color="secondary" fullWidth size="large" onClick={() => { setOpen(false); window.location.href = "/subscribe"; }} sx={{ borderRadius: "12px", py: 1.3, fontWeight: 700 }}>
+                View Membership Plans
               </MuiButton>
             </Box>
           )}

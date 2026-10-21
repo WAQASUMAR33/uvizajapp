@@ -32,6 +32,7 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Divider from "@mui/material/Divider";
+import { PageProgressBar, TableSkeletonRows } from "@/components/common/PageProgressBar";
 import {
   Users, Search, Plus, Pencil, Trash2, ShieldCheck,
   CheckCircle2, XCircle, Crown, Shield, Briefcase, Calculator,
@@ -437,27 +438,30 @@ export default function AdminUsersPage() {
           />
 
           {/* Users Table */}
-          <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: "divider", overflow: "hidden" }}>
-            {loading ? (
-              <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>Loading staff accounts…</Box>
-            ) : filteredUsers.length === 0 ? (
-              <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
-                <Users size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
-                <Typography variant="body2">No user accounts found matching your query</Typography>
-              </Box>
-            ) : (
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ "& th": { fontWeight: 600, fontSize: "0.8rem", color: "text.secondary", bgcolor: "#f8fafc" } }}>
-                    <TableCell>User</TableCell>
-                    <TableCell>Assigned Role</TableCell>
-                    <TableCell>Active Permissions</TableCell>
-                    <TableCell>Joined Date</TableCell>
-                    <TableCell align="right">Actions</TableCell>
+          <Paper variant="outlined" sx={{ borderRadius: 0, borderColor: "divider", overflow: "hidden" }}>
+            {loading && <PageProgressBar />}
+            <Table>
+              <TableHead>
+                <TableRow sx={{ "& th": { fontWeight: 600, fontSize: "0.8rem", color: "text.secondary", bgcolor: "action.hover" } }}>
+                  <TableCell>User</TableCell>
+                  <TableCell>Assigned Role</TableCell>
+                  <TableCell>Active Permissions</TableCell>
+                  <TableCell>Joined Date</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {loading ? (
+                  <TableSkeletonRows columns={5} rows={5} />
+                ) : filteredUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
+                      <Users size={36} style={{ marginBottom: 8, opacity: 0.3 }} />
+                      <Typography variant="body2">No user accounts found matching your query</Typography>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredUsers.map((u) => {
+                ) : (
+                  filteredUsers.map((u) => {
                     const assignedRole = roles.find((r) => r.id === u.roleId || r.name.toLowerCase() === u.role.toLowerCase());
                     const activePerms = u.permissions || u.rolePermissions || assignedRole?.permissions || [];
                     const isCustomOverridden = Array.isArray(u.permissions) && u.permissions.length > 0;
@@ -524,10 +528,10 @@ export default function AdminUsersPage() {
                         </TableCell>
                       </TableRow>
                     );
-                  })}
-                </TableBody>
-              </Table>
-            )}
+                  })
+                )}
+              </TableBody>
+            </Table>
           </Paper>
         </>
       )}

@@ -4,6 +4,22 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Alert from "@mui/material/Alert";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
+import Chip from "@mui/material/Chip";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useColorMode } from "@/components/ThemeRegistry";
 import {
   Mail,
   Lock,
@@ -11,16 +27,38 @@ import {
   EyeOff,
   ArrowRight,
   ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles
+  Store,
+  Utensils,
+  Receipt,
+  CreditCard,
 } from "lucide-react";
+
+const platformHighlights = [
+  {
+    icon: <Utensils size={18} />,
+    title: "Restaurant & Offer Listings",
+    description: "Manage venue profiles, dining discounts, and seasonal menu promotions across partner locations.",
+  },
+  {
+    icon: <Receipt size={18} />,
+    title: "Table Voucher Redemptions",
+    description: "Verify active subscriber vouchers and record diner savings directly at the venue during checkout.",
+  },
+  {
+    icon: <CreditCard size={18} />,
+    title: "Dining Club Memberships",
+    description: "Monitor active monthly and annual subscriber passes, customer reviews, and partner performance.",
+  },
+];
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const { mode } = useColorMode();
+  const isDark = mode === "dark";
 
+  const [portalType, setPortalType] = useState<"admin" | "merchant">("admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -42,7 +80,7 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        setError("Invalid email or password. Please check your credentials and try again.");
+        setError("Invalid credentials. Please verify your email and password.");
         setLoading(false);
       } else {
         router.push(callbackUrl);
@@ -54,239 +92,451 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-slate-50 text-slate-800">
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: { xs: "column", lg: "row" },
+        bgcolor: "background.default",
+        color: "text.primary",
+        transition: "background-color 0.3s ease",
+      }}
+    >
       {/* ======================================================== */}
-      {/* LEFT COLUMN: Logo Branding Showcase (Light Theme)       */}
+      {/* LEFT COLUMN: Uživaj Dining Club Partner Showcase        */}
       {/* ======================================================== */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-7/12 flex-col justify-between p-12 xl:p-16 bg-gradient-to-br from-indigo-50/80 via-white to-amber-50/30 border-r border-slate-200 relative overflow-hidden">
-        {/* Soft decorative background glows */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-200/40 rounded-full blur-[110px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-200/30 rounded-full blur-[120px] pointer-events-none" />
+      <Box
+        sx={{
+          display: { xs: "none", lg: "flex" },
+          width: { lg: "48%", xl: "50%" },
+          flexDirection: "column",
+          justifyContent: "space-between",
+          p: { lg: 5, xl: 7 },
+          position: "relative",
+          overflow: "hidden",
+          borderRight: "1px solid",
+          borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "divider",
+          background: isDark
+            ? "radial-gradient(ellipse at 15% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 60%), linear-gradient(180deg, #091325 0%, #0b0f19 100%)"
+            : "radial-gradient(ellipse at 15% 15%, rgba(99, 102, 241, 0.1) 0%, transparent 60%), linear-gradient(135deg, #f8fafc 0%, #eef2ff 45%, #f8fafc 100%)",
+        }}
+      >
+        {/* Soft Background Radial Lighting */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: -60,
+            left: -60,
+            width: 380,
+            height: 380,
+            borderRadius: "50%",
+            bgcolor: isDark ? "rgba(99, 102, 241, 0.12)" : "rgba(79, 70, 229, 0.08)",
+            filter: "blur(90px)",
+            pointerEvents: "none",
+          }}
+        />
 
-        <div className="relative z-10 my-auto py-12">
-          {/* Logo Container */}
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 shadow-md border border-slate-800">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/uzivaj_logo.png"
-                alt="Ujivaj"
-                className="h-9 w-auto object-contain drop-shadow-[0_2px_8px_rgba(245,158,11,0.3)]"
-              />
-            </div>
-            <div className="h-6 w-px bg-slate-300 mx-1" />
-            <span className="text-xs uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-indigo-100/70 text-indigo-700 border border-indigo-200 flex items-center gap-1.5">
-              <Sparkles size={13} className="text-indigo-600" />
-              Partner & Admin Portal
-            </span>
-          </div>
+        {/* Brand Header */}
+        <Box sx={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Box
+            component={Link}
+            href="/home"
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              px: 2.25,
+              py: 0.9,
+              borderRadius: 0,
+              background: "linear-gradient(135deg, #091e42 0%, #0a2550 100%)",
+              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              textDecoration: "none",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/uzivaj_logo.png"
+              alt="Uživaj Logo"
+              style={{ height: 30, width: "auto", objectFit: "contain" }}
+            />
+          </Box>
 
-          {/* Hero Branding Content */}
-          <div className="mt-12 max-w-lg">
-            <h1 className="text-4xl xl:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.25]">
-              Elevating dining experiences with{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-indigo-800">
-                seamless management.
-              </span>
-            </h1>
-            <div className="w-16 h-1 rounded-full bg-amber-400 mt-6" />
-          </div>
-        </div>
+          <Chip
+            label="Dining Privileges Network"
+            size="small"
+            sx={{
+              fontWeight: 700,
+              fontSize: "0.75rem",
+              bgcolor: isDark ? "rgba(99, 102, 241, 0.14)" : "rgba(79, 70, 229, 0.08)",
+              color: isDark ? "primary.light" : "primary.main",
+              border: "1px solid",
+              borderColor: isDark ? "rgba(99, 102, 241, 0.25)" : "rgba(79, 70, 229, 0.18)",
+              borderRadius: 0,
+            }}
+          />
+        </Box>
 
-        {/* Bottom Platform Status Pill */}
-        <div className="pt-6 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500 relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="font-medium text-slate-600">Ujivaj Enterprise Platform v2.4</span>
-          </div>
-          <span className="flex items-center gap-1.5 text-slate-500">
-            <ShieldCheck size={14} className="text-indigo-600" />
-            SOC-2 Enterprise Security
-          </span>
-        </div>
-      </div>
+        {/* Main Operational Overview */}
+        <Box sx={{ position: "relative", zIndex: 2, my: "auto", py: 4, maxWidth: 540 }}>
+          <Typography
+            variant="h2"
+            sx={{
+              fontSize: { lg: "2.35rem", xl: "2.75rem" },
+              fontWeight: 800,
+              lineHeight: 1.2,
+              letterSpacing: "-0.025em",
+              mb: 1.5,
+            }}
+          >
+            Partner & Staff Portal
+          </Typography>
+
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ fontSize: "1rem", lineHeight: 1.65, mb: 3.5 }}
+          >
+            The operational management hub for Uživaj partner restaurants, cafes, and administrative staff.
+          </Typography>
+
+          {/* Three Domain Highlight Cards */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.75 }}>
+            {platformHighlights.map((item, idx) => (
+              <Paper
+                key={idx}
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: 0,
+                  bgcolor: isDark ? "rgba(17, 24, 39, 0.65)" : "rgba(255, 255, 255, 0.8)",
+                  border: "1px solid",
+                  borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.06)",
+                  backdropFilter: "blur(10px)",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 1.75,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 0,
+                    bgcolor: isDark ? "rgba(99, 102, 241, 0.15)" : "rgba(79, 70, 229, 0.08)",
+                    color: isDark ? "primary.light" : "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    mt: 0.25,
+                  }}
+                >
+                  {item.icon}
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
+                    {item.title}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 0.25, display: "block", lineHeight: 1.5, fontSize: "0.8rem" }}
+                  >
+                    {item.description}
+                  </Typography>
+                </Box>
+              </Paper>
+            ))}
+          </Box>
+        </Box>
+      </Box>
 
       {/* ======================================================== */}
-      {/* RIGHT COLUMN: Login Form (Light Theme)                  */}
+      {/* RIGHT COLUMN: Material Design Authentication Form        */}
       {/* ======================================================== */}
-      <div className="w-full lg:w-1/2 xl:w-5/12 flex flex-col justify-between items-center p-6 sm:p-10 lg:p-12 bg-white relative">
-        <div className="w-full max-w-[420px] my-auto">
-          {/* Mobile Logo Branding (shown only on small screens) */}
-          <div className="lg:hidden flex flex-col items-center mb-8 text-center">
-            <div className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 shadow-md border border-slate-800 mb-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/uzivaj_logo.png"
-                alt="Ujivaj"
-                className="h-9 w-auto object-contain"
-              />
-            </div>
-            <span className="text-xs uppercase tracking-wider font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-              Partner & Admin Portal
-            </span>
-          </div>
+      <Box
+        sx={{
+          width: { xs: "100%", lg: "52%", xl: "50%" },
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+          p: { xs: 3, sm: 5, md: 6, lg: 5, xl: 7 },
+          position: "relative",
+          bgcolor: isDark ? "#0d1322" : "#f8fafc",
+        }}
+      >
+        {/* Top Bar with Mobile Logo & Theme Switcher */}
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: { xs: 3, lg: 0 },
+          }}
+        >
+          {/* Mobile Logo Branding (visible on small screens) */}
+          <Box
+            component={Link}
+            href="/home"
+            sx={{
+              display: { xs: "inline-flex", lg: "none" },
+              alignItems: "center",
+              px: 2,
+              py: 0.75,
+              borderRadius: 0,
+              background: "linear-gradient(135deg, #091e42 0%, #0a2550 100%)",
+              textDecoration: "none",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/uzivaj_logo.png"
+              alt="Uživaj Logo"
+              style={{ height: 26, width: "auto" }}
+            />
+          </Box>
 
-          {/* Form Card */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-7 sm:p-9 shadow-[0_15px_35px_-10px_rgba(15,23,42,0.06)] relative overflow-hidden">
-            {/* Top brand accent stripe */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-indigo-600 to-indigo-500" />
+          <Box sx={{ ml: "auto" }}>
+            <ThemeToggle variant="pill" size="small" sx={{ borderRadius: 0 }} />
+          </Box>
+        </Box>
 
-            {/* Header */}
-            <div className="mb-7">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold mb-3">
-                <ShieldCheck size={14} className="text-indigo-600" />
-                Staff & Partner Access
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Welcome back
-              </h2>
-              <p className="text-sm text-slate-500 mt-1.5">
-                Sign in with your administrative credentials
-              </p>
-            </div>
+        {/* Center Card */}
+        <Box sx={{ width: "100%", maxWidth: 440, my: "auto" }}>
+          <Paper
+            elevation={isDark ? 4 : 1}
+            sx={{
+              p: { xs: 3.5, sm: 4.5 },
+              borderRadius: 0,
+              border: "1px solid",
+              borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "divider",
+              bgcolor: "background.paper",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {/* Top Brand Accent Line */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 3,
+                bgcolor: "primary.main",
+              }}
+            />
 
-            {/* Error Message */}
+            {/* Role Tabs */}
+            <Box sx={{ mb: 3.5, borderBottom: "1px solid", borderColor: "divider" }}>
+              <Tabs
+                value={portalType}
+                onChange={(_, val) => setPortalType(val)}
+                variant="fullWidth"
+                textColor="primary"
+                indicatorColor="primary"
+                sx={{
+                  "& .MuiTab-root": {
+                    fontWeight: 700,
+                    fontSize: "0.875rem",
+                    textTransform: "none",
+                    py: 1.25,
+                    gap: 1,
+                  },
+                }}
+              >
+                <Tab
+                  value="admin"
+                  icon={<ShieldCheck size={18} />}
+                  iconPosition="start"
+                  label="Admin Portal"
+                />
+                <Tab
+                  value="merchant"
+                  icon={<Store size={18} />}
+                  iconPosition="start"
+                  label="Venue Partner"
+                />
+              </Tabs>
+            </Box>
+
+            {/* Header Title */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: "-0.015em" }}>
+                {portalType === "admin" ? "Staff Sign In" : "Partner Sign In"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {portalType === "admin"
+                  ? "Access system analytics, merchant partners, and subscriber management."
+                  : "Access your restaurant profile, active offers, and redemption records."}
+              </Typography>
+            </Box>
+
+            {/* Error Feedback */}
             {error && (
-              <div className="mb-6 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-700 text-sm animate-in fade-in duration-200">
-                <AlertCircle size={18} className="shrink-0 mt-0.5 text-rose-600" />
-                <div className="flex-1 text-xs sm:text-sm leading-snug">{error}</div>
-              </div>
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 3,
+                  borderRadius: 0,
+                  border: "1px solid",
+                  borderColor: "error.main",
+                }}
+              >
+                {error}
+              </Alert>
             )}
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email Address */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Email Address
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-                    <Mail size={18} />
-                  </div>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="name@ujivaj.com"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50/70 hover:bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
-                  />
-                </div>
-              </div>
+            {/* Material Form */}
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+              {/* Outlined TextField with Floating Notched Label */}
+              <TextField
+                label="Email Address"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                required
+                fullWidth
+                autoComplete="email"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Mail size={19} color={isDark ? "#818cf8" : "#4f46e5"} />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 0,
+                  },
+                }}
+              />
 
-              {/* Password */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Password
-                  </label>
-                  <Link
+              {/* Password Field with Floating Notched Label & Visibility Toggle */}
+              <Box>
+                <TextField
+                  label="Password"
+                  type={showPass ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  required
+                  fullWidth
+                  autoComplete="current-password"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock size={19} color={isDark ? "#818cf8" : "#4f46e5"} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPass(!showPass)}
+                            edge="end"
+                            size="small"
+                            aria-label={showPass ? "Hide password" : "Show password"}
+                          >
+                            {showPass ? <EyeOff size={19} /> : <Eye size={19} />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 0,
+                    },
+                  }}
+                />
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 0.75 }}>
+                  <Typography
+                    component={Link}
                     href="/forgot-password"
-                    className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
+                    variant="caption"
+                    sx={{
+                      fontWeight: 700,
+                      color: "primary.main",
+                      textDecoration: "none",
+                      "&:hover": { textDecoration: "underline" },
+                    }}
                   >
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-600 transition-colors">
-                    <Lock size={18} />
-                  </div>
-                  <input
-                    type={showPass ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="••••••••••••"
-                    className="w-full pl-10 pr-11 py-3 bg-slate-50/70 hover:bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass(!showPass)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
-                    tabIndex={-1}
-                    aria-label={showPass ? "Hide password" : "Show password"}
-                  >
-                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
+                    Forgot your password?
+                  </Typography>
+                </Box>
+              </Box>
 
-              {/* Remember Me */}
-              <div className="flex items-center justify-between pt-1">
-                <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
+              {/* Keep Signed In Checkbox */}
+              <FormControlLabel
+                control={
+                  <Checkbox
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer transition-all"
+                    color="primary"
+                    size="small"
                   />
-                  <span className="text-xs text-slate-600 font-medium">Keep me signed in on this device</span>
-                </label>
-              </div>
+                }
+                label={
+                  <Typography variant="body2" sx={{ fontWeight: 500, fontSize: "0.85rem", userSelect: "none" }}>
+                    Keep me signed in
+                  </Typography>
+                }
+              />
 
-              {/* CTA Button */}
-              <button
+              {/* Material UI Elevated Button */}
+              <Button
                 type="submit"
+                variant="contained"
+                size="large"
                 disabled={loading}
-                className="w-full relative group overflow-hidden rounded-xl py-3.5 px-4 bg-gradient-to-r from-indigo-600 via-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-sm shadow-[0_4px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_8px_24px_rgba(79,70,229,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 cursor-pointer"
+                endIcon={
+                  loading ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : (
+                    <ArrowRight size={18} />
+                  )
+                }
+                sx={{
+                  py: 1.4,
+                  borderRadius: 0,
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.01em",
+                  background: isDark
+                    ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
+                    : "linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)",
+                  boxShadow: isDark
+                    ? "0 4px 18px rgba(99, 102, 241, 0.4)"
+                    : "0 6px 18px rgba(79, 70, 229, 0.35)",
+                  "&:hover": {
+                    background: isDark
+                      ? "linear-gradient(135deg, #818cf8 0%, #6366f1 100%)"
+                      : "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+                    boxShadow: "0 8px 22px rgba(79, 70, 229, 0.45)",
+                    transform: "translateY(-1px)",
+                  },
+                }}
               >
-                {loading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span>Authenticating...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Sign In to Dashboard</span>
-                    <ArrowRight
-                      size={16}
-                      className="group-hover:translate-x-1 transition-transform"
-                    />
-                  </>
-                )}
-              </button>
-            </form>
+                {loading ? "Signing in..." : "Sign in"}
+              </Button>
+            </Box>
+          </Paper>
+        </Box>
 
-            {/* Security footnote */}
-            <div className="mt-7 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-slate-500 text-xs text-center">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
-              <span>256-bit SSL encrypted enterprise session</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="w-full text-center text-xs text-slate-500 mt-6">
-          <p>© {new Date().getFullYear()} Ujivaj Inc. All rights reserved.</p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Exclusive Dining Privileges & Partner Management Portal
-          </p>
-        </div>
-      </div>
-    </div>
+        {/* Right Bottom Footer */}
+        <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 500 }}>
+            © {new Date().getFullYear()} Uživaj. All rights reserved.
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
@@ -294,12 +544,13 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-        </div>
+        <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <CircularProgress color="primary" />
+        </Box>
       }
     >
       <LoginForm />
     </Suspense>
   );
 }
+

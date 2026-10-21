@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin/Sidebar";
 import { AdminTopbar } from "@/components/admin/Topbar";
+import Box from "@mui/material/Box";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -14,15 +15,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen">
+    <Box className="admin-scope" sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
       <AdminSidebar role={role} user={session.user} />
 
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+      <Box
+        component="div"
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+          bgcolor: "background.default",
+        }}
+      >
         <AdminTopbar user={session.user!} />
-        <main className="flex-1 overflow-auto">
-          <div className="p-8">{children}</div>
-        </main>
-      </div>
-    </div>
+        <Box component="main" sx={{ flex: 1, overflow: "auto" }}>
+          <Box sx={{ p: { xs: 2.5, sm: 3.5, md: 4 } }}>{children}</Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

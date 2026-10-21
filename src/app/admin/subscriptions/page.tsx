@@ -29,6 +29,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { formatDate, formatCurrency } from "@/lib/utils";
+import { PageProgressBar } from "@/components/common/PageProgressBar";
 
 interface PromoCodeRecord {
   id: number;
@@ -586,6 +587,7 @@ export default function AdminSubscriptionsPage() {
       {/* 4. SUBSCRIPTION TABLE                                    */}
       {/* ======================================================== */}
       <div className="bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden">
+        <PageProgressBar loading={loading} />
         {loading ? (
           <div className="py-20 text-center">
             <div className="w-10 h-10 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin mx-auto mb-3" />

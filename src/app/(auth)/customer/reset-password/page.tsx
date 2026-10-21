@@ -1,16 +1,17 @@
 "use client";
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Lock, Eye, EyeOff, ArrowRight, KeyRound } from "lucide-react";
 
 function CustomerResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ function CustomerResetPasswordForm() {
 
   if (!token || !email) {
     return (
-      <Alert severity="error" sx={{ borderRadius: 2 }}>
+      <Alert severity="error" sx={{ borderRadius: "12px" }}>
         Invalid or expired reset link. Please request a new one from the Ujivaj mobile application.
       </Alert>
     );
@@ -68,52 +69,88 @@ function CustomerResetPasswordForm() {
 
   return done ? (
     <Box sx={{ textAlign: "center" }}>
-      <Alert severity="success" sx={{ mb: 4, borderRadius: 2, textAlign: "left" }}>
+      <Alert severity="success" sx={{ mb: 3, borderRadius: "12px", textAlign: "left" }}>
         Password updated successfully! You can now log in to the <strong>Ujivaj</strong> mobile app.
       </Alert>
-      <Typography variant="body1" sx={{ color: "text.secondary", mb: 3 }}>
-        You can close this tab and return to the application to log in.
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        You may now safely close this browser window and open the Ujivaj mobile app to sign in.
       </Typography>
     </Box>
   ) : (
     <>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, color: "text.primary" }}>
-        Reset Customer Password
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-        Choose a new password for your customer account: <strong>{email}</strong>.
-      </Typography>
+      <Box sx={{ mb: 3.5, textAlign: "center" }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: "12px",
+            bgcolor: "action.selected",
+            color: "primary.main",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            mx: "auto",
+            mb: 2,
+          }}
+        >
+          <KeyRound size={24} />
+        </Box>
+        <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: "-0.01em" }}>
+          Reset Customer Password
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+          Choose a new password for your account: <strong>{email}</strong>
+        </Typography>
+      </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>{error}</Alert>}
 
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-        <TextField
-          label="New password"
-          type={showPass ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          fullWidth
-          slotProps={{ input: {
-            startAdornment: <InputAdornment position="start"><Lock size={16} /></InputAdornment>,
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton size="small" onClick={() => setShowPass(!showPass)} edge="end" tabIndex={-1}>
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          } }}
-        />
-        <TextField
-          label="Confirm password"
-          type="password"
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          required
-          fullWidth
-          slotProps={{ input: { startAdornment: <InputAdornment position="start"><Lock size={16} /></InputAdornment> } }}
-        />
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1 }}>
+            New Password
+          </Typography>
+          <TextField
+            type={showPass ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            fullWidth
+            placeholder="At least 8 characters"
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start"><Lock size={16} className="text-slate-400" /></InputAdornment>,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setShowPass(!showPass)} edge="end" tabIndex={-1}>
+                      {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "block", mb: 1 }}>
+            Confirm Password
+          </Typography>
+          <TextField
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            required
+            fullWidth
+            placeholder="Re-enter your new password"
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start"><Lock size={16} className="text-slate-400" /></InputAdornment>,
+              },
+            }}
+          />
+        </Box>
+
         <Button
           type="submit"
           variant="contained"
@@ -121,19 +158,9 @@ function CustomerResetPasswordForm() {
           fullWidth
           disabled={loading || !password || !confirm}
           endIcon={loading ? <CircularProgress size={16} color="inherit" /> : <ArrowRight size={16} />}
-          sx={{
-            borderRadius: "10px",
-            py: 1.5,
-            fontWeight: 700,
-            background: "linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)",
-            boxShadow: "0 4px 14px rgba(79,70,229,0.4)",
-            "&:hover": {
-              background: "linear-gradient(135deg, #4338ca 0%, #2e268f 100%)",
-              boxShadow: "0 6px 20px rgba(79,70,229,0.5)",
-            }
-          }}
+          sx={{ borderRadius: "12px", py: 1.4, fontWeight: 700 }}
         >
-          Reset Password
+          {loading ? "Updating..." : "Reset Password"}
         </Button>
       </Box>
     </>
@@ -142,31 +169,54 @@ function CustomerResetPasswordForm() {
 
 export default function CustomerResetPasswordPage() {
   return (
-    <Box sx={{
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%)",
-      p: 3
-    }}>
-      <Box sx={{
-        width: "100%",
-        maxWidth: 420,
-        bgcolor: "background.paper",
-        p: { xs: 4, sm: 5 },
-        borderRadius: 4,
-        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
-        border: "1px solid",
-        borderColor: "divider",
-      }}>
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 44, width: "auto" }} />
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
+        color: "text.primary",
+        p: 3,
+        position: "relative",
+      }}
+    >
+      <Box sx={{ position: "absolute", top: 24, right: 24 }}>
+        <ThemeToggle variant="icon" />
+      </Box>
+
+      <Box sx={{ width: "100%", maxWidth: 440 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 3.5 }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              px: 3,
+              py: 1.5,
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, #0f172a, #1e1b4b)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+          </Box>
         </Box>
-        <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", py: 4 }}><CircularProgress /></Box>}>
-          <CustomerResetPasswordForm />
-        </Suspense>
+
+        <Paper
+          elevation={2}
+          sx={{
+            p: { xs: 3.5, sm: 4.5 },
+            borderRadius: "20px",
+            border: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", py: 4 }}><CircularProgress /></Box>}>
+            <CustomerResetPasswordForm />
+          </Suspense>
+        </Paper>
       </Box>
     </Box>
   );

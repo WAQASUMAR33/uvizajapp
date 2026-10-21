@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const links = [
   { href: "/home", label: "Home" },
@@ -13,36 +15,66 @@ export default function MainNav({ session }: { session: any }) {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden md:flex items-center gap-1">
-      {links.map(({ href, label }) => (
-        <Link
-          key={href}
-          href={href}
-          className={cn(
-            "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-            pathname.startsWith(href) && href !== "/home"
-              ? "bg-indigo-50 text-indigo-700"
-              : pathname === href && href === "/home"
-              ? "bg-indigo-50 text-indigo-700"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          )}
-        >
-          {label}
-        </Link>
-      ))}
+    <Box component="nav" sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 1 }}>
+      {links.map(({ href, label }) => {
+        const active =
+          pathname.startsWith(href) && href !== "/home"
+            ? true
+            : pathname === href && href === "/home";
+
+        return (
+          <Button
+            key={href}
+            component={Link}
+            href={href}
+            variant={active ? "contained" : "text"}
+            color={active ? "primary" : "inherit"}
+            size="small"
+            sx={{
+              borderRadius: "10px",
+              px: 2,
+              py: 0.8,
+              fontWeight: active ? 700 : 500,
+              fontSize: "0.875rem",
+              color: active ? "#ffffff" : "text.secondary",
+              "&:hover": {
+                color: active ? "#ffffff" : "text.primary",
+                backgroundColor: active ? undefined : "action.hover",
+              },
+            }}
+          >
+            {label}
+          </Button>
+        );
+      })}
+
       {session && (
-        <Link
+        <Button
+          component={Link}
           href="/profile"
-          className={cn(
-            "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-            pathname === "/profile"
-              ? "bg-indigo-50 text-indigo-700"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-          )}
+          variant={pathname === "/profile" ? "contained" : "text"}
+          color={pathname === "/profile" ? "primary" : "inherit"}
+          size="small"
+          sx={{
+            borderRadius: "10px",
+            px: 2,
+            py: 0.8,
+            fontWeight: pathname === "/profile" ? 700 : 500,
+            fontSize: "0.875rem",
+            color: pathname === "/profile" ? "#ffffff" : "text.secondary",
+            "&:hover": {
+              color: pathname === "/profile" ? "#ffffff" : "text.primary",
+              backgroundColor: pathname === "/profile" ? undefined : "action.hover",
+            },
+          }}
         >
           Profile
-        </Link>
+        </Button>
       )}
-    </nav>
+
+      <Box sx={{ ml: 1 }}>
+        <ThemeToggle variant="icon" size="small" />
+      </Box>
+    </Box>
   );
 }
