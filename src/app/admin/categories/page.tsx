@@ -105,8 +105,8 @@ export default function AdminCategoriesPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
-      setUploadError("Only JPEG, PNG, or GIF images are allowed.");
+    if (!["image/jpeg", "image/png", "image/gif", "image/webp"].includes(file.type)) {
+      setUploadError("Only JPEG, PNG, WebP, or GIF images are allowed.");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -363,7 +363,7 @@ export default function AdminCategoriesPage() {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/jpeg,image/png,image/gif"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 style={{ display: "none" }}
                 onChange={handleFileChange}
               />

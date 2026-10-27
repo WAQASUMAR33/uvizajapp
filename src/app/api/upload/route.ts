@@ -1,82 +1,141 @@
 import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
 
-// PHP only accepts jpg/jpeg/png/gif — it extracts type from the data URI prefix
-const ALLOWED_TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png":  "png",
-  "image/gif":  "gif",
-};
-const MAX_SIZE_MB    = 5;
-const PHP_UPLOAD_URL = process.env.UPLOAD_API_URL!;
-const IMG_BASE_URL   = process.env.UPLOAD_IMG_BASE_URL!;
+const MAX_SIZE_MB = 15;
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "image/tiff",
+  "image/bmp",
+]);
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-  const file = formData.get("file") as File | null;
-
-  if (!file)
-    return NextResponse.json({ error: "No file provided" }, { status: 400 });
-
-  if (!ALLOWED_TYPES[file.type])
-    return NextResponse.json({ error: "Only JPEG, PNG, and GIF are allowed" }, { status: 400 });
-
-  if (file.size > MAX_SIZE_MB * 1024 * 1024)
-    return NextResponse.json({ error: `File too large (max ${MAX_SIZE_MB} MB)` }, { status: 400 });
-
-  // Build the full data URI — PHP extracts the type from the prefix via regex
-  const bytes   = await file.arrayBuffer();
-  const base64  = Buffer.from(bytes).toString("base64");
-  const dataUri = `data:${file.type};base64,${base64}`;
-
-  // Send JSON body — PHP reads php://input and json_decodes it
-  // Only send `image`; PHP does not use a separate `type` field
-  let phpRes: Response;
   try {
-    phpRes = await fetch(PHP_UPLOAD_URL, {
-      method:  "POST",
-      headers: {
-        "Content-Type":   "application/json",
-        "User-Agent":     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept":         "application/json, text/plain, */*",
-        "Accept-Language":"en-US,en;q=0.9",
-        "Referer":        "https://uzivaj.rizwancars.com/",
-        "Origin":         "https://uzivaj.rizwancars.com",
-      },
-      body: JSON.stringify({ image: dataUri }),
+    let inputBuffer: Buffer | null = null;
+
+    const contentType = req.headers.get("content-type") || "";
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      const file = (formData.get("file") || formData.get("image")) as File | null;
+
+      if (!file) {
+        return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      }
+
+      if (file.type && !ALLOWED_MIME_TYPES.has(file.type.toLowerCase())) {
+        return NextResponse.json(
+          { error: "Unsupported image format. Allowed: JPEG, PNG, WebP, GIF, AVIF" },
+          { status: 400 }
+        );
+      }
+
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        return NextResponse.json(
+          { error: `File too large. Maximum size is ${MAX_SIZE_MB} MB.` },
+          { status: 400 }
+        );
+      }
+
+      const bytes = await file.arrayBuffer();
+      inputBuffer = Buffer.from(bytes);
+    } else {
+      // JSON or plain text base64 payload
+      const text = await req.text();
+      let base64Data = "";
+
+      try {
+        const json = JSON.parse(text);
+        base64Data = json.image || json.file || "";
+      } catch {
+        base64Data = text;
+      }
+
+      if (!base64Data) {
+        return NextResponse.json({ error: "No image data provided" }, { status: 400 });
+      }
+
+      // Strip data URI scheme prefix if present (e.g. data:image/png;base64,...)
+      let pureBase64 = base64Data.trim();
+      const commaIdx = pureBase64.indexOf(",");
+      if (pureBase64.startsWith("data:") && commaIdx !== -1) {
+        pureBase64 = pureBase64.slice(commaIdx + 1);
+      }
+
+      inputBuffer = Buffer.from(pureBase64, "base64");
+      if (inputBuffer.length > MAX_SIZE_MB * 1024 * 1024) {
+        return NextResponse.json(
+          { error: `File too large. Maximum size is ${MAX_SIZE_MB} MB.` },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (!inputBuffer || inputBuffer.length === 0) {
+      return NextResponse.json({ error: "Empty image received" }, { status: 400 });
+    }
+
+    // Convert and optimize image to WebP using Sharp
+    let webpBuffer: Buffer;
+    try {
+      webpBuffer = await sharp(inputBuffer)
+        .rotate() // auto-orient based on EXIF tags
+        .webp({ quality: 85, effort: 4 })
+        .toBuffer();
+    } catch (sharpErr: any) {
+      console.error("Sharp WebP conversion error:", sharpErr);
+      return NextResponse.json(
+        { error: "Failed to process image. Ensure the file is a valid image." },
+        { status: 422 }
+      );
+    }
+
+    // Ensure public/uploads directory exists
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      await fs.promises.mkdir(uploadDir, { recursive: true });
+    }
+
+    // Generate unique WebP filename
+    const timestamp = Date.now();
+    const randomHex = crypto.randomBytes(6).toString("hex");
+    const filename = `${timestamp}-${randomHex}.webp`;
+    const filePath = path.join(uploadDir, filename);
+
+    // Save WebP image to disk
+    await fs.promises.writeFile(filePath, webpBuffer);
+
+    // Calculate URLs
+    const relativeUrl = `/uploads/${filename}`;
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
+    const proto = req.headers.get("x-forwarded-proto") || (host.startsWith("localhost") ? "http" : "https");
+    const appBaseUrl = host
+      ? `${proto}://${host}`
+      : (process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/+$/, "");
+
+    const fullUrl = appBaseUrl ? `${appBaseUrl}${relativeUrl}` : relativeUrl;
+
+    return NextResponse.json({
+      success: true,
+      url: relativeUrl,
+      fullUrl,
+      filename,
+      image_url: filename,
+      size: webpBuffer.length,
+      format: "webp",
     });
-  } catch {
-    return NextResponse.json({ error: "Could not reach upload server" }, { status: 502 });
-  }
-
-  const text = await phpRes.text();
-
-  if (text.trimStart().startsWith("<")) {
+  } catch (err: any) {
+    console.error("Upload handler error:", err);
     return NextResponse.json(
-      { error: `Upload server blocked the request (HTTP ${phpRes.status}). Whitelist the upload URL in your hosting bot-protection settings.` },
-      { status: 502 }
+      { error: err?.message || "Internal server error during upload" },
+      { status: 500 }
     );
   }
-
-  let json: Record<string, string>;
-  try { json = JSON.parse(text); } catch {
-    return NextResponse.json(
-      { error: `Unexpected response from upload server: ${text.slice(0, 200)}` },
-      { status: 502 }
-    );
-  }
-
-  if (json.error)
-    return NextResponse.json({ error: json.error }, { status: 502 });
-
-  // PHP returns just the filename e.g. "67abc123.jpg"
-  // Prepend the base URL to get the full accessible URL
-  const filename = json.image_url;
-  if (!filename)
-    return NextResponse.json({ error: "No filename returned from upload server" }, { status: 502 });
-
-  const imageUrl = filename.startsWith("http")
-    ? filename
-    : `${IMG_BASE_URL}/${filename}`;
-
-  return NextResponse.json({ url: imageUrl });
 }

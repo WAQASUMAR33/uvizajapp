@@ -3,10 +3,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
+import { toImageUrl } from "@/lib/images";
 
 export async function GET() {
   const categories = await prisma.category.findMany({ orderBy: { createdAt: "asc" } });
-  return NextResponse.json(categories);
+  const enriched = categories.map((c) => ({
+    ...c,
+    image: c.image ? toImageUrl(c.image) : c.image,
+  }));
+  return NextResponse.json(enriched);
 }
 
 export async function POST(req: NextRequest) {

@@ -39,14 +39,10 @@ import { hasPermission } from "@/lib/permissions";
 import { getCategoryLabel, formatDate, formatCurrency } from "@/lib/utils";
 import { CATEGORIES } from "@/types";
 import { PageProgressBar, TableSkeletonRows } from "@/components/common/PageProgressBar";
-
-const IMG_BASE_URL = (process.env.NEXT_PUBLIC_UPLOAD_IMG_BASE_URL ?? "").replace(/\/+$/, "");
+import { toImageUrl } from "@/lib/images";
 
 function resolveImageUrl(name: string): string {
-  if (!name) return name;
-  if (name.startsWith("http")) return name;
-  const clean = name.replace(/^\/+/, "");
-  return IMG_BASE_URL ? `${IMG_BASE_URL}/${clean}` : clean;
+  return toImageUrl(name);
 }
 
 function imageList(images: string[] | null): string[] {
@@ -238,8 +234,9 @@ export default function AdminMerchantsPage() {
   const handleFilesAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    const hasInvalid = files.some((f) => !["image/jpeg", "image/png", "image/gif"].includes(f.type));
-    if (hasInvalid) { setUploadError("Only JPEG, PNG, or GIF images are allowed."); return; }
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const hasInvalid = files.some((f) => !allowedTypes.includes(f.type));
+    if (hasInvalid) { setUploadError("Only JPEG, PNG, WebP, or GIF images are allowed."); return; }
     const hasTooBig = files.some((f) => f.size > 5 * 1024 * 1024);
     if (hasTooBig) { setUploadError("Each image must be smaller than 5 MB."); return; }
     setUploadError("");
@@ -1045,7 +1042,7 @@ export default function AdminMerchantsPage() {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/jpeg,image/png,image/gif"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 multiple
                 style={{ display: "none" }}
                 onChange={handleFilesAdd}
