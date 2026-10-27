@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -16,8 +16,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useColorMode } from "@/components/ThemeRegistry";
 import {
@@ -28,37 +26,43 @@ import {
   ArrowRight,
   ShieldCheck,
   Store,
-  Utensils,
-  Receipt,
-  CreditCard,
+  BarChart3,
+  Users,
+  Settings,
 } from "lucide-react";
 
-const platformHighlights = [
+const adminHighlights = [
   {
-    icon: <Utensils size={18} />,
-    title: "Restaurant & Offer Listings",
-    description: "Manage venue profiles, dining discounts, and seasonal menu promotions across partner locations.",
+    icon: <BarChart3 size={18} />,
+    title: "Real-Time Platform Analytics",
+    description: "Monitor customer voucher redemptions, monthly subscriber trends, and merchant partner volumes.",
   },
   {
-    icon: <Receipt size={18} />,
-    title: "Table Voucher Redemptions",
-    description: "Verify active subscriber vouchers and record diner savings directly at the venue during checkout.",
+    icon: <Users size={18} />,
+    title: "Subscriber & Partner Management",
+    description: "Oversee dining pass holders, verify partner listings, and manage promotional category tags.",
   },
   {
-    icon: <CreditCard size={18} />,
-    title: "Dining Club Memberships",
-    description: "Monitor active monthly and annual subscriber passes, customer reviews, and partner performance.",
+    icon: <Settings size={18} />,
+    title: "Terms, Legal & Platform Governance",
+    description: "Publish dual-language terms of service, manage promo codes, and configure staff permission tiers.",
   },
 ];
 
-function LoginForm() {
+function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
   const { mode } = useColorMode();
   const isDark = mode === "dark";
 
-  const [portalType, setPortalType] = useState<"admin" | "merchant">("admin");
+  // If redirected with ?type=merchant, automatically push to /merchant/login
+  useEffect(() => {
+    if (searchParams.get("type") === "merchant") {
+      router.replace("/merchant/login");
+    }
+  }, [searchParams, router]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -80,7 +84,7 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        setError("Invalid credentials. Please verify your email and password.");
+        setError("Invalid credentials. Please verify your administrative email and password.");
         setLoading(false);
       } else {
         router.push(callbackUrl);
@@ -103,7 +107,7 @@ function LoginForm() {
       }}
     >
       {/* ======================================================== */}
-      {/* LEFT COLUMN: Uživaj Dining Club Partner Showcase        */}
+      {/* LEFT COLUMN: Uživaj Admin & Staff Showcase               */}
       {/* ======================================================== */}
       <Box
         sx={{
@@ -162,7 +166,8 @@ function LoginForm() {
           </Box>
 
           <Chip
-            label="Dining Privileges Network"
+            icon={<ShieldCheck size={14} />}
+            label="Admin & Staff Portal"
             size="small"
             sx={{
               fontWeight: 700,
@@ -188,7 +193,7 @@ function LoginForm() {
               mb: 1.5,
             }}
           >
-            Partner & Staff Portal
+            Administrator Control Center
           </Typography>
 
           <Typography
@@ -196,33 +201,32 @@ function LoginForm() {
             color="text.secondary"
             sx={{ fontSize: "1rem", lineHeight: 1.65, mb: 3.5 }}
           >
-            The operational management hub for Uživaj partner restaurants, cafes, and administrative staff.
+            Secure, centralized administrative command for platform operations, financial auditing, partner approvals, and terms management.
           </Typography>
 
-          {/* Three Domain Highlight Cards */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.75 }}>
-            {platformHighlights.map((item, idx) => (
-              <Paper
+          {/* Highlights List */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2.25 }}>
+            {adminHighlights.map((feat, idx) => (
+              <Box
                 key={idx}
-                elevation={0}
                 sx={{
-                  p: 2,
-                  borderRadius: 0,
-                  bgcolor: isDark ? "rgba(17, 24, 39, 0.65)" : "rgba(255, 255, 255, 0.8)",
-                  border: "1px solid",
-                  borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.06)",
-                  backdropFilter: "blur(10px)",
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: 1.75,
+                  gap: 2,
+                  p: 2,
+                  borderRadius: 0,
+                  bgcolor: isDark ? "rgba(255, 255, 255, 0.03)" : "rgba(255, 255, 255, 0.7)",
+                  border: "1px solid",
+                  borderColor: isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.05)",
+                  backdropFilter: "blur(8px)",
                 }}
               >
                 <Box
                   sx={{
-                    width: 38,
-                    height: 38,
+                    width: 36,
+                    height: 36,
                     borderRadius: 0,
-                    bgcolor: isDark ? "rgba(99, 102, 241, 0.15)" : "rgba(79, 70, 229, 0.08)",
+                    bgcolor: isDark ? "rgba(99, 102, 241, 0.18)" : "rgba(79, 70, 229, 0.1)",
                     color: isDark ? "primary.light" : "primary.main",
                     display: "flex",
                     alignItems: "center",
@@ -231,32 +235,48 @@ function LoginForm() {
                     mt: 0.25,
                   }}
                 >
-                  {item.icon}
+                  {feat.icon}
                 </Box>
                 <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
-                    {item.title}
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: "0.925rem", mb: 0.25 }}>
+                    {feat.title}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ mt: 0.25, display: "block", lineHeight: 1.5, fontSize: "0.8rem" }}
-                  >
-                    {item.description}
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.825rem", lineHeight: 1.5 }}>
+                    {feat.description}
                   </Typography>
                 </Box>
-              </Paper>
+              </Box>
             ))}
+          </Box>
+        </Box>
+
+        {/* Footer info */}
+        <Box sx={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
+            © {new Date().getFullYear()} Uživaj Platform Operations. All rights reserved.
+          </Typography>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Link
+              href="/admin/terms"
+              style={{
+                fontSize: "0.8rem",
+                color: isDark ? "#94a3b8" : "#64748b",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              Terms of Service
+            </Link>
           </Box>
         </Box>
       </Box>
 
       {/* ======================================================== */}
-      {/* RIGHT COLUMN: Material Design Authentication Form        */}
+      {/* RIGHT COLUMN: Dedicated Admin Login Form                 */}
       {/* ======================================================== */}
       <Box
         sx={{
-          width: { xs: "100%", lg: "52%", xl: "50%" },
+          flex: 1,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -276,7 +296,7 @@ function LoginForm() {
             mb: { xs: 3, lg: 0 },
           }}
         >
-          {/* Mobile Logo Branding (visible on small screens) */}
+          {/* Mobile Logo Branding */}
           <Box
             component={Link}
             href="/home"
@@ -329,48 +349,31 @@ function LoginForm() {
               }}
             />
 
-            {/* Role Tabs */}
-            <Box sx={{ mb: 3.5, borderBottom: "1px solid", borderColor: "divider" }}>
-              <Tabs
-                value={portalType}
-                onChange={(_, val) => setPortalType(val)}
-                variant="fullWidth"
-                textColor="primary"
-                indicatorColor="primary"
+            {/* Portal Badge */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+              <Chip
+                icon={<ShieldCheck size={14} color="#6366f1" />}
+                label="Admin & Staff Access"
+                size="small"
                 sx={{
-                  "& .MuiTab-root": {
-                    fontWeight: 700,
-                    fontSize: "0.875rem",
-                    textTransform: "none",
-                    py: 1.25,
-                    gap: 1,
-                  },
+                  borderRadius: 0,
+                  fontWeight: 700,
+                  fontSize: "0.75rem",
+                  bgcolor: isDark ? "rgba(99, 102, 241, 0.15)" : "rgba(79, 70, 229, 0.08)",
+                  color: isDark ? "primary.light" : "primary.main",
+                  border: "1px solid",
+                  borderColor: isDark ? "rgba(99, 102, 241, 0.25)" : "rgba(79, 70, 229, 0.18)",
                 }}
-              >
-                <Tab
-                  value="admin"
-                  icon={<ShieldCheck size={18} />}
-                  iconPosition="start"
-                  label="Admin Portal"
-                />
-                <Tab
-                  value="merchant"
-                  icon={<Store size={18} />}
-                  iconPosition="start"
-                  label="Venue Partner"
-                />
-              </Tabs>
+              />
             </Box>
 
             {/* Header Title */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: "-0.015em" }}>
-                {portalType === "admin" ? "Staff Sign In" : "Partner Sign In"}
+                Administrator Sign In
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                {portalType === "admin"
-                  ? "Access system analytics, merchant partners, and subscriber management."
-                  : "Access your restaurant profile, active offers, and redemption records."}
+                Enter your staff credentials to access the administrative control dashboard.
               </Typography>
             </Box>
 
@@ -389,15 +392,14 @@ function LoginForm() {
               </Alert>
             )}
 
-            {/* Material Form */}
+            {/* Admin Sign In Form */}
             <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-              {/* Outlined TextField with Floating Notched Label */}
               <TextField
-                label="Email Address"
+                label="Staff Email Address"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
+                placeholder="admin@uzivaj.hr"
                 required
                 fullWidth
                 autoComplete="email"
@@ -417,122 +419,137 @@ function LoginForm() {
                 }}
               />
 
-              {/* Password Field with Floating Notched Label & Visibility Toggle */}
-              <Box>
-                <TextField
-                  label="Password"
-                  type={showPass ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  required
-                  fullWidth
-                  autoComplete="current-password"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Lock size={19} color={isDark ? "#818cf8" : "#4f46e5"} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPass(!showPass)}
-                            edge="end"
-                            size="small"
-                            aria-label={showPass ? "Hide password" : "Show password"}
-                          >
-                            {showPass ? <EyeOff size={19} /> : <Eye size={19} />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 0,
-                    },
-                  }}
+              <TextField
+                label="Password"
+                type={showPass ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                required
+                fullWidth
+                autoComplete="current-password"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock size={19} color={isDark ? "#818cf8" : "#4f46e5"} />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPass(!showPass)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                          size="small"
+                        >
+                          {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 0,
+                  },
+                }}
+              />
+
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      size="small"
+                      sx={{ borderRadius: 0 }}
+                    />
+                  }
+                  label={
+                    <Typography variant="body2" sx={{ fontSize: "0.85rem", fontWeight: 500 }}>
+                      Remember session
+                    </Typography>
+                  }
+                  sx={{ m: 0 }}
                 />
-                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 0.75 }}>
-                  <Typography
-                    component={Link}
-                    href="/forgot-password"
-                    variant="caption"
-                    sx={{
-                      fontWeight: 700,
-                      color: "primary.main",
-                      textDecoration: "none",
-                      "&:hover": { textDecoration: "underline" },
-                    }}
-                  >
-                    Forgot your password?
-                  </Typography>
+
+                <Box
+                  component={Link}
+                  href="/forgot-password"
+                  sx={{
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    color: "primary.main",
+                    textDecoration: "none",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
+                  Forgot password?
                 </Box>
               </Box>
 
-              {/* Keep Signed In Checkbox */}
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    color="primary"
-                    size="small"
-                  />
-                }
-                label={
-                  <Typography variant="body2" sx={{ fontWeight: 500, fontSize: "0.85rem", userSelect: "none" }}>
-                    Keep me signed in
-                  </Typography>
-                }
-              />
-
-              {/* Material UI Elevated Button */}
               <Button
                 type="submit"
                 variant="contained"
-                size="large"
+                fullWidth
                 disabled={loading}
-                endIcon={
-                  loading ? (
-                    <CircularProgress size={18} color="inherit" />
-                  ) : (
-                    <ArrowRight size={18} />
-                  )
-                }
+                endIcon={!loading && <ArrowRight size={18} />}
                 sx={{
                   py: 1.4,
-                  borderRadius: 0,
                   fontSize: "0.95rem",
                   fontWeight: 700,
-                  letterSpacing: "0.01em",
-                  background: isDark
-                    ? "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
-                    : "linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)",
-                  boxShadow: isDark
-                    ? "0 4px 18px rgba(99, 102, 241, 0.4)"
-                    : "0 6px 18px rgba(79, 70, 229, 0.35)",
-                  "&:hover": {
-                    background: isDark
-                      ? "linear-gradient(135deg, #818cf8 0%, #6366f1 100%)"
-                      : "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
-                    boxShadow: "0 8px 22px rgba(79, 70, 229, 0.45)",
-                    transform: "translateY(-1px)",
-                  },
+                  textTransform: "none",
+                  borderRadius: 0,
+                  boxShadow: "0 4px 14px rgba(79, 70, 229, 0.25)",
                 }}
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? <CircularProgress size={22} color="inherit" /> : "Sign In to Admin Portal"}
               </Button>
+            </Box>
+
+            {/* Switch to Merchant Login */}
+            <Box
+              sx={{
+                mt: 3.5,
+                pt: 2.5,
+                borderTop: "1px solid",
+                borderColor: "divider",
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.85rem" }}>
+                Looking for your restaurant or venue account?
+              </Typography>
+              <Box
+                component={Link}
+                href="/merchant/login"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  mt: 0.75,
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  color: "#d97706",
+                  textDecoration: "none",
+                  "&:hover": { textDecoration: "underline" },
+                }}
+              >
+                <Store size={16} />
+                <span>Go to Venue Partner Login →</span>
+              </Box>
             </Box>
           </Paper>
         </Box>
 
-        {/* Right Bottom Footer */}
-        <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 500 }}>
-            © {new Date().getFullYear()} Uživaj. All rights reserved.
+        {/* Bottom Help */}
+        <Box sx={{ mt: { xs: 3, lg: 0 }, textAlign: "center" }}>
+          <Typography variant="caption" color="text.secondary">
+            Restricted access. Authorized Uživaj personnel only. Contact{" "}
+            <Link href="mailto:admin@uzivaj.hr" style={{ color: "inherit", fontWeight: 700 }}>
+              admin@uzivaj.hr
+            </Link>
           </Typography>
         </Box>
       </Box>
@@ -545,12 +562,11 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <CircularProgress color="primary" />
+          <CircularProgress size={36} />
         </Box>
       }
     >
-      <LoginForm />
+      <AdminLoginForm />
     </Suspense>
   );
 }
-

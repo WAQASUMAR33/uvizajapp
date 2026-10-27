@@ -11,7 +11,8 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
-import { Users, Store, Tag, Receipt, CreditCard, TrendingUp, ShieldCheck, Ticket } from "lucide-react";
+import Link from "next/link";
+import { Users, Store, Tag, Receipt, CreditCard, TrendingUp, ShieldCheck, Ticket, FileText, ArrowRight } from "lucide-react";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
 
 async function getStats() {
@@ -238,6 +239,76 @@ export default async function AdminDashboard() {
         subscriptionStats={stats.subscriptionStats}
         topMerchants={stats.topMerchants}
       />
+
+      {/* Terms & Conditions Management Shortcut */}
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 2.5,
+          borderRadius: 0,
+          borderColor: "divider",
+          bgcolor: "background.paper",
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "flex-start", sm: "center" },
+          justifyContent: "space-between",
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: 0,
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <FileText size={22} />
+          </Box>
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                Terms & Conditions Management
+              </Typography>
+              <Chip label="HR / EN Rich Editor" size="small" sx={{ height: 20, fontSize: "0.65rem", fontWeight: 700, borderRadius: 0 }} />
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.85rem" }}>
+              Publish, preview, and update dual-language platform policies with rich HTML formatting.
+            </Typography>
+          </Box>
+        </Box>
+        <Link
+          href="/admin/terms"
+          style={{ textDecoration: "none" }}
+        >
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 1,
+              px: 2.5,
+              py: 1.25,
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              fontWeight: 700,
+              fontSize: "0.875rem",
+              borderRadius: 0,
+              transition: "opacity 0.2s",
+              "&:hover": { opacity: 0.9 },
+              flexShrink: 0,
+            }}
+          >
+            <span>Open Terms Editor</span>
+            <ArrowRight size={16} />
+          </Box>
+        </Link>
+      </Paper>
 
       {/* Recent redemptions table */}
       <Paper

@@ -2,28 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-// GET /api/terms  — public
-//
-// ── Response (200) ────────────────────────────────────────────────────────────
-// { "contentEn": "<p>...</p>", "contentHr": "<p>...</p>", "updatedAt": "2026-06-07T..." }
-// { "contentEn": null, "contentHr": null } — not set yet
-export async function GET() {
-  const rows = await prisma.$queryRawUnsafe<any[]>(
-    "SELECT contentEn, contentHr, updatedAt FROM TermsAndConditions ORDER BY id DESC LIMIT 1"
-  );
-  if (!rows.length) return NextResponse.json({ contentEn: null, contentHr: null });
-  return NextResponse.json({ contentEn: rows[0].contentEn, contentHr: rows[0].contentHr, updatedAt: rows[0].updatedAt });
-}
-
-// PUT /api/terms  — admin only
-//
-// ── Request body ──────────────────────────────────────────────────────────────
-// { "contentEn": "<p>English terms...</p>", "contentHr": "<p>Croatian terms...</p>" }
-//
-// ── Response (200) ────────────────────────────────────────────────────────────
 import { hasPermission } from "@/lib/permissions";
 
+// GET /api/terms — public
+export async function GET() {
+  try {
+    const record = await (prisma as any).termsAndConditions?.findFirst({
+      orderBy: { id: "desc" },
+    });
+    if (record) {
+      return NextResponse.json({
+        contentEn: record.contentEn,
+        contentHr: record.contentHr,
+        updatedAt: record.updatedAt,
+      });
+    }
+  } catch {
+    // Fall back to raw SQL
+  }
+
+  try {
+    const rows = await prisma.$queryRawUnsafe<any[]>(
+      "SELECT contentEn, contentHr, updatedAt FROM TermsAndConditions ORDER BY id DESC LIMIT 1"
+    );
+    if (!rows.length) return NextResponse.json({ contentEn: null, contentHr: null });
+    return NextResponse.json({
+      contentEn: rows[0].contentEn,
+      contentHr: rows[0].contentHr,
+      updatedAt: rows[0].updatedAt,
+    });
+  } catch {
+    return NextResponse.json({ contentEn: null, contentHr: null });
+  }
+}
+
+// PUT /api/terms — admin only
 export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || !hasPermission(session.user, "terms")) {
@@ -35,11 +48,40 @@ export async function PUT(req: NextRequest) {
   const contentHr = typeof body?.contentHr === "string" ? body.contentHr : "";
 
   if (!contentEn.trim() && !contentHr.trim()) {
-    return NextResponse.json({ error: "at least one of contentEn or contentHr is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "At least one of English or Croatian terms is required." },
+      { status: 400 }
+    );
   }
 
+  // 1. Try Prisma Model
   try {
-    // Check if a record exists
+    const model = (prisma as any).termsAndConditions;
+    if (model) {
+      const existing = await model.findFirst();
+      let saved;
+      if (existing) {
+        saved = await model.update({
+          where: { id: existing.id },
+          data: { contentEn, contentHr },
+        });
+      } else {
+        saved = await model.create({
+          data: { contentEn, contentHr },
+        });
+      }
+      return NextResponse.json({
+        contentEn: saved.contentEn,
+        contentHr: saved.contentHr,
+        updatedAt: saved.updatedAt,
+      });
+    }
+  } catch {
+    // Proceed to raw SQL
+  }
+
+  // 2. Fallback to raw SQL
+  try {
     const existing = await prisma.$queryRawUnsafe<any[]>(
       "SELECT id FROM TermsAndConditions LIMIT 1"
     );
@@ -62,7 +104,11 @@ export async function PUT(req: NextRequest) {
     const rows = await prisma.$queryRawUnsafe<any[]>(
       "SELECT contentEn, contentHr, updatedAt FROM TermsAndConditions ORDER BY id DESC LIMIT 1"
     );
-    return NextResponse.json({ contentEn: rows[0].contentEn, contentHr: rows[0].contentHr, updatedAt: rows[0].updatedAt });
+    return NextResponse.json({
+      contentEn: rows[0].contentEn,
+      contentHr: rows[0].contentHr,
+      updatedAt: rows[0].updatedAt,
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? "Save failed" }, { status: 500 });
   }

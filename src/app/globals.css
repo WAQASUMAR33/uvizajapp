@@ -84,3 +84,33 @@ html.dark .shadow-lg {
   border-radius: 0 !important;
 }
 
+/* Quill Editor Dark Mode styling */
+html.dark .ql-toolbar {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+html.dark .ql-toolbar .ql-stroke {
+  stroke: #cbd5e1 !important;
+}
+html.dark .ql-toolbar .ql-fill {
+  fill: #cbd5e1 !important;
+}
+html.dark .ql-toolbar .ql-picker-label {
+  color: #cbd5e1 !important;
+}
+html.dark .ql-toolbar .ql-picker-options {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+}
+html.dark .ql-container {
+  background-color: #111827 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+html.dark .ql-editor {
+  color: #f8fafc !important;
+}
+html.dark .ql-editor.ql-blank::before {
+  color: #64748b !important;
+}
+
