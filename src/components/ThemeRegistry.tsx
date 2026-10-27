@@ -32,19 +32,15 @@ export function ThemeRegistry({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Read stored preference or system preference on initial mount
+    // Default to light theme unless the user explicitly selected "dark"
     try {
       const stored = localStorage.getItem("ujivaj-color-mode") as Mode | null;
-      if (stored === "dark" || stored === "light") {
-        setMode(stored);
-        if (stored === "dark") {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
-      } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      if (stored === "dark") {
         setMode("dark");
         document.documentElement.classList.add("dark");
+      } else {
+        setMode("light");
+        document.documentElement.classList.remove("dark");
       }
     } catch {
       // Ignore localStorage read errors in private browsing
