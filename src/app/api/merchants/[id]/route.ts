@@ -6,9 +6,10 @@ import { getImageArray } from "@/lib/utils";
 import { toImageFilename, toImageUrl } from "@/lib/images";
 import { hasPermission } from "@/lib/permissions";
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const merchantId = parseInt(id);
+  const customerIdStr = req.nextUrl.searchParams.get("customerId");
 
   const merchant = await prisma.merchant.findUnique({
     where: { id: merchantId },
@@ -52,10 +53,28 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
     for (const r of rows) dvMap[r.id] = r.discountValue ?? null;
   }
 
+  // If customerId is provided, look up which offers the customer has already redeemed
+  const customerId = customerIdStr ? parseInt(customerIdStr) : null;
+  let redeemedOfferIds = new Set<number>();
+  if (customerId && !isNaN(customerId) && offerIds.length) {
+    const redemptions = await prisma.redemption.findMany({
+      where: {
+        customerId,
+        offerId: { in: offerIds },
+      },
+      select: { offerId: true },
+    });
+    redeemedOfferIds = new Set(redemptions.map((r) => r.offerId));
+  }
+
   return NextResponse.json({
     ...merchant,
     images: getImageArray(merchant.images).map(toImageUrl),
-    offers: merchant.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
+    offers: merchant.offers.map((o) => ({
+      ...o,
+      discountValue: dvMap[o.id] ?? null,
+      isRedeemed: redeemedOfferIds.has(o.id),
+    })),
   });
 }
 

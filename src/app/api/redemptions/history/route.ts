@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
 
   const result = redemptions.map((r) => ({
     id:            r.id,
+    offerId:       r.offerId,
     redeemedAt:    r.redeemedAt,
     savings:       r.savings,
     offerAmount:   snapMap[r.id]?.offerAmount  ?? null,

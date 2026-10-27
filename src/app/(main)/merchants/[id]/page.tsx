@@ -31,6 +31,21 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
 
   if (!merchant) notFound();
 
+  let redeemedOfferIds = new Set<number>();
+  if (session?.user?.email) {
+    const customer = await prisma.customer.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+    if (customer) {
+      const redemptions = await prisma.redemption.findMany({
+        where: { customerId: customer.id, offerId: { in: merchant.offers.map((o) => o.id) } },
+        select: { offerId: true },
+      });
+      redeemedOfferIds = new Set(redemptions.map((r) => r.offerId));
+    }
+  }
+
   const images   = getImageArray(merchant.images).map(toImageUrl);
   const mainImg  = images[0] ?? null;
   const userRole = (session?.user as any)?.role;
@@ -126,7 +141,12 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
               ) : (
                 <Stack spacing={2.5}>
                   {(merchant.offers as SafeOffer[]).map((offer) => (
-                    <OfferCard key={offer.id} offer={offer} userRole={userRole} merchantName={merchant.nameEn || merchant.nameHr} />
+                    <OfferCard
+                      key={offer.id}
+                      offer={{ ...offer, isRedeemed: redeemedOfferIds.has(offer.id) }}
+                      userRole={userRole}
+                      merchantName={merchant.nameEn || merchant.nameHr}
+                    />
                   ))}
                 </Stack>
               )}

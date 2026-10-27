@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
   const category  = searchParams.get("category");
   const search    = searchParams.get("search");
   const all       = searchParams.get("all") === "true";
+  const customerIdStr = searchParams.get("customerId");
   const page      = parseInt(searchParams.get("page")  ?? "1");
   const limit     = parseInt(searchParams.get("limit") ?? "20");
   const skip      = (page - 1) * limit;
@@ -93,10 +94,28 @@ export async function GET(req: NextRequest) {
     for (const r of rows) dvMap[r.id] = r.discountValue ?? null;
   }
 
+  // If customerId is provided, look up which offers the customer has already redeemed
+  const customerId = customerIdStr ? parseInt(customerIdStr) : null;
+  let redeemedOfferIds = new Set<number>();
+  if (customerId && !isNaN(customerId) && offerIds.length) {
+    const redemptions = await prisma.redemption.findMany({
+      where: {
+        customerId,
+        offerId: { in: offerIds },
+      },
+      select: { offerId: true },
+    });
+    redeemedOfferIds = new Set(redemptions.map((r) => r.offerId));
+  }
+
   const enriched = merchants.map((m) => ({
     ...m,
     images: getImageArray(m.images).map(toImageUrl),
-    offers: m.offers.map((o) => ({ ...o, discountValue: dvMap[o.id] ?? null })),
+    offers: m.offers.map((o) => ({
+      ...o,
+      discountValue: dvMap[o.id] ?? null,
+      isRedeemed: redeemedOfferIds.has(o.id),
+    })),
   }));
 
   return NextResponse.json({ merchants: enriched, total, page, limit });

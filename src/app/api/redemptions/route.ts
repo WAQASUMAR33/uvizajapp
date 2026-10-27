@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getImageArray } from "@/lib/utils";
 import { toImageUrl } from "@/lib/images";
@@ -98,16 +100,28 @@ export async function POST(req: NextRequest) {
   try {
     const { customerId, offerId } = await req.json();
 
-    if (!customerId || !offerId) {
-      return NextResponse.json({ error: "customerId and offerId are required" }, { status: 400 });
+    let resolvedCustomerId = customerId ? parseInt(customerId) : null;
+    if (!resolvedCustomerId) {
+      const session = await getServerSession(authOptions);
+      if (session?.user?.email) {
+        const customer = await prisma.customer.findUnique({
+          where: { email: session.user.email },
+          select: { id: true },
+        });
+        if (customer) resolvedCustomerId = customer.id;
+      }
+    }
+
+    if (!resolvedCustomerId || !offerId) {
+      return NextResponse.json({ error: "customerId and offerId are required", message: "customerId and offerId are required" }, { status: 400 });
     }
 
     // Verify customer has an active subscription
     const subscription = await prisma.subscription.findUnique({
-      where: { customerId: parseInt(customerId) },
+      where: { customerId: resolvedCustomerId },
     });
     if (!subscription || subscription.status !== "ACTIVE") {
-      return NextResponse.json({ error: "Active subscription required to redeem offers" }, { status: 403 });
+      return NextResponse.json({ error: "Active subscription required to redeem offers", message: "Active subscription required to redeem offers" }, { status: 403 });
     }
 
     const offer = await prisma.offer.findUnique({
@@ -115,12 +129,29 @@ export async function POST(req: NextRequest) {
       include: { merchant: true },
     });
     if (!offer || !offer.isActive) {
-      return NextResponse.json({ error: "Offer not available" }, { status: 404 });
+      return NextResponse.json({ error: "Offer not available", message: "Offer not available" }, { status: 404 });
+    }
+
+    // Check if the customer has ALREADY redeemed this offer (1 use per customer limit)
+    const existing = await prisma.redemption.findFirst({
+      where: {
+        customerId: resolvedCustomerId,
+        offerId: offer.id,
+      },
+    });
+    if (existing) {
+      return NextResponse.json(
+        {
+          error: "Offer already redeemed",
+          message: "This offer has already been used and cannot be redeemed again.",
+        },
+        { status: 409 }
+      );
     }
 
     const redemption = await prisma.redemption.create({
       data: {
-        customerId: parseInt(customerId),
+        customerId: resolvedCustomerId,
         offerId:    offer.id,
         merchantId: offer.merchantId,
         savings:    offer.merchant.savingsEstimate,

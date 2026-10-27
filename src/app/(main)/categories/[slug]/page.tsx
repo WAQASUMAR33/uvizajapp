@@ -27,9 +27,11 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   return (
     <Box sx={{ maxWidth: 1152, mx: "auto", px: 3, py: 4 }}>
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Typography component={Link} href="/categories" color="inherit" variant="caption" sx={{ textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>
-          Categories
-        </Typography>
+        <Link href="/categories" style={{ textDecoration: "none", color: "inherit" }}>
+          <Typography color="inherit" variant="caption" sx={{ "&:hover": { textDecoration: "underline" } }}>
+            Categories
+          </Typography>
+        </Link>
         <Typography color="text.primary" variant="caption" sx={{ fontWeight: 700 }}>
           {category.label}
         </Typography>
@@ -53,15 +55,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <Typography variant="h6" color="text.secondary">
             No merchants in this category yet
           </Typography>
-          <Button
-            component={Link}
-            href="/merchants"
-            variant="outlined"
-            startIcon={<ArrowLeft size={16} />}
-            sx={{ mt: 3, borderRadius: "10px" }}
-          >
-            Explore all venues
-          </Button>
+          <Link href="/merchants" style={{ textDecoration: "none" }}>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowLeft size={16} />}
+              sx={{ mt: 3, borderRadius: "10px" }}
+            >
+              Explore all venues
+            </Button>
+          </Link>
         </Box>
       ) : (
         <Grid container spacing={3}>

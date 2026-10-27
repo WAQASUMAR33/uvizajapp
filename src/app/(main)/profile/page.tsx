@@ -208,16 +208,16 @@ export default async function ProfilePage() {
             </Box>
 
             <Box sx={{ pt: 2, borderTop: "1px solid", borderColor: "divider" }}>
-              <MuiButton
-                component={Link}
-                href="/subscribe"
-                variant="outlined"
-                color="secondary"
-                fullWidth
-                sx={{ borderRadius: "10px", fontWeight: 700 }}
-              >
-                View Membership Plans
-              </MuiButton>
+              <Link href="/subscribe" style={{ textDecoration: "none", display: "block" }}>
+                <MuiButton
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  sx={{ borderRadius: "10px", fontWeight: 700 }}
+                >
+                  View Membership Plans
+                </MuiButton>
+              </Link>
             </Box>
           </Paper>
         </Grid>
@@ -225,28 +225,28 @@ export default async function ProfilePage() {
 
       {/* Quick Navigation Actions */}
       <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-        <MuiButton
-          component={Link}
-          href="/admin"
-          variant="contained"
-          color="primary"
-          size="large"
-          startIcon={<Settings size={18} />}
-          sx={{ borderRadius: "12px", py: 1.3, px: 3, fontWeight: 700 }}
-        >
-          Go to Admin Portal
-        </MuiButton>
+        <Link href="/admin" style={{ textDecoration: "none" }}>
+          <MuiButton
+            variant="contained"
+            color="primary"
+            size="large"
+            startIcon={<Settings size={18} />}
+            sx={{ borderRadius: "12px", py: 1.3, px: 3, fontWeight: 700 }}
+          >
+            Go to Admin Portal
+          </MuiButton>
+        </Link>
 
-        <MuiButton
-          component={Link}
-          href="/merchants"
-          variant="outlined"
-          size="large"
-          startIcon={<Store size={18} />}
-          sx={{ borderRadius: "12px", py: 1.3, px: 3, fontWeight: 600 }}
-        >
-          Explore Venues
-        </MuiButton>
+        <Link href="/merchants" style={{ textDecoration: "none" }}>
+          <MuiButton
+            variant="outlined"
+            size="large"
+            startIcon={<Store size={18} />}
+            sx={{ borderRadius: "12px", py: 1.3, px: 3, fontWeight: 600 }}
+          >
+            Explore Venues
+          </MuiButton>
+        </Link>
       </Box>
     </Box>
   );

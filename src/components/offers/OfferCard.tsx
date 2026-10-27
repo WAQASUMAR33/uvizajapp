@@ -23,12 +23,12 @@ interface OfferCardProps {
 
 export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
   const [open, setOpen]         = useState(false);
-  const [redeemed, setRedeemed] = useState(false);
+  const [redeemed, setRedeemed] = useState(Boolean(offer.isRedeemed));
   const [loading, setLoading]   = useState(false);
   const canRedeem = userRole === "PAID_SUBSCRIBER" || userRole === "ADMIN";
 
   async function handleRedeem() {
-    if (!canRedeem) return;
+    if (!canRedeem || redeemed) return;
     setLoading(true);
     try {
       const res = await fetch("/api/redemptions", {
@@ -36,7 +36,19 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ offerId: offer.id }),
       });
-      if (res.ok) setRedeemed(true);
+      if (res.ok) {
+        setRedeemed(true);
+        setOpen(false);
+      } else {
+        const data = await res.json().catch(() => null);
+        if (res.status === 409) {
+          setRedeemed(true);
+          setOpen(false);
+        }
+        alert(data?.message || data?.error || "Failed to redeem offer");
+      }
+    } catch (err: any) {
+      alert(err?.message || "Failed to redeem offer");
     } finally {
       setLoading(false);
     }
@@ -46,13 +58,14 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
     <>
       <Card
         sx={{
-          bgcolor: "background.paper",
+          bgcolor: redeemed ? "action.hover" : "background.paper",
           border: "1px solid",
           borderColor: "divider",
           borderRadius: "16px",
           boxShadow: 1,
+          opacity: redeemed ? 0.75 : 1,
           transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-          "&:hover": {
+          "&:hover": redeemed ? undefined : {
             boxShadow: 4,
             borderColor: "primary.main",
             transform: "translateY(-2px)",
@@ -105,8 +118,8 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
           <Box sx={{ mt: 2 }}>
             {canRedeem ? (
               redeemed ? (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "success.main" }}>
-                  <CheckCircle size={16} /><Typography variant="body2" sx={{ fontWeight: 600 }}>Redeemed!</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "text.secondary" }}>
+                  <CheckCircle size={16} /><Typography variant="body2" sx={{ fontWeight: 600 }}>Already Used</Typography>
                 </Box>
               ) : (
                 <MuiButton size="small" variant="contained" onClick={() => setOpen(true)} sx={{ borderRadius: "8px" }}>Redeem Offer</MuiButton>

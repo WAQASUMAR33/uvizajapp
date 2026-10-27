@@ -32,26 +32,25 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
 
       {/* Category filter chips */}
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 4 }}>
-        <Chip
-          component={Link}
-          href="/merchants"
-          label="All"
-          clickable
-          variant={!category ? "filled" : "outlined"}
-          color={!category ? "primary" : "default"}
-          sx={{ fontWeight: 600 }}
-        />
-        {CATEGORIES.map((cat) => (
+        <Link href="/merchants" style={{ textDecoration: "none" }}>
           <Chip
-            key={cat.value}
-            component={Link}
-            href={`/merchants?category=${cat.value}`}
-            label={`${cat.emoji} ${cat.label}`}
+            label="All"
             clickable
-            variant={category === cat.value ? "filled" : "outlined"}
-            color={category === cat.value ? "primary" : "default"}
+            variant={!category ? "filled" : "outlined"}
+            color={!category ? "primary" : "default"}
             sx={{ fontWeight: 600 }}
           />
+        </Link>
+        {CATEGORIES.map((cat) => (
+          <Link key={cat.value} href={`/merchants?category=${cat.value}`} style={{ textDecoration: "none" }}>
+            <Chip
+              label={`${cat.emoji} ${cat.label}`}
+              clickable
+              variant={category === cat.value ? "filled" : "outlined"}
+              color={category === cat.value ? "primary" : "default"}
+              sx={{ fontWeight: 600 }}
+            />
+          </Link>
         ))}
       </Box>
 

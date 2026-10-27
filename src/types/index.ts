@@ -63,6 +63,7 @@ export interface SafeOffer {
   validFrom: Date;
   validUntil: Date | null;
   isActive: boolean;
+  isRedeemed?: boolean;
 }
 
 export interface SafeRedemption {

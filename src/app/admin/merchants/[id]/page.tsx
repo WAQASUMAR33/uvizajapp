@@ -44,16 +44,16 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
     <Box>
       {/* ── Breadcrumb bar ── */}
       <Box sx={{ borderBottom: "1px solid", borderColor: "divider", px: 3, py: 1.5, bgcolor: "background.paper" }}>
-        <MuiButton
-          component={Link}
-          href="/admin/merchants"
-          startIcon={<ArrowLeft size={15} />}
-          variant="text"
-          size="small"
-          sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}
-        >
-          Merchants
-        </MuiButton>
+        <Link href="/admin/merchants" style={{ textDecoration: "none" }}>
+          <MuiButton
+            startIcon={<ArrowLeft size={15} />}
+            variant="text"
+            size="small"
+            sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}
+          >
+            Merchants
+          </MuiButton>
+        </Link>
         <Typography component="span" variant="caption" color="text.disabled" sx={{ mx: 1 }}>/</Typography>
         <Typography component="span" variant="caption" color="text.primary" sx={{ fontWeight: 600 }}>{merchant.nameEn || merchant.nameHr || "Merchant Details"}</Typography>
       </Box>
@@ -232,15 +232,15 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           <Divider />
 
           <Box sx={{ px: 3, py: 2.5 }}>
-            <MuiButton
-              component={Link}
-              href="/admin/merchants"
-              variant="outlined"
-              fullWidth
-              startIcon={<ArrowLeft size={15} />}
-            >
-              Back to Merchants
-            </MuiButton>
+            <Link href="/admin/merchants" style={{ textDecoration: "none", display: "block" }}>
+              <MuiButton
+                variant="outlined"
+                fullWidth
+                startIcon={<ArrowLeft size={15} />}
+              >
+                Back to Merchants
+              </MuiButton>
+            </Link>
           </Box>
         </Grid>
       </Grid>

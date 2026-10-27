@@ -15,21 +15,22 @@ export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
   const imgSrc = images[0] || `https://ui-avatars.com/api/?name=${encodeURIComponent(merchant.nameEn || merchant.nameHr)}&background=6366f1&color=fff&size=400`;
 
   return (
-    <Card
-      component={Link}
+    <Link
       href={`/merchants/${merchant.id}`}
-      sx={{
-        textDecoration: "none",
-        display: "block",
-        borderRadius: 3,
-        border: "1px solid",
-        borderColor: "divider",
-        boxShadow: 1,
-        transition: "all 0.2s",
-        "&:hover": { boxShadow: 4, transform: "translateY(-2px)" },
-        overflow: "hidden",
-      }}
+      style={{ textDecoration: "none", color: "inherit", display: "block" }}
     >
+      <Card
+        sx={{
+          display: "block",
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          boxShadow: 1,
+          transition: "all 0.2s",
+          "&:hover": { boxShadow: 4, transform: "translateY(-2px)" },
+          overflow: "hidden",
+        }}
+      >
       <Box sx={{ position: "relative", height: 176, bgcolor: "grey.100", overflow: "hidden" }}>
         <CardMedia
           component="img"
@@ -75,5 +76,6 @@ export function MerchantCard({ merchant }: { merchant: SafeMerchant }) {
         )}
       </CardContent>
     </Card>
+    </Link>
   );
 }
