@@ -543,15 +543,6 @@ function AdminLoginForm() {
           </Paper>
         </Box>
 
-        {/* Bottom Help */}
-        <Box sx={{ mt: { xs: 3, lg: 0 }, textAlign: "center" }}>
-          <Typography variant="caption" color="text.secondary">
-            Restricted access. Authorized Uživaj personnel only. Contact{" "}
-            <Link href="mailto:admin@uzivaj.hr" style={{ color: "inherit", fontWeight: 700 }}>
-              admin@uzivaj.hr
-            </Link>
-          </Typography>
-        </Box>
       </Box>
     </Box>
   );
