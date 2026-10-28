@@ -263,23 +263,10 @@ function AdminLoginForm() {
         </Box>
 
         {/* Footer info */}
-        <Box sx={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box sx={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center" }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
             © {new Date().getFullYear()} Uživaj Platform Operations. All rights reserved.
           </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Link
-              href="/admin/terms"
-              style={{
-                fontSize: "0.8rem",
-                color: isDark ? "#94a3b8" : "#64748b",
-                textDecoration: "none",
-                fontWeight: 600,
-              }}
-            >
-              Terms of Service
-            </Link>
-          </Box>
         </Box>
       </Box>
 

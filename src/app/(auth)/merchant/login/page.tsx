@@ -256,6 +256,12 @@ function MerchantLoginForm() {
           </Box>
         </Box>
 
+        {/* Footer info */}
+        <Box sx={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center" }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
+            © {new Date().getFullYear()} Uživaj Merchant Partner Operations. All rights reserved.
+          </Typography>
+        </Box>
       </Box>
 
       {/* ======================================================== */}
