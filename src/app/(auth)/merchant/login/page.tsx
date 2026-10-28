@@ -244,25 +244,6 @@ function MerchantLoginForm() {
           </Box>
         </Box>
 
-        {/* Footer info */}
-        <Box sx={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
-            © {new Date().getFullYear()} Uživaj Partner Network. All rights reserved.
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Link
-              href="/admin/terms"
-              style={{
-                fontSize: "0.8rem",
-                color: isDark ? "#94a3b8" : "#64748b",
-                textDecoration: "none",
-                fontWeight: 600,
-              }}
-            >
-              Partner Terms
-            </Link>
-          </Box>
-        </Box>
       </Box>
 
       {/* ======================================================== */}
@@ -541,15 +522,6 @@ function MerchantLoginForm() {
           </Paper>
         </Box>
 
-        {/* Bottom Help */}
-        <Box sx={{ mt: { xs: 3, lg: 0 }, textAlign: "center" }}>
-          <Typography variant="caption" color="text.secondary">
-            Need partner onboarding assistance? Contact{" "}
-            <Link href="mailto:partners@uzivaj.hr" style={{ color: "inherit", fontWeight: 700 }}>
-              partners@uzivaj.hr
-            </Link>
-          </Typography>
-        </Box>
       </Box>
     </Box>
   );
