@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
-    error: "/not-found",
+    error: "/login",
   },
   providers: [
     CredentialsProvider({

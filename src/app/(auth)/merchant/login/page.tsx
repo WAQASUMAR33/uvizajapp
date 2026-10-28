@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -64,6 +64,16 @@ function MerchantLoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Display error if redirected with error in URL params
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam === "CredentialsSignin") {
+      setError("Invalid credentials. Please verify your merchant email and password.");
+    } else if (errorParam) {
+      setError("Authentication failed: " + errorParam);
+    }
+  }, [searchParams]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -77,12 +87,14 @@ function MerchantLoginForm() {
         callbackUrl,
       });
 
-      if (res?.error) {
+      if (!res || !res.ok || res.error) {
         setError("Invalid credentials. Please verify your merchant email and password.");
         setLoading(false);
-      } else {
-        router.push(callbackUrl);
+        return;
       }
+
+      // Hard navigation so newly set session cookies are cleanly recognized by Server Components
+      window.location.href = callbackUrl;
     } catch {
       setError("An unexpected error occurred during sign in. Please try again.");
       setLoading(false);
