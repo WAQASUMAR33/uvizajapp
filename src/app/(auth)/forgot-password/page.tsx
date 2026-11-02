@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+            <img src="/uzivaj_logo.png" alt="Uživaj" style={{ height: 36, width: "auto" }} />
           </Box>
         </Box>
 
@@ -136,7 +136,7 @@ export default function ForgotPasswordPage() {
                   </Typography>
                   <TextField
                     type="email"
-                    placeholder="name@ujivaj.com"
+                    placeholder="name@uzivajlife.online"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

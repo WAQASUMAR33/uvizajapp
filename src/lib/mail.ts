@@ -15,12 +15,12 @@ function createTransporter() {
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   const transporter = createTransporter();
   await transporter.sendMail({
-    from: process.env.SMTP_FROM ?? `"Ujivaj Admin" <${process.env.SMTP_USER}>`,
+    from: process.env.SMTP_FROM ?? `"Uživaj Admin" <${process.env.SMTP_USER}>`,
     to,
-    subject: "Reset your Ujivaj password",
+    subject: "Reset your Uživaj password",
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f8fafc;border-radius:12px">
-        <img src="${process.env.NEXTAUTH_URL}/uzivaj_logo.png" alt="Ujivaj" style="height:48px;margin-bottom:24px" />
+        <img src="${process.env.NEXTAUTH_URL}/uzivaj_logo.png" alt="Uživaj" style="height:48px;margin-bottom:24px" />
         <h2 style="margin:0 0 8px;color:#1e1b4b">Reset your password</h2>
         <p style="color:#64748b;margin:0 0 24px">Click the button below to set a new password. This link expires in <strong>1 hour</strong>.</p>
         <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Reset Password</a>
@@ -34,14 +34,14 @@ export async function sendCustomerPasswordResetEmail(to: string, resetUrl: strin
   try {
     const transporter = createTransporter();
     await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? `"Ujivaj Support" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
-      subject: "Reset your Ujivaj password",
+      subject: "Reset your Uživaj password",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f8fafc;border-radius:12px">
-          <img src="${process.env.NEXTAUTH_URL}/uzivaj_logo.png" alt="Ujivaj" style="height:48px;margin-bottom:24px" />
+          <img src="${process.env.NEXTAUTH_URL}/uzivaj_logo.png" alt="Uživaj" style="height:48px;margin-bottom:24px" />
           <h2 style="margin:0 0 8px;color:#1e1b4b">Reset your customer password</h2>
-          <p style="color:#64748b;margin:0 0 24px">Click the button below to set a new password for your Ujivaj customer account. This link expires in <strong>1 hour</strong>.</p>
+          <p style="color:#64748b;margin:0 0 24px">Click the button below to set a new password for your Uživaj customer account. This link expires in <strong>1 hour</strong>.</p>
           <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Reset Password</a>
           <p style="color:#94a3b8;font-size:12px;margin-top:24px">If you didn't request this, you can safely ignore this email.</p>
         </div>
@@ -58,12 +58,12 @@ export async function sendCustomerVerificationCodeEmail(to: string, code: string
   try {
     const transporter = createTransporter();
     await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? `"Ujivaj Support" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
-      subject: "Your Ujivaj Verification Code",
+      subject: "Your Uživaj Verification Code",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f8fafc;border-radius:12px">
-          <img src="${process.env.NEXTAUTH_URL}/uzivaj_logo.png" alt="Ujivaj" style="height:48px;margin-bottom:24px" />
+          <img src="${process.env.NEXTAUTH_URL}/uzivaj_logo.png" alt="Uživaj" style="height:48px;margin-bottom:24px" />
           <h2 style="margin:0 0 8px;color:#1e1b4b">Verification Code</h2>
           <p style="color:#64748b;margin:0 0 24px">Your 6-digit password reset verification code is:</p>
           <div style="font-size:32px;font-weight:700;color:#4f46e5;letter-spacing:4px;margin:16px 0;text-align:center">${code}</div>
@@ -100,13 +100,13 @@ export async function sendSupportReplyEmail({
     const transporter = createTransporter();
     const appUrl = process.env.NEXTAUTH_URL ?? "https://uzivaj.com";
     await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? `"Ujivaj Member Support" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM ?? `"Uživaj Member Support" <${process.env.SMTP_USER}>`,
       to,
       subject: `Re: [Ticket #${ticketId}] ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 28px 24px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
           <div style="margin-bottom: 20px; text-align: center;">
-            <img src="${appUrl}/uzivaj_logo.png" alt="Ujivaj" style="height: 44px; width: auto;" />
+            <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 44px; width: auto;" />
           </div>
           
           <div style="background-color: #ffffff; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0;">
@@ -127,7 +127,7 @@ export async function sendSupportReplyEmail({
           </div>
 
           <div style="margin-top: 20px; text-align: center; color: #94a3b8; font-size: 12px;">
-            <p style="margin: 0;">Thank you for being an active member of Ujivaj!</p>
+            <p style="margin: 0;">Thank you for being an active member of Uživaj!</p>
             <p style="margin: 4px 0 0;">If you have further questions, feel free to submit a new message via the mobile app.</p>
           </div>
         </div>
@@ -145,19 +145,19 @@ export async function sendCustomerEmailVerificationLink(to: string, verifyUrl: s
     const displayName = fullname ? ` ${fullname}` : "";
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://uvizajapp.vercel.app";
     await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? `"Ujivaj Support" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
-      subject: "Verify your Ujivaj account email",
+      subject: "Verify your Uživaj account email",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
           <div style="text-align: center; margin-bottom: 24px;">
-            <img src="${appUrl}/uzivaj_logo.png" alt="Ujivaj" style="height: 48px; width: auto;" />
+            <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 48px; width: auto;" />
           </div>
           <div style="background-color: #ffffff; padding: 28px 24px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <h2 style="margin: 0 0 12px; color: #1e1b4b; font-size: 20px; font-weight: 700;">Verify your email address</h2>
             <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 20px;">
               Hello${displayName},<br/><br/>
-              Thank you for registering with Ujivaj! Please click the button below to verify your email address and activate your account.
+              Thank you for registering with Uživaj! Please click the button below to verify your email address and activate your account.
             </p>
             <div style="text-align: center; margin: 28px 0;">
               <a href="${verifyUrl}" style="display: inline-block; padding: 14px 36px; background-color: #4f46e5; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; letter-spacing: 0.3px;">
@@ -174,7 +174,7 @@ export async function sendCustomerEmailVerificationLink(to: string, verifyUrl: s
             </p>
           </div>
           <div style="margin-top: 24px; text-align: center; color: #94a3b8; font-size: 12px;">
-            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Ujivaj. All rights reserved.</p>
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} Uživaj. All rights reserved.</p>
           </div>
         </div>
       `,

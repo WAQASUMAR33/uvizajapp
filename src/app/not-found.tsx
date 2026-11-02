@@ -77,7 +77,7 @@ export default function NotFound() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/uzivaj_logo.png"
-              alt="Ujivaj Logo"
+              alt="Uživaj Logo"
               style={{ height: 55, width: "auto", filter: "brightness(0) invert(1)" }}
             />
           </Box>

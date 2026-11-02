@@ -169,7 +169,7 @@ export function OfferCard({ offer, userRole, merchantName }: OfferCardProps) {
               </Avatar>
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant="h6" sx={{ fontWeight: 800 }}>Unlock This Offer</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Subscribe to Ujivaj to redeem exclusive offers at premium merchants.</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Subscribe to Uživaj to redeem exclusive offers at premium merchants.</Typography>
               </Box>
               <MuiButton variant="contained" color="secondary" fullWidth size="large" onClick={() => { setOpen(false); window.location.href = "/subscribe"; }} sx={{ borderRadius: "12px", py: 1.3, fontWeight: 700 }}>
                 View Membership Plans

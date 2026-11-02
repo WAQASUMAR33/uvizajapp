@@ -29,7 +29,7 @@ export function MainHeader({ session }: { session: any }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/uzivaj_logo.png"
-            alt="Ujivaj"
+            alt="Uživaj"
             style={{ height: 34, width: "auto", objectFit: "contain" }}
           />
         </Box>

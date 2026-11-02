@@ -28,7 +28,7 @@ function CustomerResetPasswordForm() {
   if (!token || !email) {
     return (
       <Alert severity="error" sx={{ borderRadius: "12px" }}>
-        Invalid or expired reset link. Please request a new one from the Ujivaj mobile application.
+        Invalid or expired reset link. Please request a new one from the Uživaj mobile application.
       </Alert>
     );
   }
@@ -70,10 +70,10 @@ function CustomerResetPasswordForm() {
   return done ? (
     <Box sx={{ textAlign: "center" }}>
       <Alert severity="success" sx={{ mb: 3, borderRadius: "12px", textAlign: "left" }}>
-        Password updated successfully! You can now log in to the <strong>Ujivaj</strong> mobile app.
+        Password updated successfully! You can now log in to the <strong>Uživaj</strong> mobile app.
       </Alert>
       <Typography variant="body2" sx={{ color: "text.secondary" }}>
-        You may now safely close this browser window and open the Ujivaj mobile app to sign in.
+        You may now safely close this browser window and open the Uživaj mobile app to sign in.
       </Typography>
     </Box>
   ) : (
@@ -200,7 +200,7 @@ export default function CustomerResetPasswordPage() {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+            <img src="/uzivaj_logo.png" alt="Uživaj" style={{ height: 36, width: "auto" }} />
           </Box>
         </Box>
 

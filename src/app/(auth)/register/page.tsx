@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
         <Box sx={{ position: "relative", display: "flex", alignItems: "center", gap: 2 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+          <img src="/uzivaj_logo.png" alt="Uživaj" style={{ height: 36, width: "auto" }} />
           <Chip
             label="Membership"
             size="small"
@@ -206,7 +206,7 @@ export default function RegisterPage() {
         </Box>
 
         <Typography sx={{ position: "relative", color: "#818cf8", fontSize: "0.75rem" }}>
-          © {new Date().getFullYear()} Ujivaj Inc. All rights reserved.
+          © {new Date().getFullYear()} Uživaj Inc. All rights reserved.
         </Typography>
       </Box>
 
@@ -367,7 +367,7 @@ export default function RegisterPage() {
 
         <Box sx={{ width: "100%", textAlign: "center", mt: 4 }}>
           <Typography variant="caption" color="text.secondary">
-            Ujivaj Hospitality & Dining Network
+            Uživaj Hospitality & Dining Network
           </Typography>
         </Box>
       </Box>

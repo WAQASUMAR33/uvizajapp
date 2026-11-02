@@ -24,14 +24,14 @@ async function main() {
   console.log(`\nSending test email to ${to}...`);
   try {
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? `"Ujivaj Support" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
-      subject: "Ujivaj SMTP Server Test",
-      text: "This is a test email to verify that the Hostinger SMTP mail server is working correctly for the Ujivaj app.",
+      subject: "Uživaj SMTP Server Test",
+      text: "This is a test email to verify that the Hostinger SMTP mail server is working correctly for the Uživaj app.",
       html: `
         <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0">
           <h2 style="margin:0 0 8px;color:#1e1b4b">SMTP Connection Test</h2>
-          <p style="color:#64748b;margin:0 0 24px">This is a test email verifying that your Ujivaj email server configuration is working correctly.</p>
+          <p style="color:#64748b;margin:0 0 24px">This is a test email verifying that your Uživaj email server configuration is working correctly.</p>
           <p style="color:#94a3b8;font-size:12px;margin-top:24px">Sent via Hostinger SMTP for uzivaj@rapidtechpro.com.</p>
         </div>
       `,

@@ -259,7 +259,7 @@ export function AdminSidebar({ role, user }: { role: string; user?: any }) {
         <div className="flex items-center gap-2.5">
           <Image
             src="/uzivaj_logo.png"
-            alt="Ujivaj"
+            alt="Uživaj"
             width={112}
             height={42}
             style={{ objectFit: "contain" }}

@@ -40,7 +40,7 @@ function VerifyEmailContent() {
           const data = await res.json();
           if (res.ok && data.success) {
             setStatus("success");
-            setMessage("Your email address has been successfully verified! You can now log into your Ujivaj app.");
+            setMessage("Your email address has been successfully verified! You can now log into your Uživaj app.");
           } else {
             setStatus("error");
             setMessage(data.error || "The verification link is invalid or has expired.");
@@ -110,7 +110,7 @@ function VerifyEmailContent() {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+            <img src="/uzivaj_logo.png" alt="Uživaj" style={{ height: 36, width: "auto" }} />
           </Box>
         </Box>
 
@@ -160,11 +160,11 @@ function VerifyEmailContent() {
                 Email Verified!
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
-                Your email address has been successfully verified. You can now open the Ujivaj mobile application and log into your account.
+                Your email address has been successfully verified. You can now open the Uživaj mobile application and log into your account.
               </Typography>
 
               <Alert severity="success" icon={<Sparkles size={18} />} sx={{ borderRadius: "12px", textAlign: "left" }}>
-                You are all set! Return to the Ujivaj app to start enjoying dining savings.
+                You are all set! Return to the Uživaj app to start enjoying dining savings.
               </Alert>
             </Box>
           )}

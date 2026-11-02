@@ -716,7 +716,7 @@ export default function AdminUsersPage() {
                 onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))}
                 fullWidth size="small" type="email" required
                 disabled={!!editingUser}
-                placeholder="user@ujivaj.com"
+                placeholder="user@uzivajlife.online"
               />
 
               <TextField

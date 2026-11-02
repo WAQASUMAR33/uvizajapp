@@ -32,7 +32,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
           }}
         >
           <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "center" }}>
-            © {new Date().getFullYear()} Ujivaj Inc. All rights reserved. Premium Gastronomy Privileges.
+            © {new Date().getFullYear()} Uživaj Inc. All rights reserved. Premium Gastronomy Privileges.
           </Typography>
         </Box>
       </Box>

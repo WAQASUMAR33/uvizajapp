@@ -49,7 +49,7 @@ export function MainSidebar({ role }: { role?: string }) {
           <Sparkles size={20} color="#fff" />
         </Box>
         <Box>
-          <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1.2 }}>Ujivaj</Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1.2 }}>Uživaj</Typography>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.7rem", fontWeight: 600 }}>Dining Privileges</Typography>
         </Box>
       </Box>

@@ -204,7 +204,7 @@ export default function ResetPasswordPage() {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/uzivaj_logo.png" alt="Ujivaj" style={{ height: 36, width: "auto" }} />
+            <img src="/uzivaj_logo.png" alt="Uživaj" style={{ height: 36, width: "auto" }} />
           </Box>
         </Box>
 
