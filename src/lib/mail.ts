@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import path from "path";
+import fs from "fs";
 
 function createTransporter() {
   return nodemailer.createTransport({
@@ -16,17 +18,38 @@ function getAppUrl(): string {
   return (process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://uzivajlife.online").replace(/\/$/, "");
 }
 
+function getLogoConfig() {
+  const localLogo = path.join(process.cwd(), "public", "uzivaj_logo.png");
+  if (fs.existsSync(localLogo)) {
+    return {
+      src: "cid:uzivaj_logo",
+      attachments: [
+        {
+          filename: "uzivaj_logo.png",
+          path: localLogo,
+          cid: "uzivaj_logo",
+        },
+      ],
+    };
+  }
+  return {
+    src: "https://uzivajlife.online/uploads/1793992981591-dc163158b664.webp",
+    attachments: [],
+  };
+}
+
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   const transporter = createTransporter();
-  const appUrl = getAppUrl();
+  const logo = getLogoConfig();
   await transporter.sendMail({
     from: process.env.SMTP_FROM ?? `"Uživaj Admin" <${process.env.SMTP_USER}>`,
     to,
     subject: "Reset your Uživaj password",
+    attachments: logo.attachments,
     html: `
       <div style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
         <div style="text-align: center; margin-bottom: 24px;">
-          <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
+          <img src="${logo.src}" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
         </div>
         <h2 style="margin: 0 0 12px; color: #1e1b4b; font-size: 20px; font-weight: 700; text-align: center;">Reset your password</h2>
         <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin: 0 0 24px; text-align: center;">Click the button below to set a new password. This link expires in <strong>1 hour</strong>.</p>
@@ -43,15 +66,16 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
 export async function sendCustomerPasswordResetEmail(to: string, resetUrl: string) {
   try {
     const transporter = createTransporter();
-    const appUrl = getAppUrl();
+    const logo = getLogoConfig();
     await transporter.sendMail({
       from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
       subject: "Reset your Uživaj password",
+      attachments: logo.attachments,
       html: `
         <div style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
           <div style="text-align: center; margin-bottom: 24px;">
-            <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
+            <img src="${logo.src}" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
           </div>
           <h2 style="margin: 0 0 12px; color: #1e1b4b; font-size: 20px; font-weight: 700; text-align: center;">Reset your customer password</h2>
           <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin: 0 0 24px; text-align: center;">Click the button below to set a new password for your Uživaj customer account. This link expires in <strong>1 hour</strong>.</p>
@@ -73,15 +97,16 @@ export async function sendCustomerPasswordResetEmail(to: string, resetUrl: strin
 export async function sendCustomerVerificationCodeEmail(to: string, code: string) {
   try {
     const transporter = createTransporter();
-    const appUrl = getAppUrl();
+    const logo = getLogoConfig();
     await transporter.sendMail({
       from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
       subject: "Your Uživaj Verification Code",
+      attachments: logo.attachments,
       html: `
         <div style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
           <div style="text-align: center; margin-bottom: 24px;">
-            <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
+            <img src="${logo.src}" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
           </div>
           <h2 style="margin: 0 0 8px; color: #1e1b4b; font-size: 20px; font-weight: 700; text-align: center;">Verification Code</h2>
           <p style="color: #64748b; font-size: 15px; line-height: 1.6; margin: 0 0 20px; text-align: center;">Your 6-digit password reset verification code is:</p>
@@ -120,15 +145,16 @@ export async function sendSupportReplyEmail({
 }) {
   try {
     const transporter = createTransporter();
-    const appUrl = getAppUrl();
+    const logo = getLogoConfig();
     await transporter.sendMail({
       from: process.env.SMTP_FROM ?? `"Uživaj Member Support" <${process.env.SMTP_USER}>`,
       to,
       subject: `Re: [Ticket #${ticketId}] ${subject}`,
+      attachments: logo.attachments,
       html: `
         <div style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; padding: 28px 24px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
           <div style="margin-bottom: 20px; text-align: center;">
-            <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 48px; width: auto; max-width: 200px; display: inline-block;" />
+            <img src="${logo.src}" alt="Uživaj" style="height: 48px; width: auto; max-width: 200px; display: inline-block;" />
           </div>
           
           <div style="background-color: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
@@ -165,15 +191,16 @@ export async function sendCustomerEmailVerificationLink(to: string, verifyUrl: s
   try {
     const transporter = createTransporter();
     const displayName = fullname ? ` ${fullname}` : "";
-    const appUrl = getAppUrl();
+    const logo = getLogoConfig();
     await transporter.sendMail({
       from: process.env.SMTP_FROM ?? `"Uživaj Support" <${process.env.SMTP_USER}>`,
       to,
       subject: "Verify your Uživaj account email",
+      attachments: logo.attachments,
       html: `
         <div style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
           <div style="text-align: center; margin-bottom: 24px;">
-            <img src="${appUrl}/uzivaj_logo.png" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
+            <img src="${logo.src}" alt="Uživaj" style="height: 50px; width: auto; max-width: 200px; display: inline-block;" />
           </div>
           <div style="background-color: #ffffff; padding: 28px 24px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
             <h2 style="margin: 0 0 12px; color: #1e1b4b; font-size: 20px; font-weight: 700; text-align: center;">Verify your email address</h2>
