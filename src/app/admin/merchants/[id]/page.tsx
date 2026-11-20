@@ -15,7 +15,7 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import MuiButton from "@mui/material/Button";
-import { ArrowLeft, MapPin, Phone, Globe, Percent, Tag, ImageIcon } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Globe, Percent, Tag, ImageIcon, Clock, Calendar } from "lucide-react";
 
 async function getMerchant(id: string) {
   const merchantId = parseInt(id, 10);
@@ -192,6 +192,23 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                 merchant.website
                   ? { icon: <Globe size={15} />, label: "Website", value: String(merchant.website), link: true }
                   : null,
+                merchant.workingDays || (merchant as any).workingDaysEn || (merchant as any).workingDaysHr
+                  ? {
+                      icon: <Calendar size={15} />,
+                      label: "Working Days",
+                      value: [
+                        merchant.workingDays || (merchant as any).workingDaysEn,
+                        (merchant as any).workingDaysHr ? `(${(merchant as any).workingDaysHr})` : null,
+                      ].filter(Boolean).join(" "),
+                    }
+                  : null,
+                merchant.workingHours
+                  ? {
+                      icon: <Clock size={15} />,
+                      label: "Working Hours",
+                      value: String(merchant.workingHours),
+                    }
+                  : null,
                 merchant.savingsEstimate && Number(merchant.savingsEstimate) > 0
                   ? { icon: <Percent size={15} />, label: "Est. Savings", value: `$${merchant.savingsEstimate} per visit` }
                   : null,
@@ -228,6 +245,45 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
               ))}
             </TableBody>
           </Table>
+
+          {/* Weekly Opening Hours Panel */}
+          {merchant.openingHours && (() => {
+            try {
+              const sched = JSON.parse(merchant.openingHours);
+              const days = [
+                { k: "monday", l: "Monday" },
+                { k: "tuesday", l: "Tuesday" },
+                { k: "wednesday", l: "Wednesday" },
+                { k: "thursday", l: "Thursday" },
+                { k: "friday", l: "Friday" },
+                { k: "saturday", l: "Saturday" },
+                { k: "sunday", l: "Sunday" },
+              ];
+              return (
+                <Box sx={{ borderTop: "1px solid", borderColor: "divider", p: 2.5, bgcolor: "background.paper" }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "text.secondary", display: "flex", alignItems: "center", gap: 0.75, mb: 1.5 }}>
+                    <Clock size={13} /> Weekly Schedule
+                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                    {days.map((d) => {
+                      const item = sched[d.k];
+                      if (!item) return null;
+                      return (
+                        <Box key={d.k} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, color: item.closed ? "text.disabled" : "text.primary", minWidth: 80 }}>
+                            {d.l}
+                          </Typography>
+                          <Typography variant="caption" sx={{ fontWeight: 600, color: item.closed ? "error.main" : "text.secondary", fontFamily: "monospace" }}>
+                            {item.closed ? "Closed" : item.slots ? item.slots.map((s: any) => `${s.open} - ${s.close}`).join(", ") : `${item.open || "09:00"} - ${item.close || "22:30"}`}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                </Box>
+              );
+            } catch (_) { return null; }
+          })()}
 
           <Divider />
 

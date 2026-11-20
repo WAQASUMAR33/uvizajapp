@@ -190,6 +190,11 @@ model Merchant {
   longitude       Float?
   phone           String?
   website         String?
+  workingDays     String?
+  workingDaysEn   String?
+  workingDaysHr   String?
+  workingHours    String?          @db.Text
+  openingHours    String?          @db.Text
   images          String?          @db.Text
   isActive        Boolean          @default(true)
   savingsEstimate Float            @default(0)

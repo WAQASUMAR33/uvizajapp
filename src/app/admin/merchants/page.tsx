@@ -31,9 +31,10 @@ import Tab from "@mui/material/Tab";
 import Skeleton from "@mui/material/Skeleton";
 import {
   Plus, Edit2, Trash2, Store, Search, Eye, MapPin, X, Upload, Tag,
-  Star, Receipt, RefreshCw, CheckCircle2, XCircle, Utensils,
+  Star, Receipt, RefreshCw, CheckCircle2, XCircle, Utensils, Clock, Calendar,
 } from "lucide-react";
 import { MapPickerModal } from "@/components/admin/MapPickerModal";
+import { OperatingHoursManager } from "@/components/admin/OperatingHoursManager";
 import { useSession } from "next-auth/react";
 import { hasPermission } from "@/lib/permissions";
 import { getCategoryLabel, formatDate, formatCurrency } from "@/lib/utils";
@@ -87,6 +88,11 @@ interface Merchant {
   descriptionHr: string | null;
   phone: string | null;
   website: string | null;
+  workingDays?: string | null;
+  workingDaysEn?: string | null;
+  workingDaysHr?: string | null;
+  workingHours?: string | null;
+  openingHours?: string | null;
   images: string[] | null;
   isActive: boolean;
   savingsEstimate: number;
@@ -98,7 +104,7 @@ interface Merchant {
 const emptyMerchant: Partial<Merchant> = {
   merchantCode: "", nameEn: "", nameHr: "", category: "CASUAL_DINING", cityEn: "", cityHr: "", addressEn: "", addressHr: "",
   latitude: null, longitude: null, descriptionEn: "", descriptionHr: "", phone: "",
-  website: "", images: [], savingsEstimate: 0,
+  website: "", workingDays: "", workingDaysEn: "", workingDaysHr: "", workingHours: "", openingHours: "", images: [], savingsEstimate: 0,
 };
 
 const emptyOffer: Partial<Offer> = {
@@ -728,6 +734,12 @@ export default function AdminMerchantsPage() {
                       <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
                         {m.nameHr}
                       </Typography>
+                      {(m.workingDaysEn || m.workingDays || m.workingHours) && (
+                        <Typography variant="caption" sx={{ color: "primary.main", display: "flex", alignItems: "center", gap: 0.5, mt: 0.35, fontSize: "0.68rem", fontWeight: 600 }}>
+                          <Clock size={11} />
+                          {[m.workingDaysEn || m.workingDays, m.workingHours].filter(Boolean).join(" • ")}
+                        </Typography>
+                      )}
                     </TableCell>
 
                     {/* Category */}
@@ -1022,6 +1034,60 @@ export default function AdminMerchantsPage() {
               fullWidth
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: 0 } }}
             />
+
+            {/* Operating Days & Hours Management */}
+            <Box sx={{ gridColumn: "1 / -1" }}>
+              <OperatingHoursManager
+                value={form.openingHours}
+                onChange={({ openingHoursJson, workingDaysEn, workingDaysHr, workingHours }) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    openingHours: openingHoursJson,
+                    workingDays: workingDaysEn,
+                    workingDaysEn,
+                    workingDaysHr,
+                    workingHours,
+                  }));
+                }}
+              />
+            </Box>
+
+            {/* Auto-synced summary info bar */}
+            <Box sx={{ gridColumn: "1 / -1", bgcolor: "#f8fafc", p: 2, borderRadius: "8px", border: "1px solid", borderColor: "divider" }}>
+              <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", display: "block", mb: 1.25 }}>
+                Summary Badges & App Display Text
+              </Typography>
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 1.5 }}>
+                <TextField
+                  label="Working Days (English)"
+                  value={form.workingDaysEn || form.workingDays || ""}
+                  onChange={(e) => setForm({ ...form, workingDaysEn: e.target.value, workingDays: e.target.value })}
+                  size="small"
+                  fullWidth
+                  sx={{ bgcolor: "#ffffff", "& .MuiOutlinedInput-root": { borderRadius: "6px" } }}
+                  helperText="Auto-computed from schedule"
+                />
+                <TextField
+                  label="Working Days (Croatian)"
+                  value={form.workingDaysHr || ""}
+                  onChange={(e) => setForm({ ...form, workingDaysHr: e.target.value })}
+                  size="small"
+                  fullWidth
+                  sx={{ bgcolor: "#ffffff", "& .MuiOutlinedInput-root": { borderRadius: "6px" } }}
+                  helperText="npr. Od ponedjeljka do subote"
+                />
+              </Box>
+              <TextField
+                label="Working Hours Display"
+                value={form.workingHours || ""}
+                onChange={(e) => setForm({ ...form, workingHours: e.target.value })}
+                size="small"
+                fullWidth
+                sx={{ bgcolor: "#ffffff", mt: 1.5, "& .MuiOutlinedInput-root": { borderRadius: "6px" } }}
+                helperText="Summary shown on cards and mobile profile (e.g. 09:00 - 22:30)"
+              />
+            </Box>
+
             <TextField
               label="Savings Estimate (€ per visit)"
               type="number"

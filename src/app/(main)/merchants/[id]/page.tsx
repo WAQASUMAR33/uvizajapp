@@ -16,7 +16,7 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
-import { MapPin, Phone, Globe, Tag, ImageIcon, DollarSign } from "lucide-react";
+import { MapPin, Phone, Globe, Tag, ImageIcon, DollarSign, Clock, Calendar } from "lucide-react";
 import type { SafeOffer } from "@/types";
 
 export default async function MerchantPage({ params }: { params: Promise<{ id: string }> }) {
@@ -205,6 +205,20 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
                     : null,
                   merchant.website
                     ? { icon: <Globe size={16} />, label: "Website", value: merchant.website.replace(/^https?:\/\//, ""), href: merchant.website }
+                    : null,
+                  merchant.workingDays || (merchant as any).workingDaysEn
+                    ? {
+                        icon: <Calendar size={16} />,
+                        label: "Days",
+                        value: merchant.workingDays || (merchant as any).workingDaysEn,
+                      }
+                    : null,
+                  merchant.workingHours
+                    ? {
+                        icon: <Clock size={16} />,
+                        label: "Hours",
+                        value: merchant.workingHours,
+                      }
                     : null,
                 ].filter(Boolean).map((row: any) => (
                   <TableRow key={row.label} sx={{ "&:last-child td": { borderBottom: 0 } }}>
