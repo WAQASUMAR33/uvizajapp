@@ -192,21 +192,21 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
                 merchant.website
                   ? { icon: <Globe size={15} />, label: "Website", value: String(merchant.website), link: true }
                   : null,
-                merchant.workingDays || (merchant as any).workingDaysEn || (merchant as any).workingDaysHr
+                (merchant as any).workingDays || (merchant as any).workingDaysEn || (merchant as any).workingDaysHr
                   ? {
                       icon: <Calendar size={15} />,
                       label: "Working Days",
                       value: [
-                        merchant.workingDays || (merchant as any).workingDaysEn,
+                        (merchant as any).workingDays || (merchant as any).workingDaysEn,
                         (merchant as any).workingDaysHr ? `(${(merchant as any).workingDaysHr})` : null,
                       ].filter(Boolean).join(" "),
                     }
                   : null,
-                merchant.workingHours
+                (merchant as any).workingHours
                   ? {
                       icon: <Clock size={15} />,
                       label: "Working Hours",
-                      value: String(merchant.workingHours),
+                      value: String((merchant as any).workingHours),
                     }
                   : null,
                 merchant.savingsEstimate && Number(merchant.savingsEstimate) > 0
@@ -247,9 +247,9 @@ export default async function MerchantDetailPage({ params }: { params: { id: str
           </Table>
 
           {/* Weekly Opening Hours Panel */}
-          {merchant.openingHours && (() => {
+          {(merchant as any).openingHours && (() => {
             try {
-              const sched = JSON.parse(merchant.openingHours);
+              const sched = JSON.parse((merchant as any).openingHours);
               const days = [
                 { k: "monday", l: "Monday" },
                 { k: "tuesday", l: "Tuesday" },

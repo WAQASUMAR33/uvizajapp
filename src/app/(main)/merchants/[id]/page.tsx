@@ -206,18 +206,18 @@ export default async function MerchantPage({ params }: { params: Promise<{ id: s
                   merchant.website
                     ? { icon: <Globe size={16} />, label: "Website", value: merchant.website.replace(/^https?:\/\//, ""), href: merchant.website }
                     : null,
-                  merchant.workingDays || (merchant as any).workingDaysEn
+                  (merchant as any).workingDays || (merchant as any).workingDaysEn
                     ? {
                         icon: <Calendar size={16} />,
                         label: "Days",
-                        value: merchant.workingDays || (merchant as any).workingDaysEn,
+                        value: (merchant as any).workingDays || (merchant as any).workingDaysEn,
                       }
                     : null,
-                  merchant.workingHours
+                  (merchant as any).workingHours
                     ? {
                         icon: <Clock size={16} />,
                         label: "Hours",
-                        value: merchant.workingHours,
+                        value: (merchant as any).workingHours,
                       }
                     : null,
                 ].filter(Boolean).map((row: any) => (
