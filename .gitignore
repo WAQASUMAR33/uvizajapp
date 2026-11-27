@@ -47,3 +47,7 @@ public/uploads/*
 !public/uploads/**/.gitkeep
 
 uzvaj_application/
+
+*.aab
+*.apk
+ipad_screenshots/
